@@ -19,7 +19,8 @@ public class Transformer implements IClassTransformer {
 	public boolean init;
 	public boolean recomputeFrames;
 	public boolean generateFieldNames;
-	public Map<String, Object> arr = new ConcurrentHashMap();
+	public static MCEGen gen;
+	public Map<String, String> arr = new ConcurrentHashMap();
 	
 	public Transformer()
 	{
@@ -29,10 +30,7 @@ public class Transformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String actualName, byte[] clazz) 
 	{
-		if(clazz == null)
-			return null;
-		
-		return this.arr.containsKey(actualName) ? configureModClass(actualName, clazz) : clazz;
+		return (clazz != null && this.arr.containsKey(actualName)) ? configureModClass(actualName, clazz) : clazz;
 	}
 
 	public byte[] configureModClass(String actualName, byte[] clazz)
@@ -42,36 +40,7 @@ public class Transformer implements IClassTransformer {
 			ClassNode classNode = CoreUtils.getClassNode(clazz);
 			CoreUtils.pubMinusFinal(classNode, true);
 			int flags = this.recomputeFrames ? (ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) : ClassWriter.COMPUTE_MAXS;
-			
-			if(this.generateFieldNames)
-			{
-				File file_gen = new File(System.getProperty("user.dir"), "config/ModClassEditor/GeneratedFieldNames.json");
-				if(!file_gen.exists())
-					JSONUtils.save(new JSONObject(), file_gen);
-				JSONObject groot = JSONUtils.getJson(file_gen);
-				JSONArray fields = new JSONArray();
-				groot.put(actualName, fields);
-				
-				for(int i=0;i<=1;i++)
-				{
-					for(FieldNode fn : classNode.fields)
-					{
-						boolean isStatic = (fn.access & Opcodes.ACC_STATIC) != 0;
-						if(i == 0 ? (!isStatic) : isStatic)
-							continue;
-						JSONObject jfield = new JSONObject();
-						String type = this.getType(fn.desc);
-						jfield.put("name", fn.name);
-						jfield.put("desc", fn.desc);
-						jfield.put("static", isStatic);
-						jfield.put("type", type);
-						fields.add(jfield);
-					}
-				}
-				
-				JSONUtils.save(groot, file_gen);
-			}
-			
+			gen.gen(actualName, classNode);
 			return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, flags), actualName);
 		}
 		catch(Throwable t)
@@ -80,20 +49,7 @@ public class Transformer implements IClassTransformer {
 		}
 		return clazz;
 	}
-
-	private static final String UNSUPPORTED = "Unsupported";
-	public String getType(String desc) {
-		return desc.equals("B") ? "byte"
-				: desc.equals("S") ? "short"
-						: desc.equals("I") ? "int"
-								: desc.equals("J") ? "long"
-										: desc.equals("Ljava/lang/String;") ? "string"
-												: desc.equals("Z") ? "boolean" 
-												: desc.equals("F") ? "float"
-												: desc.equals("D") ? "double"
-														: UNSUPPORTED;
-	}
-
+	
 	/**
 	 * Initializes the Main Configuration file so we know what we want to edit
 	 */
@@ -119,6 +75,8 @@ public class Transformer implements IClassTransformer {
 		JSONObject ojson = JSONUtils.getJson(cfg);
 		this.recomputeFrames = ojson.getBoolean("Recompute Frames");
 		this.generateFieldNames = ojson.getBoolean("Generate Field Names");
+		gen = new MCEGen("config/ModClassEditor/GeneratedFieldNames.json", this.generateFieldNames);
+		gen.init();
 		System.out.println("Recompute frames:" + this.recomputeFrames + ", GenFieldNames:" + this.generateFieldNames);
 	}
 	
@@ -143,7 +101,7 @@ public class Transformer implements IClassTransformer {
 		//Load the Classes List
 		JSONObject json = JSONUtils.getJson(cfg);
 		for(Object s : json.getJSONArray("ModClasses"))
-			this.arr.put((String) s, null);
+			this.arr.put((String) s, "");
 		
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())

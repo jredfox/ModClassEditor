@@ -10,9 +10,11 @@ import java.io.OutputStream;
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
+import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.internal.Util;
 
@@ -76,6 +78,45 @@ public class CoreUtils {
 	    access |= Opcodes.ACC_PUBLIC;
 	    
 	    return access;
+	}
+	
+	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
+	{
+		for (Object method_ : classNode.methods)
+		{
+			MethodNode method = (MethodNode) method_;
+			if (method.name.equals(method_name) && method.desc.equals(method_desc))
+			{
+				return method;
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Gets the Last LabelNode either before the return of the method or last label
+	 */
+	public static LabelNode getLastLabelNode(MethodNode method, boolean afterReturn)
+	{
+		AbstractInsnNode[] arr = method.instructions.toArray();
+		boolean found = afterReturn;
+		for(int i=arr.length-1;i>=0;i--)
+		{
+			AbstractInsnNode ab = arr[i];
+			if(!found && isReturnOpcode(ab.getOpcode()))
+				found = true;
+			
+			if(found && ab instanceof LabelNode)
+			{
+				return (LabelNode) ab;
+			}
+		}
+		return null;
+	}
+	
+	public static boolean isReturnOpcode(int opcode)
+	{
+		return opcode == Opcodes.RETURN || opcode == Opcodes.ARETURN || opcode == Opcodes.DRETURN || opcode == Opcodes.FRETURN || opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN;
 	}
 	
 	/**

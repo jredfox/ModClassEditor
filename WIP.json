@@ -1,0 +1,84 @@
+{
+  "_comment": "This will generate all field names with their values under <clinit> preinit init and even post init or NULL if not populated. it will also display the discriptor and type",
+  "_comment0": "List of names of classes we will be editing. Changing the name to \"_\" or \"#\" at the start or end will comment it",
+  "ModClasses":
+  [
+    "com.example.ExampleMod",
+    "com.example.ExampleModBlocks"
+  ],
+  
+  "com.example.ExampleMod":
+  {
+    "Fields":
+    [
+      {
+        "name": "id",
+        "method": "<clinit>",
+        "inject": "after",
+        "value": 202
+      },
+      {
+        "name": "id",
+        "method": "preinit",
+		"desc": "*",
+		"_comment": "//inject values are [before, after, <injectionPoint>, <before:InjectionByteCodePoint>, <after:InjectionByteCodePoint>] it will be injected before the next label or before the next return",
+        "inject": "before",
+        "value": 204
+      },
+	  {
+        "name": "id",
+		"_comment_class": "The class is where to inject the changes into. Having this field will automatically AT the entire class's field we are changing",
+		"class": "com.example.ExampleModMain",
+        "method": "preinit",
+		"desc": "*",
+		"_comment": "//inject values are [before, after, <injectionPoint>, <before:InjectionByteCodePoint>, <after:InjectionByteCodePoint>] it will be injected before the next label or before the next return",
+        "inject": "before",
+        "value": 204
+      }
+    ],
+
+    "FindAndReplace":
+    [
+      {
+		"_comment": "types are primatives whose type is [string, byte, int, short, long, float, double, boolean]",
+		"type": "string",
+        "method": "loadBlocks",
+        "desc": "",
+        "find": "Incorrect String",
+        "replace": "Custom Name Here",
+        "index": 1,
+        "all": false
+      },
+      {
+		"_comment": "when the desc is null or empty it will be the first method found, when it's * it will be all methods. Since the descriptor is blank it will match any descriptor",
+		"type": "string",
+        "method": "*",
+        "desc": "",
+        "find": 1738,
+        "replace": 2402,
+        "index": 0,
+        "all": true
+      },
+	 {
+		"type": "int",
+        "method": "*",
+        "desc": "",
+        "find": 101,
+        "replace": 1096,
+		"_comment": "index_range will start at index 0 and end replacing at index 10 so 11 indices will be replaced",
+        "index_range": "0-10"
+      }
+    ],
+    
+    "MethodChangeParams":
+    [
+      {
+        "method": "loadBlocks",
+        "desc": "",
+        "inject": "INVOKEVIRTUAL, \"java/io/PrintStream\", \"println\", \"(I)V\", false",
+        "param": 0,
+        "value": 64209
+      }
+    ]
+  }
+}

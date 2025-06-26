@@ -2,6 +2,8 @@ package jredfox.mce;
 
 import java.io.File;
 import java.util.HashSet;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
@@ -17,7 +19,7 @@ public class Transformer implements IClassTransformer {
 	public boolean init;
 	public boolean recomputeFrames;
 	public boolean generateFieldNames;
-	public HashSet<String> arr = new HashSet();
+	public Map<String, Object> arr = new ConcurrentHashMap();
 	
 	public Transformer()
 	{
@@ -30,7 +32,7 @@ public class Transformer implements IClassTransformer {
 		if(clazz == null)
 			return null;
 		
-		return this.arr.contains(actualName) ? configureModClass(actualName, clazz) : clazz;
+		return this.arr.containsKey(actualName) ? configureModClass(actualName, clazz) : clazz;
 	}
 
 	public byte[] configureModClass(String actualName, byte[] clazz)
@@ -58,10 +60,11 @@ public class Transformer implements IClassTransformer {
 						if(i == 0 ? (!isStatic) : isStatic)
 							continue;
 						JSONObject jfield = new JSONObject();
+						String type = this.getType(fn.desc);
 						jfield.put("name", fn.name);
 						jfield.put("desc", fn.desc);
 						jfield.put("static", isStatic);
-						jfield.put("type", this.getType(fn.desc));
+						jfield.put("type", type);
 						fields.add(jfield);
 					}
 				}
@@ -78,6 +81,7 @@ public class Transformer implements IClassTransformer {
 		return clazz;
 	}
 
+	private static final String UNSUPPORTED = "Unsupported";
 	public String getType(String desc) {
 		return desc.equals("B") ? "byte"
 				: desc.equals("S") ? "short"
@@ -87,7 +91,7 @@ public class Transformer implements IClassTransformer {
 												: desc.equals("Z") ? "boolean" 
 												: desc.equals("F") ? "float"
 												: desc.equals("D") ? "double"
-														: "Unsupported";
+														: UNSUPPORTED;
 	}
 
 	/**
@@ -139,10 +143,10 @@ public class Transformer implements IClassTransformer {
 		//Load the Classes List
 		JSONObject json = JSONUtils.getJson(cfg);
 		for(Object s : json.getJSONArray("ModClasses"))
-			this.arr.add((String) s);
+			this.arr.put((String) s, null);
 		
 		//Load the ModClassEditor Into Objects
-		for(String c : this.arr)
+		for(String c : this.arr.keySet())
 			MCEObj.register(c, json);
 	}
 

@@ -14,6 +14,15 @@ public class Test {
 	private static double id_d = 2.0D;
 	private static String id_str = "Entity Id";
 	
+	//Start Wrappers
+	private static Boolean rapped_id_bool = true;
+	private static Byte rapped_id_b = (byte) 125;
+	private static Short rapped_id_s = 126;
+	private static Integer rapped_id = 127;
+	private static Long rapped_id_l = 128L;
+	private static Float rapped_id_f = 2.0F;
+	private static Double rapped_id_d = 3.0D;
+	
 	static
 	{
 //		MCEGen.capValue("", "", id_bool);
@@ -27,6 +36,9 @@ public class Test {
 //		MCEGen.capValue("", "", "");
 //		MCEGen.capValue("", "", "");
 //		MCEGen.saveChanges();
+		
+//		MCEGen.capValue("", "", rapped_id_bool);
+//		rapped_id_bool = true;
 	}
 	
 	private int o_id = 200;

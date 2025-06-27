@@ -1,14 +1,20 @@
 package jredfox.mce;
 
 import java.io.File;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LocalVariableNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
@@ -30,6 +36,44 @@ public class Transformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String actualName, byte[] clazz) 
 	{
+		if(this.generateFieldNames && actualName.startsWith("jredfox.mce.MCEGenInit"))
+		{
+			try
+			{
+				String cn = actualName.replace('.', '/');
+				ClassNode classNode = new ClassNode();
+				//Define Required Class Fields
+				classNode.version = Opcodes.V1_6;
+				classNode.access = Opcodes.ACC_PUBLIC;
+				classNode.name = cn;
+				classNode.superName = "java/lang/Object";
+				
+				//Define Required Default Constructor
+				MethodNode ctr = new MethodNode(Opcodes.ACC_PUBLIC, "<init>", "()V", null, null);
+				classNode.methods.add(ctr);
+				InsnList l = new InsnList();
+				LabelNode l0 = new LabelNode();
+				l.add(l0);
+				l.add(new VarInsnNode(Opcodes.ALOAD, 0));
+				l.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V"));
+				LabelNode l1 = new LabelNode();
+				l.add(l1);
+				l.add(new InsnNode(Opcodes.RETURN));
+				LabelNode l2 = new LabelNode();
+				l.add(l2);
+				ctr.instructions = l;
+				ctr.localVariables.add(new LocalVariableNode("this", "L" + cn + ";", null, l0, l2, 0));
+				ctr.visitMaxs(1, 1);
+				
+				//TODO: create the dynamic Gen Method
+				
+				return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName);
+			}
+			catch(Throwable t)
+			{
+				t.printStackTrace();
+			}
+		}
 		return (clazz != null && this.arr.containsKey(actualName)) ? configureModClass(actualName, clazz) : clazz;
 	}
 

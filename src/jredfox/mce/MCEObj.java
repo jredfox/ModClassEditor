@@ -14,6 +14,7 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
@@ -185,11 +186,14 @@ public class MCEObj {
 				System.err.println("Method Not Found:" + f.method + " desc:\"" + f.desc + "\"");
 				continue;
 			}
+			boolean isWrapper = Character.isUpperCase(type.charAt(0));
 			InsnList list = new InsnList();
-			if(type.equals("boolean"))
+			if(type.equalsIgnoreCase("boolean"))
 			{
 				list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Z"));
+				if(isWrapper)
+					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Boolean;" : "Z") ));
 			}
 			else if(type.equals("byte"))
 			{

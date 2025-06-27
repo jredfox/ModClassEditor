@@ -38,7 +38,7 @@ public class Test {
 //		id_b = (byte) 200;
 	}
 	
-	private int o_id = 200;
+	private int o_id = new Integer(200);
 //	private short o_id_s = 201;
 //	private byte o_id_b = (byte) 202;
 //	private long o_id_l = 203;
@@ -62,25 +62,9 @@ public class Test {
 		method_st(null);
 	}
 	
-	public static void test()
-	{
-		
-	}
-	
-	public static void test(Object a)
-	{
-		
-	}
-	
-	public static void test(Object b, boolean c)
-	{
-		
-	}
-	
 	public static void main(String[] args)
 	{
-		byte b = (byte) 258;
-		System.out.println(b);
+		
 	}
 
 }

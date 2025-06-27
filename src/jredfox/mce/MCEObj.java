@@ -227,6 +227,16 @@ public class MCEObj {
 					list.add(new LdcInsnNode(new Integer(v)));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "I"));
 			}
+			else if(type.equals("long"))
+			{
+				long v = parseLong(f.value);
+				InsnNode insn = getConstantInsn(v);
+				if(insn != null)
+					list.add(insn);
+				else
+					list.add(new LdcInsnNode(new Long(v)));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "J"));
+			}
 			
 			//Injection Point
 			if(f.inject.equals("after"))
@@ -237,6 +247,11 @@ public class MCEObj {
 				m.instructions.insert(list);
 			}
 		}
+	}
+
+	private static InsnNode getConstantInsn(long v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.LCONST_0) : (v == 1 ? new InsnNode(Opcodes.LCONST_1) : null);
 	}
 
 	private static InsnNode getConstantInsn(int b) 

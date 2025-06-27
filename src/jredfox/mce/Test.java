@@ -26,19 +26,21 @@ public class Test {
 	static
 	{
 //		//InsnNode
-		id = -1;
-		id = 0;
-		id = 1;
-		id = 2;
-		id = 3;
-		id = 4;
-		id = 5;
-		id = 6;
-		id = 127;
-		id = Short.MAX_VALUE;
-		id = Short.MAX_VALUE + 1;
-		id = Short.MIN_VALUE - 1;
-		id = 389000;
+		id_l = -1;
+		id_l = 0;
+		id_l = 1;
+		id_l = 2L;
+		id_l = 3;
+		id_l = 4;
+		id_l = 5;
+		id_l = (long) 6;
+		id_l = 127L;
+		id_l = Short.MAX_VALUE;
+		id_l = Short.MAX_VALUE + 1;
+		id_l = Short.MIN_VALUE - 1;
+		id_l = 389000;
+		id_l = Integer.MAX_VALUE;
+		id_l = Long.MAX_VALUE;
 	}
 	
 	private int o_id = new Integer(200);

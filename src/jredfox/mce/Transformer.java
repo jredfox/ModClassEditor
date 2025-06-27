@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -36,7 +37,7 @@ public class Transformer implements IClassTransformer {
 	@Override
 	public byte[] transform(String name, String actualName, byte[] clazz) 
 	{
-		if(this.generateFieldNames && actualName.startsWith("jredfox.mce.MCEGenInit"))
+		if(this.generateFieldNames && actualName.startsWith("jredfox.mce.MCEGenInit") && clazz != null)
 		{
 			try
 			{
@@ -65,7 +66,52 @@ public class Transformer implements IClassTransformer {
 				ctr.localVariables.add(new LocalVariableNode("this", "L" + cn + ";", null, l0, l2, 0));
 				ctr.visitMaxs(1, 1);
 				
-				//TODO: create the dynamic Gen Method
+				//Generate init method to load the values into MCEGen
+				MethodNode init = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "init", "()V", null, null);
+				classNode.methods.add(init);
+				InsnList initList = new InsnList();
+				LabelNode l0_ = new LabelNode();
+				initList.add(l0_);
+				initList.insert(l0_, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+				LabelNode l1_ = new LabelNode();
+				initList.add(l1_);
+				initList.add(new InsnNode(Opcodes.RETURN));
+				LabelNode l2_ = new LabelNode();
+				initList.add(l2_);
+				init.instructions = initList;
+				init.localVariables.add(new LocalVariableNode("this", "L" + cn + ";", null, l0_, l2_, 0));
+				init.visitMaxs(1, 1);
+				
+				//Generate the methods calls dynamically
+				for(Map.Entry pair : gen.root.entrySet())
+				{
+					if(!(pair.getValue() instanceof JSONArray))
+						continue;
+					JSONArray arr = (JSONArray) pair.getValue();
+					for(Object ov : arr)
+					{
+						if(!(ov instanceof JSONObject))
+							continue;
+						JSONObject jval = (JSONObject) ov;
+						
+						//Since we only support static value in gen if this tag exists we don't have to check everything again only this tag
+						if(!jval.containsKey("value"))
+							continue;
+						boolean isStatic = jval.getBoolean("static");
+						String orgClName = (String) pair.getKey();
+						String clname = orgClName.toString().replace('.', '/');
+						String fieldName = jval.getString("name");
+						String desc = jval.getString("desc");
+						String type = jval.getString("type");
+						
+						InsnList li = new InsnList();
+						li.add(new LdcInsnNode(orgClName));
+						li.add(new LdcInsnNode(fieldName));
+						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fieldName, desc));
+						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V"));
+						init.instructions.insert(l0_, li);
+					}
+				}
 				
 				return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName);
 			}

@@ -8,47 +8,25 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid="modclasseditor", name="Mod Class Editor", version="0.1", dependencies="after:*")
 public class MCEMod {
 	
-	public static String stage = "preinit";
-	
 	@Mod.PreInit
 	public void mcePreinit(FMLPreInitializationEvent e)
 	{
-		try
-		{
-			Class.forName("jredfox.mce.MCEGenInitPre");
-		}
-		catch(Throwable t)
-		{
-			t.printStackTrace();
-		}
-		stage = "init";
+		Transformer.gen.stage = "preInit";
+		MCEGenInitPre.init();
 	}
 	
 	@Mod.Init
 	public void mceInit(FMLInitializationEvent e)
 	{
-		try
-		{
-			Class.forName("jredfox.mce.MCEGenInit");
-		}
-		catch(Throwable t)
-		{
-			t.printStackTrace();
-		}
-		stage = "postinit";
+		Transformer.gen.stage = "init";
+		MCEGenInit.init();
 	}
 	
 	@Mod.PostInit
 	public void mcepostInit(FMLPostInitializationEvent e)
 	{
-		try
-		{
-			Class.forName("jredfox.mce.MCEGenInitPost");
-		}
-		catch(Throwable t)
-		{
-			t.printStackTrace();
-		}
+		Transformer.gen.stage = "postInit";
+		MCEGenInitPost.init();
 	}
 
 }	

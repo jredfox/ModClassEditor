@@ -19,6 +19,7 @@ public class MCEGen {
 	public File file_gen;
 	public JSONObject root;
 	public boolean enabled;
+	public String stage = "";
 	
 	public MCEGen(String path, boolean enabled)
 	{
@@ -95,7 +96,7 @@ public class MCEGen {
 		JSONUtils.save(this.root, this.file_gen);
 	}
 
-	private static final String UNSUPPORTED = "Unsupported";
+	static final String UNSUPPORTED = "Unsupported";
 
 	public String getType(String desc) {
 		return desc.equals("B") ? "byte"
@@ -200,7 +201,7 @@ public class MCEGen {
 				JSONObject j = (JSONObject) o;
 				if(j.getString("name").equals(fieldName))
 				{
-					j.put("value", v);
+					j.put(this.stage.isEmpty() ? "value" : ("value_" + this.stage), v);
 					break;
 				}
 			}

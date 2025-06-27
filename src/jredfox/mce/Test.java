@@ -62,10 +62,25 @@ public class Test {
 		method_st(null);
 	}
 	
+	public static void test()
+	{
+		
+	}
+	
+	public static void test(Object a)
+	{
+		
+	}
+	
+	public static void test(Object b, boolean c)
+	{
+		
+	}
+	
 	public static void main(String[] args)
 	{
-		long l1 = ((long)Integer.MAX_VALUE) + 1L;
-		System.out.println(l1);
+		byte b = (byte) 258;
+		System.out.println(b);
 	}
 
 }

@@ -251,8 +251,7 @@ public class MCEObj {
 	 */
 	private static byte parseByte(String value) 
 	{
-		long i = Long.parseLong(value, 10);
-		return (i > Byte.MAX_VALUE) ? Byte.MAX_VALUE : ( (i < Byte.MIN_VALUE) ? Byte.MIN_VALUE : (byte)i);
+		return (byte) Long.parseLong(value, 10);
 	}
 	
 	/**
@@ -260,8 +259,7 @@ public class MCEObj {
 	 */
 	private static short parseShort(String value) 
 	{
-		long i = Long.parseLong(value, 10);
-		return (i > Short.MAX_VALUE) ? Short.MAX_VALUE : ( (i < Short.MIN_VALUE) ? Short.MIN_VALUE : (short)i);
+		return (short) Long.parseLong(value, 10);
 	}
 	
 	/**
@@ -269,8 +267,7 @@ public class MCEObj {
 	 */
 	private static int parseInt(String value) 
 	{
-		long i = Long.parseLong(value, 10);
-		return (i > Integer.MAX_VALUE) ? Integer.MAX_VALUE : ( (i < Integer.MIN_VALUE) ? Integer.MIN_VALUE : (int)i);
+		return (int) Long.parseLong(value, 10);
 	}
 
 	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 

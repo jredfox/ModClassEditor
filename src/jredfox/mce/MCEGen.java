@@ -243,6 +243,7 @@ public class MCEGen {
 					if(!(pair.getValue() instanceof JSONArray))
 						continue;
 					JSONArray arr = (JSONArray) pair.getValue();
+					AbstractInsnNode genSpot = l0_;
 					for(Object ov : arr)
 					{
 						if(!(ov instanceof JSONObject))
@@ -263,8 +264,10 @@ public class MCEGen {
 						li.add(new LdcInsnNode(orgClName));
 						li.add(new LdcInsnNode(fieldName));
 						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fieldName, desc));
-						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V"));
-						init.instructions.insert(l0_, li);
+						MethodInsnNode lastInsn = new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V");
+						li.add(lastInsn);
+						init.instructions.insert(genSpot, li);
+						genSpot = lastInsn;
 					}
 				}
 				

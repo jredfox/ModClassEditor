@@ -25,17 +25,17 @@ public class Test {
 	
 	static
 	{
-		//InsnNode
-//		id_b = -1;
-//		id_b = 0;
-//		id_b = 1;
-//		id_b = 2;
-//		id_b = 3;
-//		id_b = 4;
-//		id_b = 5;
-//		id_b = 6;
-//		id_b = 127;
-//		id_b = (byte) 200;
+//		//InsnNode
+//		id_s = -1;
+//		id_s = 0;
+//		id_s = 1;
+//		id_s = 2;
+//		id_s = 3;
+//		id_s = 4;
+//		id_s = 5;
+//		id_s = 6;
+//		id_s = 127;
+//		id_s = (short) 3276999;
 	}
 	
 	private int o_id = new Integer(200);

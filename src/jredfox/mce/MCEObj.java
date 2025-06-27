@@ -193,46 +193,24 @@ public class MCEObj {
 			else if(type.equals("byte"))
 			{
 				byte b = parseByte(f.value);
-				if (b > -2 && b < 6)
-				{
-					int opcode = 0;
-					switch(b)
-					{
-						case -1:
-							opcode = Opcodes.ICONST_M1;
-						break;
-						
-						case 0:
-							opcode = Opcodes.ICONST_0;
-						break;
-						
-						case 1:
-							opcode = Opcodes.ICONST_1;
-						break;
-						
-						case 2:
-							opcode = Opcodes.ICONST_2;
-						break;
-						
-						case 3:
-							opcode = Opcodes.ICONST_3;
-						break;
-						
-						case 4:
-							opcode = Opcodes.ICONST_4;
-						break;
-						
-						case 5:
-							opcode = Opcodes.ICONST_5;
-						break;
-					}
-					list.add(new InsnNode(opcode));
-				}
+				InsnNode insn = getConstantInsn(b);
+				if(insn != null)
+					list.add(insn);
 				else
-				{
 					list.add(new IntInsnNode(Opcodes.BIPUSH, b));
-				}
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "B"));
+			}
+			else if(type.equals("short"))
+			{
+				short s = parseShort(f.value);
+				InsnNode insn = getConstantInsn(s);
+				if(insn != null)
+					list.add(insn);
+				else if (s >= Byte.MIN_VALUE && s <= Byte.MAX_VALUE)
+					list.add(new IntInsnNode(Opcodes.BIPUSH, s));
+				else
+					list.add(new IntInsnNode(Opcodes.SIPUSH, s));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "S"));
 			}
 			
 			//Injection Point
@@ -244,6 +222,47 @@ public class MCEObj {
 				m.instructions.insert(list);
 			}
 		}
+	}
+
+	private static InsnNode getConstantInsn(int b) 
+	{
+		if (b > -2 && b < 6)
+		{
+			int opcode = 0;
+			switch(b)
+			{
+				case -1:
+					opcode = Opcodes.ICONST_M1;
+				break;
+				
+				case 0:
+					opcode = Opcodes.ICONST_0;
+				break;
+				
+				case 1:
+					opcode = Opcodes.ICONST_1;
+				break;
+				
+				case 2:
+					opcode = Opcodes.ICONST_2;
+				break;
+				
+				case 3:
+					opcode = Opcodes.ICONST_3;
+				break;
+				
+				case 4:
+					opcode = Opcodes.ICONST_4;
+				break;
+				
+				case 5:
+					opcode = Opcodes.ICONST_5;
+				break;
+			}
+			return new InsnNode(opcode);
+		}
+		
+		return null;
 	}
 
 	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 

@@ -10,7 +10,7 @@ public class MCEMod {
 	
 	static
 	{
-		Test.load();
+		Test.load();//TODO: REMOVE
 	}
 	
 	@Mod.PreInit

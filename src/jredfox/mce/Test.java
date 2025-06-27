@@ -22,20 +22,8 @@ public class Test {
 	
 	static
 	{
-//		MCEGen.capValue("", "", id_bool);
-//		id_b = (byte) 100;
-//		id_s = 100;
-//		id = 100;
-//		id_l = 100;
-//		id_f = 100F;
-//		id_d = 100D;
-//		String id_str = "A String";
-//		MCEGen.capValue("", "", "");
-//		MCEGen.capValue("", "", "");
-//		MCEGen.saveChanges();
-		
-//		MCEGen.capValue("", "", rapped_id_bool);
-//		rapped_id_bool = true;
+		id_bool = true;
+		id_bool = false;
 	}
 	
 //	private int o_id = 200;

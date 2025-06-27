@@ -171,4 +171,13 @@ public class CoreUtils {
 		}
 	}
 
+	public static FieldNode getFieldNode(String name, ClassNode classNode) {
+		for (FieldNode fn : classNode.fields) {
+			if (fn.name.equals(name)) {
+				return fn;
+			}
+		}
+		return null;
+	}
+
 }

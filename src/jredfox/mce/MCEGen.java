@@ -64,7 +64,7 @@ public class MCEGen {
 					if (i == 0 ? (!isStatic) : isStatic)
 						continue;
 					JSONObject jfield = new JSONObject();
-					String type = this.getType(fn.desc);
+					String type = MCEObj.getType(fn.desc);
 					jfield.put("name", fn.name);
 					jfield.put("desc", fn.desc);
 					jfield.put("static", isStatic);
@@ -72,7 +72,7 @@ public class MCEGen {
 					fields.add(jfield);
 	
 					//We need to generate the values here for non static arrays
-					if (isStatic && !UNSUPPORTED.equals(type) && !fn.desc.startsWith("[")) 
+					if (isStatic && !MCEObj.UNSUPPORTED.equals(type) && !fn.desc.startsWith("[")) 
 					{
 						InsnList li = new InsnList();
 						String clname = actualName.replace('.', '/');
@@ -93,27 +93,6 @@ public class MCEGen {
 	public void save()
 	{
 		JSONUtils.save(this.root, this.file_gen);
-	}
-
-	static final String UNSUPPORTED = "Unsupported";
-
-	public String getType(String desc) {
-		return desc.equals("B") ? "byte"
-				: desc.equals("S") ? "short"
-						: desc.equals("I") ? "int"
-								: desc.equals("J") ? "long"
-										: desc.equals("Ljava/lang/String;") ? "string"
-												: desc.equals("Z") ? "boolean"
-														: desc.equals("F") ? "float"
-																: desc.equals("D") ? "double"
-																		: desc.equals("Ljava/lang/Boolean;") ? "Boolean"
-																: desc.equals("Ljava/lang/Byte;") ? "Byte"
-															: desc.equals("Ljava/lang/Short;") ? "Short"
-														: desc.equals("Ljava/lang/Integer;") ? "Integer"
-												: desc.equals("Ljava/lang/Long;") ? "Long"
-										: desc.equals("Ljava/lang/Float;") ? "Float"
-								: desc.equals("Ljava/lang/Double;") ? "Double"
-						: UNSUPPORTED;
 	}
 	
 	public static void saveChanges() {

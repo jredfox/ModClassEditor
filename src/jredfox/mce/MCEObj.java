@@ -5,6 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
@@ -22,19 +30,29 @@ public class MCEObj {
 		MCEObj.registry.put(c, new MCEObj(c, root.getJSONObject(c)));
 	}
 	
+	/**
+	 * Get the MCEObj required for the Transformer
+	 */
+	public static MCEObj get(String actualName) 
+	{
+		return registry.get(actualName);
+	}
+	
 	public String className;
+	public String classNameASM;
 	public List<MCEField> fields = new ArrayList();
 //	public List<MCEFindAndReplace> frs = new ArrayList();
 //	public List<MCEParam> params = new ArrayList();
 	
 	public MCEObj(String className)
 	{
-		this.className = className;
+		this.className = className.replace('/', '.');
+		this.classNameASM = className.replace('.', '/');
 	}
 	
 	public MCEObj(String c, JSONObject json)
 	{
-		this.className = c;
+		this(c);
 		this.parse(json);
 	}
 	
@@ -113,8 +131,103 @@ public class MCEObj {
 		
 		private String safeString(String s, String def)
 		{
-			return s != null ? s : def;
+			return (s == null || s.isEmpty()) ? def : s;
 		}
+	}
+
+	public static void configure(String actualName, ClassNode classNode)
+	{
+		MCEObj mce = get(actualName);
+		
+		//Sanity Check
+		if(mce == null) 
+		{
+			System.err.println("Error Missing " + actualName + " JSON Configuration Skipping!");
+			return;
+		}
+		
+		//Configure Fields
+		for(MCEField f : mce.fields)
+		{
+			String type = f.type;
+			FieldNode fn = CoreUtils.getFieldNode(f.name, classNode);
+			
+			//Sanity Checks
+			if(fn == null)
+			{
+				System.err.println("Field not Found:" + f.name + " in: " + mce.className);
+				continue;
+			}
+			else if((fn.access & Opcodes.ACC_STATIC) != 0)
+			{
+				System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + f.name + " in:" + mce.className);
+				continue;
+			}
+			
+			//Populate the Type
+			if(type.isEmpty())
+				type = getType(fn.desc);
+			
+			//disallow unsupported field opperations to prevent runtime crashing
+			if(type == UNSUPPORTED)
+			{
+				System.err.println("Unsupported Type for Field:" + f.name + " in:" + mce.className);
+				continue;
+			}
+			
+			//Actual code
+			MethodNode m = getMethodNode(classNode, f.method, f.desc);
+			InsnList list = new InsnList();
+			if(type.equals("boolean"))
+			{
+				list.add(new InsnNode(Boolean.parseBoolean(f.value) ?  Opcodes.ICONST_1 : Opcodes.ICONST_0));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Z"));
+			}
+			
+			//Injection Point
+			if(f.inject.equals("after"))
+				m.instructions.insertBefore(CoreUtils.getLastReturn(m), list);
+			else if(f.inject.equals("before"))
+			{
+				list.insert(new LabelNode());
+				m.instructions.insert(list);
+			}
+		}
+	}
+	
+	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
+	{
+		boolean mt = method_desc.isEmpty() || method_desc.equals("*");
+		for (Object method_ : classNode.methods)
+		{
+			MethodNode method = (MethodNode) method_;
+			if (method.name.equals(method_name) && (mt || method.desc.equals(method_desc)) )
+			{
+				return method;
+			}
+		}
+		return null;
+	}
+	
+	public static final String UNSUPPORTED = "Unsupported";
+
+	public static String getType(String desc) {
+		return desc.equals("B") ? "byte"
+				: desc.equals("S") ? "short"
+						: desc.equals("I") ? "int"
+								: desc.equals("J") ? "long"
+										: desc.equals("Ljava/lang/String;") ? "string"
+												: desc.equals("Z") ? "boolean"
+														: desc.equals("F") ? "float"
+																: desc.equals("D") ? "double"
+																		: desc.equals("Ljava/lang/Boolean;") ? "Boolean"
+																: desc.equals("Ljava/lang/Byte;") ? "Byte"
+															: desc.equals("Ljava/lang/Short;") ? "Short"
+														: desc.equals("Ljava/lang/Integer;") ? "Integer"
+												: desc.equals("Ljava/lang/Long;") ? "Long"
+										: desc.equals("Ljava/lang/Float;") ? "Float"
+								: desc.equals("Ljava/lang/Double;") ? "Double"
+						: UNSUPPORTED;
 	}
 
 }

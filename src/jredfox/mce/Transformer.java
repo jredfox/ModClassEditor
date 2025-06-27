@@ -51,6 +51,7 @@ public class Transformer implements IClassTransformer {
 			CoreUtils.pubMinusFinal(classNode, true);
 			int flags = this.recomputeFrames ? (ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) : ClassWriter.COMPUTE_MAXS;
 			gen.gen(actualName, classNode);
+			MCEObj.configure(actualName, classNode);
 			return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, flags), actualName);
 		}
 		catch(Throwable t)

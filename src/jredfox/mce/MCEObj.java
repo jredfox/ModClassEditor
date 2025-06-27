@@ -111,7 +111,7 @@ public class MCEObj {
 		
 		public MCEField(JSONObject json)
 		{
-			this(json.getString("name"), json.getString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
+			this(json.getString("name"), json.getAsString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
 		}
 		
 		public MCEField(String name, String value, String type, String method, String desc, String inject)
@@ -137,12 +137,13 @@ public class MCEObj {
 
 	public static void configure(String actualName, ClassNode classNode)
 	{
+		System.out.println("Editing:" + actualName);
 		MCEObj mce = get(actualName);
 		
 		//Sanity Check
 		if(mce == null) 
 		{
-			System.err.println("Error Missing " + actualName + " JSON Configuration Skipping!");
+			System.err.println("Error Missing " + actualName + " MCEObj from ModClassEditor.JSON this is a BUG!");
 			return;
 		}
 		
@@ -180,7 +181,7 @@ public class MCEObj {
 			InsnList list = new InsnList();
 			if(type.equals("boolean"))
 			{
-				list.add(new InsnNode(Boolean.parseBoolean(f.value) ?  Opcodes.ICONST_1 : Opcodes.ICONST_0));
+				list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Z"));
 			}
 			

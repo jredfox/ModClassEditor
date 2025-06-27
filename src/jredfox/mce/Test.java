@@ -22,8 +22,8 @@ public class Test {
 	
 	static
 	{
-		id_bool = true;
-		id_bool = false;
+//		id_bool = true;
+//		id_bool = false;
 	}
 	
 //	private int o_id = 200;

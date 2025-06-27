@@ -52,10 +52,8 @@ public class MCEGen {
 			JSONArray fields = new JSONArray();
 			root.put(actualName, fields);
 			
-			//Save Changes in Mod's <clinit> after all fields have their values generated
 			AbstractInsnNode spot = CoreUtils.getLastReturn(clinit);
-			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
-	
+			
 			for (int i = 0; i <= 1; i++) 
 			{
 				for (FieldNode fn : classNode.fields) 
@@ -84,6 +82,9 @@ public class MCEGen {
 					}
 				}
 			}
+			
+			//Save Changes in Mod's <clinit> after all fields have their values generated
+			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 			
 			//Save Progres
 			this.save();

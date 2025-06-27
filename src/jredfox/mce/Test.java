@@ -1,5 +1,8 @@
 package jredfox.mce;
 
+import org.ralleytn.simple.json.JSONObject;
+import org.ralleytn.simple.json.JSONParseException;
+
 public class Test {
 	
 	private static boolean id_bool = false;
@@ -35,7 +38,7 @@ public class Test {
 //		id_b = (byte) 200;
 	}
 	
-//	private int o_id = 200;
+	private int o_id = 200;
 //	private short o_id_s = 201;
 //	private byte o_id_b = (byte) 202;
 //	private long o_id_l = 203;
@@ -61,7 +64,8 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		
+		long l1 = ((long)Integer.MAX_VALUE) + 1L;
+		System.out.println(l1);
 	}
 
 }

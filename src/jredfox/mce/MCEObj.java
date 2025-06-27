@@ -192,7 +192,7 @@ public class MCEObj {
 			}
 			else if(type.equals("byte"))
 			{
-				byte b = Byte.parseByte(f.value);
+				byte b = parseByte(f.value);
 				if (b > -2 && b < 6)
 				{
 					int opcode = 0;
@@ -246,6 +246,33 @@ public class MCEObj {
 		}
 	}
 	
+	/**
+	 * Parse a Byte Safely
+	 */
+	private static byte parseByte(String value) 
+	{
+		long i = Long.parseLong(value, 10);
+		return (i > Byte.MAX_VALUE) ? Byte.MAX_VALUE : ( (i < Byte.MIN_VALUE) ? Byte.MIN_VALUE : (byte)i);
+	}
+	
+	/**
+	 * Parse a Short Safely
+	 */
+	private static short parseShort(String value) 
+	{
+		long i = Long.parseLong(value, 10);
+		return (i > Short.MAX_VALUE) ? Short.MAX_VALUE : ( (i < Short.MIN_VALUE) ? Short.MIN_VALUE : (short)i);
+	}
+	
+	/**
+	 * Parse a Int Safely
+	 */
+	private static int parseInt(String value) 
+	{
+		long i = Long.parseLong(value, 10);
+		return (i > Integer.MAX_VALUE) ? Integer.MAX_VALUE : ( (i < Integer.MIN_VALUE) ? Integer.MIN_VALUE : (int)i);
+	}
+
 	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
 	{
 		boolean mt = method_desc.isEmpty() || method_desc.equals("*");

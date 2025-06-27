@@ -25,22 +25,21 @@ public class Test {
 	
 	static
 	{
-//		//InsnNode
-		id_l = -1;
-		id_l = 0;
-		id_l = 1;
-		id_l = 2L;
-		id_l = 3;
-		id_l = 4;
-		id_l = 5;
-		id_l = (long) 6;
-		id_l = 127L;
-		id_l = Short.MAX_VALUE;
-		id_l = Short.MAX_VALUE + 1;
-		id_l = Short.MIN_VALUE - 1;
-		id_l = 389000;
-		id_l = Integer.MAX_VALUE;
-		id_l = Long.MAX_VALUE;
+		id_f = -1;
+		id_f = 0;
+		id_f = 1;
+		id_f = 2F;
+		id_f = 3;
+		id_f = 4;
+		id_f = 5;
+		id_f = (float) 6;
+		id_f = 127F;
+		id_f = Short.MAX_VALUE;
+		id_f = Short.MAX_VALUE + 1;
+		id_f = Short.MIN_VALUE - 1;
+		id_f = 389000;
+		id_f = Integer.MAX_VALUE;
+		id_f = Long.MAX_VALUE;
 	}
 	
 	private int o_id = new Integer(200);
@@ -69,7 +68,7 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		System.out.println(300000000);
+		
 	}
 
 }

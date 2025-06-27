@@ -139,7 +139,7 @@ public class MCEObj {
 
 	public static void configure(String actualName, ClassNode classNode)
 	{
-		System.out.println("Editing:" + actualName);
+		System.out.println("Mod Class Editor:" + actualName);
 		MCEObj mce = get(actualName);
 		
 		//Sanity Check
@@ -237,6 +237,16 @@ public class MCEObj {
 					list.add(new LdcInsnNode(new Long(v)));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "J"));
 			}
+			else if(type.equals("float"))
+			{
+				float v = parseFloat(f.value);
+				InsnNode insn = getConstantInsn(v);
+				if(insn != null)
+					list.add(insn);
+				else
+					list.add(new LdcInsnNode(new Float(v)));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "F"));
+			}
 			
 			//Injection Point
 			if(f.inject.equals("after"))
@@ -249,9 +259,22 @@ public class MCEObj {
 		}
 	}
 
+	/**
+	 * longs behave completly different in the bytecode compared to boolean, byte, short and int
+	 */
 	private static InsnNode getConstantInsn(long v) 
 	{
 		return v == 0 ? new InsnNode(Opcodes.LCONST_0) : (v == 1 ? new InsnNode(Opcodes.LCONST_1) : null);
+	}
+	
+	private static InsnNode getConstantInsn(float v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.FCONST_0) : (v == 1 ? new InsnNode(Opcodes.FCONST_1) : (v == 2 ? new InsnNode(Opcodes.FCONST_2) : null) );
+	}
+	
+	private static InsnNode getConstantInsn(double v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.DCONST_0) : (v == 1 ? new InsnNode(Opcodes.DCONST_1) : null);
 	}
 
 	private static InsnNode getConstantInsn(int b) 
@@ -363,6 +386,14 @@ public class MCEObj {
 	private static long parseLong(String value) 
 	{
 		return Long.parseLong(value, 10);
+	}
+	
+	/**
+	 * Parse a Int Safely
+	 */
+	private static float parseFloat(String value) 
+	{
+		return Float.parseFloat(value);
 	}
 	
 	//END UTIL METHODS___________________________________________________

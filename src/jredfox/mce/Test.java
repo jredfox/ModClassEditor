@@ -25,21 +25,21 @@ public class Test {
 	
 	static
 	{
-		id_f = -1;
-		id_f = 0;
-		id_f = 1;
-		id_f = 2F;
-		id_f = 3;
-		id_f = 4;
-		id_f = 5;
-		id_f = (float) 6;
-		id_f = 127F;
-		id_f = Short.MAX_VALUE;
-		id_f = Short.MAX_VALUE + 1;
-		id_f = Short.MIN_VALUE - 1;
-		id_f = 389000;
-		id_f = Integer.MAX_VALUE;
-		id_f = Long.MAX_VALUE;
+		id_d = -1;
+		id_d = 0;
+		id_d = 1;
+		id_d = 2F;
+		id_d = 3;
+		id_d = 4;
+		id_d = 5;
+		id_d = (float) 6;
+		id_d = 127F;
+		id_d = Short.MAX_VALUE;
+		id_d = Short.MAX_VALUE + 1;
+		id_d = Short.MIN_VALUE - 1;
+		id_d = 389000;
+		id_d = Integer.MAX_VALUE;
+		id_d = Long.MAX_VALUE;
 	}
 	
 	private int o_id = new Integer(200);

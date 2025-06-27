@@ -159,7 +159,7 @@ public class MCEObj {
 				System.err.println("Field not Found:" + f.name + " in: " + mce.className);
 				continue;
 			}
-			else if((fn.access & Opcodes.ACC_STATIC) != 0)
+			else if((fn.access & Opcodes.ACC_STATIC) == 0)
 			{
 				System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + f.name + " in:" + mce.className);
 				continue;
@@ -178,6 +178,11 @@ public class MCEObj {
 			
 			//Actual code
 			MethodNode m = getMethodNode(classNode, f.method, f.desc);
+			if(m == null)
+			{
+				System.err.println("Method Not Found:" + f.method + " desc:\"" + f.desc + "\"");
+				continue;
+			}
 			InsnList list = new InsnList();
 			if(type.equals("boolean"))
 			{

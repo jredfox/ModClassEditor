@@ -195,7 +195,7 @@ public class MCEObj {
 					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Boolean;" : "Z") ));
 			}
-			else if(type.equals("byte"))
+			else if(type.equalsIgnoreCase("byte"))
 			{
 				byte b = parseByte(f.value);
 				InsnNode insn = getConstantInsn(b);
@@ -203,7 +203,11 @@ public class MCEObj {
 					list.add(insn);
 				else
 					list.add(new IntInsnNode(Opcodes.BIPUSH, b));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "B"));
+				
+				if(isWrapper)
+					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"));
+				
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Byte;" : "B") ));
 			}
 			else if(type.equals("short"))
 			{

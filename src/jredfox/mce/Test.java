@@ -26,16 +26,19 @@ public class Test {
 	static
 	{
 //		//InsnNode
-//		id_s = -1;
-//		id_s = 0;
-//		id_s = 1;
-//		id_s = 2;
-//		id_s = 3;
-//		id_s = 4;
-//		id_s = 5;
-//		id_s = 6;
-//		id_s = 127;
-//		id_s = (short) 3276999;
+		id = -1;
+		id = 0;
+		id = 1;
+		id = 2;
+		id = 3;
+		id = 4;
+		id = 5;
+		id = 6;
+		id = 127;
+		id = Short.MAX_VALUE;
+		id = Short.MAX_VALUE + 1;
+		id = Short.MIN_VALUE - 1;
+		id = 389000;
 	}
 	
 	private int o_id = new Integer(200);
@@ -64,7 +67,7 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		
+		System.out.println(300000000);
 	}
 
 }

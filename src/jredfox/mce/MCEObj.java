@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
@@ -211,6 +212,20 @@ public class MCEObj {
 				else
 					list.add(new IntInsnNode(Opcodes.SIPUSH, s));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "S"));
+			}
+			else if(type.equals("int"))
+			{
+				int v = parseInt(f.value);
+				InsnNode insn = getConstantInsn(v);
+				if(insn != null)
+					list.add(insn);
+				else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
+					list.add(new IntInsnNode(Opcodes.BIPUSH, v));
+				else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
+					list.add(new IntInsnNode(Opcodes.SIPUSH, v));
+				else
+					list.add(new LdcInsnNode(new Integer(v)));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "I"));
 			}
 			
 			//Injection Point

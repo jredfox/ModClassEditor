@@ -25,21 +25,7 @@ public class Test {
 	
 	static
 	{
-		id_d = -1;
-		id_d = 0;
-		id_d = 1;
-		id_d = 2F;
-		id_d = 3;
-		id_d = 4;
-		id_d = 5;
-		id_d = (float) 6;
-		id_d = 127F;
-		id_d = Short.MAX_VALUE;
-		id_d = Short.MAX_VALUE + 1;
-		id_d = Short.MIN_VALUE - 1;
-		id_d = 389000;
-		id_d = Integer.MAX_VALUE;
-		id_d = Long.MAX_VALUE;
+		id_str = "A test";
 	}
 	
 	private int o_id = new Integer(200);

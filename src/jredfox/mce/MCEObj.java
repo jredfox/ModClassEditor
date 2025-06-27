@@ -257,6 +257,11 @@ public class MCEObj {
 					list.add(new LdcInsnNode(new Double(v)));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "D"));
 			}
+			else if(type.equals("string"))
+			{
+				list.add(new LdcInsnNode(f.value));
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
+			}
 			
 			//Injection Point
 			if(f.inject.equals("after"))

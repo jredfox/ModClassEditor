@@ -35,7 +35,7 @@ public class Test {
 //		wrapped_id = 6;
 //		wrapped_id = (int) Short.MAX_VALUE;
 //		wrapped_id = (int) 2000;
-		wrapped_id = 320000000;
+//		wrapped_id = 320000000;
 	}
 	
 	private int o_id = new Integer(200);

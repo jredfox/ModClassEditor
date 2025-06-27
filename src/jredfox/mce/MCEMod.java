@@ -8,6 +8,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid="modclasseditor", name="Mod Class Editor", version="0.1.1", dependencies="after:*")
 public class MCEMod {
 	
+	static
+	{
+		Test.load();
+	}
+	
 	@Mod.PreInit
 	public void mcePreinit(FMLPreInitializationEvent e)
 	{

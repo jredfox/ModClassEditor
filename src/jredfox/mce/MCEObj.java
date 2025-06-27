@@ -70,7 +70,7 @@ public class MCEObj {
 		 */
 		public String value;
 		/**
-		 * the type [string, boolean, byte, short, int, long, float, double]
+		 * the type [string, boolean, byte, short, int, long, float, double, Boolean, Byte, Short, Integer, Long, Float, Double]
 		 */
 		public String type;
 		/**
@@ -100,10 +100,20 @@ public class MCEObj {
 		{
 			this.name = name;
 			this.value = value;
-			this.type = type;
-			this.method = method;
-			this.desc = desc;
-			this.inject = inject;
+			this.type = this.safeString(type);
+			this.method = this.safeString(method, "<clinit>");
+			this.desc = this.safeString(desc);
+			this.inject = this.safeString(inject, "after");
+		}
+		
+		private String safeString(String s)
+		{
+			return this.safeString(s, "");
+		}
+		
+		private String safeString(String s, String def)
+		{
+			return s != null ? s : def;
 		}
 	}
 

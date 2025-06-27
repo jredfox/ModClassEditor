@@ -245,30 +245,6 @@ public class MCEObj {
 			}
 		}
 	}
-	
-	/**
-	 * Parse a Byte Safely
-	 */
-	private static byte parseByte(String value) 
-	{
-		return (byte) Long.parseLong(value, 10);
-	}
-	
-	/**
-	 * Parse a Short Safely
-	 */
-	private static short parseShort(String value) 
-	{
-		return (short) Long.parseLong(value, 10);
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	private static int parseInt(String value) 
-	{
-		return (int) Long.parseLong(value, 10);
-	}
 
 	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
 	{
@@ -304,5 +280,43 @@ public class MCEObj {
 								: desc.equals("Ljava/lang/Double;") ? "Double"
 						: UNSUPPORTED;
 	}
+	
+	//Start UTIL METHODS__________________________________________
+	//____________________________________________________________
+	
+	/**
+	 * Parse a Byte Safely
+	 */
+	private static byte parseByte(String value) 
+	{
+		return (byte) Long.parseLong(value, 10);
+	}
+	
+	/**
+	 * Parse a Short Safely
+	 */
+	private static short parseShort(String value) 
+	{
+		return (short) Long.parseLong(value, 10);
+	}
+	
+	/**
+	 * Parse a Int Safely
+	 */
+	private static int parseInt(String value) 
+	{
+		return (int) Long.parseLong(value, 10);
+	}
+	
+	/**
+	 * Parse a Int Safely
+	 */
+	private static long parseLong(String value) 
+	{
+		return Long.parseLong(value, 10);
+	}
+	
+	//END UTIL METHODS___________________________________________________
+	//___________________________________________________________________
 
 }

@@ -54,8 +54,8 @@ public class MCEGen {
 			root.put(actualName, fields);
 			
 			//Save Changes in Mod's <clinit> after all fields have their values generated
-			AbstractInsnNode spot = CoreUtils.getLastLabelNode(clinit, false);
-			clinit.instructions.insert(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+			AbstractInsnNode spot = CoreUtils.getLastReturn(clinit);
+			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 	
 			for (int i = 0; i <= 1; i++) 
 			{
@@ -81,7 +81,7 @@ public class MCEGen {
 						li.add(new LdcInsnNode(fn.name));
 						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fn.name, fn.desc));
 						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + fn.desc + ")V"));
-						clinit.instructions.insert(spot, li);
+						clinit.instructions.insertBefore(spot, li);
 					}
 				}
 			}

@@ -1,8 +1,5 @@
 package jredfox.mce;
 
-import org.ralleytn.simple.json.JSONFormatter;
-import org.ralleytn.simple.json.JSONObject;
-
 public class Test {
 	
 	private static boolean id_bool = false;
@@ -41,11 +38,16 @@ public class Test {
 //		rapped_id_bool = true;
 	}
 	
-	private int o_id = 200;
-	private short o_id_s = 201;
-	private byte o_id_b = (byte) 202;
-	private long o_id_l = 203;
-	private String o_id_str = "Entity Id";
+//	private int o_id = 200;
+//	private short o_id_s = 201;
+//	private byte o_id_b = (byte) 202;
+//	private long o_id_l = 203;
+//	private String o_id_str = "Entity Id";
+	
+	public Test()
+	{
+		System.out.println();
+	}
 	
 	private static void method_st(Object obj)
 	{

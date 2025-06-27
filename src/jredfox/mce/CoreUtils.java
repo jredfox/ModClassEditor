@@ -114,6 +114,21 @@ public class CoreUtils {
 		return null;
 	}
 	
+	/**
+	 * Gets the Last LabelNode either before the return of the method or last label
+	 */
+	public static AbstractInsnNode getLastReturn(MethodNode method)
+	{
+		AbstractInsnNode[] arr = method.instructions.toArray();
+		for(int i=arr.length-1;i>=0;i--)
+		{
+			AbstractInsnNode ab = arr[i];
+			if(isReturnOpcode(ab.getOpcode()))
+				return ab;
+		}
+		return null;
+	}
+	
 	public static boolean isReturnOpcode(int opcode)
 	{
 		return opcode == Opcodes.RETURN || opcode == Opcodes.ARETURN || opcode == Opcodes.DRETURN || opcode == Opcodes.FRETURN || opcode == Opcodes.IRETURN || opcode == Opcodes.LRETURN;

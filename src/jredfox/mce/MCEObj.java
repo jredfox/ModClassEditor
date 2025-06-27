@@ -11,6 +11,7 @@ import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
@@ -188,6 +189,50 @@ public class MCEObj {
 			{
 				list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Z"));
+			}
+			else if(type.equals("byte"))
+			{
+				byte b = Byte.parseByte(f.value);
+				if (b > -2 && b < 6)
+				{
+					int opcode = 0;
+					switch(b)
+					{
+						case -1:
+							opcode = Opcodes.ICONST_M1;
+						break;
+						
+						case 0:
+							opcode = Opcodes.ICONST_0;
+						break;
+						
+						case 1:
+							opcode = Opcodes.ICONST_1;
+						break;
+						
+						case 2:
+							opcode = Opcodes.ICONST_2;
+						break;
+						
+						case 3:
+							opcode = Opcodes.ICONST_3;
+						break;
+						
+						case 4:
+							opcode = Opcodes.ICONST_4;
+						break;
+						
+						case 5:
+							opcode = Opcodes.ICONST_5;
+						break;
+					}
+					list.add(new InsnNode(opcode));
+				}
+				else
+				{
+					list.add(new IntInsnNode(Opcodes.BIPUSH, b));
+				}
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "B"));
 			}
 			
 			//Injection Point

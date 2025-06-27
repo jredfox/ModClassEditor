@@ -22,8 +22,17 @@ public class Test {
 	
 	static
 	{
-//		id_bool = true;
-//		id_bool = false;
+		//InsnNode
+//		id_b = -1;
+//		id_b = 0;
+//		id_b = 1;
+//		id_b = 2;
+//		id_b = 3;
+//		id_b = 4;
+//		id_b = 5;
+//		id_b = 6;
+//		id_b = 127;
+//		id_b = (byte) 200;
 	}
 	
 //	private int o_id = 200;

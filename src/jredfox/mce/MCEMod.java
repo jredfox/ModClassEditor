@@ -5,7 +5,7 @@ import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 
-@Mod(modid="modclasseditor", name="Mod Class Editor", version="0.3.0", dependencies="after:*")
+@Mod(modid="modclasseditor", name="Mod Class Editor", version="0.3.1", dependencies="after:*")
 public class MCEMod {
 	
 	static

@@ -57,11 +57,6 @@ public class Test {
 		System.out.println("id_l:" +   id_l);
 		System.out.println("id_str:" + id_str);
 	}
-	
-	private static void avava(Object obj, boolean b, Object a)
-	{
-		
-	}
 
 	public static void load() {
 		method_st(null);

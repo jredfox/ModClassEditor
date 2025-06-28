@@ -25,17 +25,17 @@ public class Test {
 	
 	static
 	{
-//		wrapped_id = -1;
-//		wrapped_id = 0;
-//		wrapped_id = 1;
-//		wrapped_id = 2;
-//		wrapped_id = 3;
-//		wrapped_id = 4;
-//		wrapped_id = 5;
-//		wrapped_id = 6;
-//		wrapped_id = (int) Short.MAX_VALUE;
-//		wrapped_id = (int) 2000;
-//		wrapped_id = 320000000;
+//		wrapped_id_l = -1L;
+//		wrapped_id_l = (long) 0;
+//		wrapped_id_l = 1L;
+//		wrapped_id_l = 2L;
+//		wrapped_id_l = 3L;
+//		wrapped_id_l = 4L;
+//		wrapped_id_l = 5L;
+//		wrapped_id_l = 6L;
+//		wrapped_id_l = (long) Short.MAX_VALUE;
+//		wrapped_id_l = 2000L;
+//		wrapped_id_l = (long) Integer.MAX_VALUE;
 	}
 	
 	private int o_id = new Integer(200);

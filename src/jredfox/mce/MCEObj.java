@@ -243,7 +243,7 @@ public class MCEObj {
 				
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Integer;" : "I") ));
 			}
-			else if(type.equals("long"))
+			else if(type.equalsIgnoreCase("long"))
 			{
 				long v = parseLong(f.value);
 				InsnNode insn = getConstantInsn(v);
@@ -251,7 +251,11 @@ public class MCEObj {
 					list.add(insn);
 				else
 					list.add(new LdcInsnNode(new Long(v)));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "J"));
+				
+				if(isWrapper)
+					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"));
+				
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Long;" : "J") ));
 			}
 			else if(type.equals("float"))
 			{
@@ -291,7 +295,7 @@ public class MCEObj {
 	}
 
 	/**
-	 * longs behave completly different in the bytecode compared to boolean, byte, short and int
+	 * longs, double and float behave completely different in the bytecode compared to boolean, byte, short and int
 	 */
 	private static InsnNode getConstantInsn(long v) 
 	{

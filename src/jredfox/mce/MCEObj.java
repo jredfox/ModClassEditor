@@ -383,8 +383,6 @@ public class MCEObj {
 					break;
 			}
 		}
-		for(MethodNode m : l)
-			System.out.println("Found:" + m.name + " desc:" + m.desc + " M:" + m);
 		return l;
 	}
 	

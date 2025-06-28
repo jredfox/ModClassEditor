@@ -25,17 +25,17 @@ public class Test {
 	
 	static
 	{
-		wrapped_id_d = -1D;
-		wrapped_id_d = (double) 0;
-		wrapped_id_d = 1.0D;
-		wrapped_id_d = 2D;
-		wrapped_id_d = (double) 3;
-		wrapped_id_d = 4D;
-		wrapped_id_d = 5D;
-		wrapped_id_d = (double) 6;
-		wrapped_id_d = (double) Short.MAX_VALUE;
-		wrapped_id_d = 2000D;
-		wrapped_id_d = (double) Integer.MAX_VALUE;
+//		wrapped_id_d = -1D;
+//		wrapped_id_d = (double) 0;
+//		wrapped_id_d = 1.0D;
+//		wrapped_id_d = 2D;
+//		wrapped_id_d = (double) 3;
+//		wrapped_id_d = 4D;
+//		wrapped_id_d = 5D;
+//		wrapped_id_d = (double) 6;
+//		wrapped_id_d = (double) Short.MAX_VALUE;
+//		wrapped_id_d = 2000D;
+//		wrapped_id_d = (double) Integer.MAX_VALUE;
 	}
 	
 	private int o_id = new Integer(200);
@@ -57,6 +57,11 @@ public class Test {
 		System.out.println("id_l:" +   id_l);
 		System.out.println("id_str:" + id_str);
 	}
+	
+	private static void avava(Object obj, boolean b, Object a)
+	{
+		
+	}
 
 	public static void load() {
 		method_st(null);
@@ -64,7 +69,9 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		
+		String s = "*";
+		System.out.println(s.contains("*"));
+//		System.out.println(WildCardMatcher.match("com.evilnotch.lib", "", true));
 	}
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
@@ -180,124 +181,128 @@ public class MCEObj {
 			}
 			
 			//Actual code
-			MethodNode m = getMethodNode(classNode, f.method, f.desc);
-			if(m == null)
+			List<MethodNode> methodList = getMethodNodes(classNode, f.method, f.desc);
+			if(methodList.isEmpty())
 			{
 				System.err.println("Method Not Found:" + f.method + " desc:\"" + f.desc + "\"");
 				continue;
 			}
-			boolean isWrapper = Character.isUpperCase(type.charAt(0));
-			InsnList list = new InsnList();
-			if(type.equalsIgnoreCase("boolean"))
-			{
-				list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Boolean;" : "Z") ));
-			}
-			else if(type.equalsIgnoreCase("byte"))
-			{
-				byte b = parseByte(f.value);
-				InsnNode insn = getConstantInsn(b);
-				if(insn != null)
-					list.add(insn);
-				else
-					list.add(new IntInsnNode(Opcodes.BIPUSH, b));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Byte;" : "B") ));
-			}
-			else if(type.equalsIgnoreCase("short"))
-			{
-				short s = parseShort(f.value);
-				InsnNode insn = getConstantInsn(s);
-				if(insn != null)
-					list.add(insn);
-				else if (s >= Byte.MIN_VALUE && s <= Byte.MAX_VALUE)
-					list.add(new IntInsnNode(Opcodes.BIPUSH, s));
-				else
-					list.add(new IntInsnNode(Opcodes.SIPUSH, s));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Short;" : "S") ));
-			}
-			else if(type.equals("int") || type.equals("Integer"))
-			{
-				int v = parseInt(f.value);
-				InsnNode insn = getConstantInsn(v);
-				if(insn != null)
-					list.add(insn);
-				else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
-					list.add(new IntInsnNode(Opcodes.BIPUSH, v));
-				else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
-					list.add(new IntInsnNode(Opcodes.SIPUSH, v));
-				else
-					list.add(new LdcInsnNode(new Integer(v)));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Integer;" : "I") ));
-			}
-			else if(type.equalsIgnoreCase("long"))
-			{
-				long v = parseLong(f.value);
-				InsnNode insn = getConstantInsn(v);
-				if(insn != null)
-					list.add(insn);
-				else
-					list.add(new LdcInsnNode(new Long(v)));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Long;" : "J") ));
-			}
-			else if(type.equalsIgnoreCase("float"))
-			{
-				float v = parseFloat(f.value);
-				InsnNode insn = getConstantInsn(v);
-				if(insn != null)
-					list.add(insn);
-				else
-					list.add(new LdcInsnNode(new Float(v)));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Float;" : "F") ));
-			}
-			else if(type.equalsIgnoreCase("double"))
-			{
-				double v = Double.parseDouble(f.value);
-				InsnNode insn = getConstantInsn(v);
-				if(insn != null)
-					list.add(insn);
-				else
-					list.add(new LdcInsnNode(new Double(v)));
-				
-				if(isWrapper)
-					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"));
-				
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Double;" : "D") ));
-			}
-			else if(type.equals("string"))
-			{
-				list.add(new LdcInsnNode(f.value));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
-			}
 			
-			//Injection Point
-			if(f.inject.equals("after"))
-				m.instructions.insertBefore(CoreUtils.getLastReturn(m), list);
-			else if(f.inject.equals("before"))
+			for(MethodNode m : methodList)
 			{
-				list.insert(new LabelNode());
-				m.instructions.insert(list);
+				boolean isWrapper = Character.isUpperCase(type.charAt(0));
+				InsnList list = new InsnList();
+				if(type.equalsIgnoreCase("boolean"))
+				{
+					list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Boolean;" : "Z") ));
+				}
+				else if(type.equalsIgnoreCase("byte"))
+				{
+					byte b = parseByte(f.value);
+					InsnNode insn = getConstantInsn(b);
+					if(insn != null)
+						list.add(insn);
+					else
+						list.add(new IntInsnNode(Opcodes.BIPUSH, b));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Byte;" : "B") ));
+				}
+				else if(type.equalsIgnoreCase("short"))
+				{
+					short s = parseShort(f.value);
+					InsnNode insn = getConstantInsn(s);
+					if(insn != null)
+						list.add(insn);
+					else if (s >= Byte.MIN_VALUE && s <= Byte.MAX_VALUE)
+						list.add(new IntInsnNode(Opcodes.BIPUSH, s));
+					else
+						list.add(new IntInsnNode(Opcodes.SIPUSH, s));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Short;" : "S") ));
+				}
+				else if(type.equals("int") || type.equals("Integer"))
+				{
+					int v = parseInt(f.value);
+					InsnNode insn = getConstantInsn(v);
+					if(insn != null)
+						list.add(insn);
+					else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
+						list.add(new IntInsnNode(Opcodes.BIPUSH, v));
+					else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
+						list.add(new IntInsnNode(Opcodes.SIPUSH, v));
+					else
+						list.add(new LdcInsnNode(new Integer(v)));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Integer;" : "I") ));
+				}
+				else if(type.equalsIgnoreCase("long"))
+				{
+					long v = parseLong(f.value);
+					InsnNode insn = getConstantInsn(v);
+					if(insn != null)
+						list.add(insn);
+					else
+						list.add(new LdcInsnNode(new Long(v)));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Long;" : "J") ));
+				}
+				else if(type.equalsIgnoreCase("float"))
+				{
+					float v = parseFloat(f.value);
+					InsnNode insn = getConstantInsn(v);
+					if(insn != null)
+						list.add(insn);
+					else
+						list.add(new LdcInsnNode(new Float(v)));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Float;" : "F") ));
+				}
+				else if(type.equalsIgnoreCase("double"))
+				{
+					double v = Double.parseDouble(f.value);
+					InsnNode insn = getConstantInsn(v);
+					if(insn != null)
+						list.add(insn);
+					else
+						list.add(new LdcInsnNode(new Double(v)));
+					
+					if(isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"));
+					
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Double;" : "D") ));
+				}
+				else if(type.equals("string"))
+				{
+					list.add(new LdcInsnNode(f.value));
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
+				}
+				
+				//Injection Point
+				if(f.inject.equals("after"))
+					m.instructions.insertBefore(CoreUtils.getLastReturn(m), list);
+				else if(f.inject.equals("before"))
+				{
+					list.insert(new LabelNode());
+					m.instructions.insert(list);
+				}
 			}
 		}
 	}
@@ -361,18 +366,26 @@ public class MCEObj {
 		return null;
 	}
 
-	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
-	{
-		boolean mt = method_desc.isEmpty() || method_desc.equals("*");
-		for (Object method_ : classNode.methods)
-		{
+	public static List<MethodNode> getMethodNodes(ClassNode classNode, String method_name, String method_desc) {
+		boolean wc = method_name.contains("*") || method_name.contains("?");
+		boolean wcd = method_desc.contains("*") || method_desc.contains("?");
+		boolean mt = method_desc.trim().isEmpty();
+
+		List<MethodNode> l = new ArrayList<MethodNode>(wc ? 10 : 3);
+		for (Object method_ : classNode.methods) {
 			MethodNode method = (MethodNode) method_;
-			if (method.name.equals(method_name) && (mt || method.desc.equals(method_desc)) )
-			{
-				return method;
+
+			if ((wc ? WildCardMatcher.match(method.name, method_name, true) : method.name.equals(method_name))
+					&& (mt || (wcd ? WildCardMatcher.match(method.desc, method_desc, true)
+							: method.desc.equals(method_desc)))) {
+				l.add(method);
+				if (!wc)
+					break;
 			}
 		}
-		return null;
+		for(MethodNode m : l)
+			System.out.println("Found:" + m.name + " desc:" + m.desc + " M:" + m);
+		return l;
 	}
 	
 	public static final String UNSUPPORTED = "Unsupported";

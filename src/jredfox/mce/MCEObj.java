@@ -271,7 +271,7 @@ public class MCEObj {
 				
 				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Float;" : "F") ));
 			}
-			else if(type.equals("double"))
+			else if(type.equalsIgnoreCase("double"))
 			{
 				double v = Double.parseDouble(f.value);
 				InsnNode insn = getConstantInsn(v);
@@ -279,7 +279,11 @@ public class MCEObj {
 					list.add(insn);
 				else
 					list.add(new LdcInsnNode(new Double(v)));
-				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "D"));
+				
+				if(isWrapper)
+					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"));
+				
+				list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Double;" : "D") ));
 			}
 			else if(type.equals("string"))
 			{

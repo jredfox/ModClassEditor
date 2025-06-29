@@ -477,6 +477,8 @@ public class MCEObj {
 	public static String[] splitFirst(String s, char delim)
 	{
 		int index = s.indexOf(delim);
+		if(index == 0)
+			index = s.indexOf(delim, 1);
 		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
 	}
 	

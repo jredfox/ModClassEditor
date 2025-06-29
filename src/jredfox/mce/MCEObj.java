@@ -107,19 +107,7 @@ public class MCEObj {
 		 * the injection point
 		 */
 		public String inject;
-		/**
-		 * used for static arrays as it increments the value by this number each time
-		 */
-		public int increment;
-		/**
-		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
-		 */
-		public int index_start;
-		/**
-		 * used for static arrays as the end index where -1 repsresents the last index
-		 */
-		public int index_end;
-
+		
 		public MCEField()
 		{
 			
@@ -127,10 +115,10 @@ public class MCEObj {
 		
 		public MCEField(JSONObject json)
 		{
-			this(json.getString("name"), json.getAsString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"), json.getAsString("increment"), json.getAsString("index"));
+			this(json.getString("name"), json.getAsString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
 		}
 		
-		public MCEField(String name, String value, String type, String method, String desc, String inject, String increment, String index)
+		public MCEField(String name, String value, String type, String method, String desc, String inject)
 		{
 			this.name = name;
 			this.value = value;
@@ -138,18 +126,6 @@ public class MCEObj {
 			this.method = this.safeString(method, "<clinit>");
 			this.desc = this.safeString(desc);
 			this.inject = this.safeString(inject, "after");
-			
-			//static arrays
-			this.increment = parseInt(this.safeString(increment, "0"));
-			index = this.safeString(index);
-			if(!index.isEmpty())
-			{
-				String[] arr = splitFirst(index, '-');
-				String str_start = arr[0];
-				String str_end = arr[1];
-				this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
-				this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : Integer.parseInt(str_end));
-			}
 		}
 		
 		private String safeString(String s)
@@ -472,14 +448,6 @@ public class MCEObj {
 	private static float parseFloat(String value) 
 	{
 		return Float.parseFloat(value);
-	}
-	
-	public static String[] splitFirst(String s, char delim)
-	{
-		int index = s.indexOf(delim);
-		if(index == 0)
-			index = s.indexOf(delim, 1);
-		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
 	}
 	
 	//END UTIL METHODS___________________________________________________

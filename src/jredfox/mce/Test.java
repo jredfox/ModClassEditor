@@ -23,6 +23,16 @@ public class Test {
 	private static Float wrapped_id_f = 2.0F;
 	private static Double wrapped_id_d = 3.0D;
 	
+	//Start static array primatives
+	private static boolean[] arr_bool = 	{false, false, false, false, false, false};
+	private static byte[] arr_btye = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static short[] arr_short = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static int[] arr_int = 			{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static long[] arr_long = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static float[] arr_float = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static double[] arr_double = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static String[] arr_str = 		{"Entity Id"};
+	
 	static
 	{
 //		wrapped_id_d = -1D;
@@ -38,7 +48,7 @@ public class Test {
 //		wrapped_id_d = (double) Integer.MAX_VALUE;
 	}
 	
-	private int o_id = new Integer(200);
+//	private int o_id = new Integer(200);
 //	private short o_id_s = 201;
 //	private byte o_id_b = (byte) 202;
 //	private long o_id_l = 203;
@@ -64,9 +74,7 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		String s = "*";
-		System.out.println(s.contains("*"));
-//		System.out.println(WildCardMatcher.match("com.evilnotch.lib", "", true));
+		
 	}
 
 }

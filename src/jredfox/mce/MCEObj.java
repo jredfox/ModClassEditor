@@ -1,6 +1,7 @@
 package jredfox.mce;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -77,7 +78,7 @@ public class MCEObj {
 				continue;//Why are there comments in here
 			
 			JSONObject f = (JSONObject) o;
-			this.fields.add(new MCEField(f));
+			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
 		}
 	}
 
@@ -128,14 +129,77 @@ public class MCEObj {
 			this.inject = this.safeString(inject, "after");
 		}
 		
-		private String safeString(String s)
+		protected String safeString(String s)
 		{
 			return this.safeString(s, "");
 		}
 		
-		private String safeString(String s, String def)
+		protected String safeString(String s, String def)
 		{
 			return (s == null || s.isEmpty()) ? def : s;
+		}
+	}
+	
+	public static class MCEArrField extends MCEField
+	{
+		/**
+		 * The list of values going to be applied to the static array
+		 */
+		public String[] values;
+		/**
+		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
+		 */
+		public int index_start;
+		/**
+		 * used for static arrays as the end index where -1 repsresents the last index
+		 */
+		public int index_end;
+		/**
+		 * used for static arrays as it increments the value by this number each time
+		 */
+		public int increment;
+		/**
+		 * when true allows the array to grow WARNING: this creates a new memory location and possible code breaking changes
+		 */
+		public boolean grow;
+		/**
+		 * when true inserts values into the index without replacement and grows the array WARNING: this creates a new memory location and possible code breaking changes
+		 */
+		public boolean append;
+		/**
+		 * when true replaces the entire array with your values WARNING: this creates a new memory location and possible code breaking changes
+		 */
+		public boolean replace;
+		
+		public MCEArrField(){}
+		
+		public MCEArrField(JSONObject json)
+		{
+			this(json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"), json.getAsString("index"), json.getAsString("increment"));
+		}
+		
+		public MCEArrField(String name, List values, String type, String method, String desc, String inject, String index, String increment)
+		{
+			super(name, null, type, method, desc, inject);
+			//process values into the String[] array
+			if(values != null && values.isEmpty())
+			{
+				this.values = new String[values.size()];
+				for(int i=0;i<values.size();i++)
+					this.values[i] = String.valueOf(values.get(i));
+			}
+			else
+				this.values = new String[] {""};
+			
+			//process index
+			index = this.safeString(index, "0");
+			String[] arr = splitFirst(index, '-');
+			String str_start = arr[0];
+			String str_end = arr[1];
+			this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
+			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : Integer.parseInt(str_end));
+			//process increment
+			this.increment = parseInt(this.safeString(increment, "0"));
 		}
 	}
 
@@ -448,6 +512,14 @@ public class MCEObj {
 	private static float parseFloat(String value) 
 	{
 		return Float.parseFloat(value);
+	}
+	
+	public static String[] splitFirst(String s, char delim)
+	{
+		int index = s.indexOf(delim);
+		if(index == 0)
+			index = s.indexOf(delim, 1);
+		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
 	}
 	
 	//END UTIL METHODS___________________________________________________

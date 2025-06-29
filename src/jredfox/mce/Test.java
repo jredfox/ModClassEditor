@@ -23,22 +23,23 @@ public class Test {
 	private static Float wrapped_id_f = 2.0F;
 	private static Double wrapped_id_d = 3.0D;
 	
+	//Start static array primatives
+	private static boolean[] arr_bool = 	{false, false, false, false, false, false};
+	private static byte[] arr_btye = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static short[] arr_short = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static int[] arr_int = 			{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static long[] arr_long = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static float[] arr_float = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static double[] arr_double = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static String[] arr_str = 		{"Entity Id"};
+	
 	static
 	{
-//		wrapped_id_d = -1D;
-//		wrapped_id_d = (double) 0;
-//		wrapped_id_d = 1.0D;
-//		wrapped_id_d = 2D;
-//		wrapped_id_d = (double) 3;
-//		wrapped_id_d = 4D;
-//		wrapped_id_d = 5D;
-//		wrapped_id_d = (double) 6;
-//		wrapped_id_d = (double) Short.MAX_VALUE;
-//		wrapped_id_d = 2000D;
-//		wrapped_id_d = (double) Integer.MAX_VALUE;
+//		arr_bool[2] = true;
+//		arr_bool[1] = false;
 	}
 	
-	private int o_id = new Integer(200);
+//	private int o_id = new Integer(200);
 //	private short o_id_s = 201;
 //	private byte o_id_b = (byte) 202;
 //	private long o_id_l = 203;
@@ -64,9 +65,24 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		String s = "*";
-		System.out.println(s.contains("*"));
-//		System.out.println(WildCardMatcher.match("com.evilnotch.lib", "", true));
+		String index = "2--1";
+		if(!index.isEmpty())
+		{
+			String[] arr = splitFirst(index, '-');
+			String str_start = arr[0];
+			String str_end = arr[1];
+			int index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
+			int index_end = str_end.isEmpty() ? index_start : (str_end.equals("end") ? -1 : Integer.parseInt(str_end));
+			System.out.println(index_start + "," + index_end);
+		}
+	}
+	
+	public static String[] splitFirst(String s, char delim)
+	{
+		int index = s.indexOf(delim);
+		if(index == 0)
+			index = s.indexOf(delim, 1);
+		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
 	}
 
 }

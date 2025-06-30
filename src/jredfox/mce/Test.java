@@ -54,9 +54,24 @@ public class Test {
 		method_st(null);
 	}
 	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(byte[] arr, byte[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
 	public static void main(String[] args)
 	{
-		ArrUtils.fill(arr_byte, (byte)21, 0, 1, 10);
+		insert(arr_byte, new byte[] {12, 11, 113, 1, 3}, 1);
 		for(byte b : arr_byte)
 			System.out.print(b + ", ");
 		System.out.println();

@@ -183,7 +183,7 @@ public class MCEObj {
 			super(name, null, type, method, desc, inject);
 			
 			//process values into the String[] array
-			if(values != null && values.isEmpty())
+			if(values != null && !values.isEmpty())
 			{
 				this.values = new String[values.size()];
 				for(int i=0;i<values.size();i++)
@@ -358,6 +358,21 @@ public class MCEObj {
 				{
 					list.add(new LdcInsnNode(f.value));
 					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
+				}
+				else if(type.startsWith("["))
+				{
+					MCEArrField farr = (MCEArrField) f;
+					String atype = type.replace("[", "");
+					if(atype.equals("boolean"))
+					{
+						boolean v = Boolean.parseBoolean(farr.values[0]);
+						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
+						InsnNode insn = getConstantInsn(farr.index_start);
+						if(insn != null)
+							list.add(insn);//the index
+						list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
+						list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+					}
 				}
 				
 				//Injection Point

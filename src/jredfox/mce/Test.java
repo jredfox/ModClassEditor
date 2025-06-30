@@ -35,7 +35,7 @@ public class Test {
 	
 	static
 	{
-		arr_bool[0] = true;
+//		arr_bool[0] = true;
 	}
 	
 //	private int o_id = new Integer(200);

@@ -56,7 +56,7 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		fill(arr_byte, (byte)21, 0, 1, 10);
+		ArrUtils.fill(arr_byte, (byte)21, 0, 1, 10);
 		for(byte b : arr_byte)
 			System.out.print(b + ", ");
 		System.out.println();

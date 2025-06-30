@@ -34,6 +34,7 @@ public class Test {
 	{
 //		ArrUtils.fill(arr_bool, true, 21, 22);
 //		ArrUtils.set(arr_bool, 21, true);
+//		arr_bool[21] = true;
 	}
 	
 //	private int o_id = new Integer(200);

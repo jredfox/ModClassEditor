@@ -368,10 +368,26 @@ public class MCEObj {
 					if(atype.equals("boolean"))
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
-						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
-						list.add(getIntInsn(farr.index_start));//set the index
-						list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
-						list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+						if(farr.values.length == 1)
+						{
+							if(farr.index_start != farr.index_end)
+							{
+								//ArrUtils#fill(arr_bool, v, index_start, index_end);
+								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
+								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
+								list.add(getIntInsn(farr.index_start));
+								list.add(getIntInsn(farr.index_end));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([ZZII)V"));
+							}
+							else
+							{
+								//arr_bool[index_start] = v;
+								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
+								list.add(getIntInsn(farr.index_start));//set the index
+								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
+								list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+							}
+						}
 					}
 				}
 				

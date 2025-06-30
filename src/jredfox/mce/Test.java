@@ -32,7 +32,7 @@ public class Test {
 	
 	static
 	{
-
+//		ArrUtils.fill(arr_bool, true, 21, 22);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -48,33 +48,20 @@ public class Test {
 		System.out.println("id_b:" +   id_b);
 		System.out.println("id_l:" +   id_l);
 		System.out.println("id_str:" + id_str);
+		
+		System.out.print("[");
+		for(boolean b : arr_bool)
+			System.out.print(b + ",");
+		System.out.println("]");
 	}
 
 	public static void load() {
 		method_st(null);
 	}
 	
-	/**
-	 * Insert an array into another one replacing it's indexesd
-	 */
-	public static void insert(byte[] arr, byte[] val, int index)
-	{
-		if(arr.length == 0)
-			return;
-		if(index == -1)
-			index = arr.length - 1;
-		
-		int valIndex = 0;
-	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
-	        arr[i] = val[valIndex++];
-	}
-	
 	public static void main(String[] args)
 	{
-		insert(arr_byte, new byte[] {12, 11, 113, 1, 3}, 1);
-		for(byte b : arr_byte)
-			System.out.print(b + ", ");
-		System.out.println();
+		
 	}
 
 }

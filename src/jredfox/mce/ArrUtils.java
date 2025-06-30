@@ -2,105 +2,105 @@ package jredfox.mce;
 
 public class ArrUtils {
 	
-	public static void set(boolean[] arr, boolean val, int index)
+	public static void set(boolean[] arr, int index, boolean val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(byte[] arr, byte val, int index)
+	public static void set(byte[] arr, int index, byte val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(short[] arr, short val, int index)
+	public static void set(short[] arr, int index, short val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(int[] arr, int val, int index)
+	public static void set(int[] arr, int index, int val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(long[] arr, long val, int index)
+	public static void set(long[] arr, int index, long val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(float[] arr, float val, int index)
+	public static void set(float[] arr, int index, float val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(double[] arr, double val, int index)
+	public static void set(double[] arr, int index, double val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(String[] arr, String val, int index)
+	public static void set(String[] arr, int index, String val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Boolean[] arr, boolean val, int index)
+	public static void set(Boolean[] arr, int index, boolean val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Byte[] arr, byte val, int index)
+	public static void set(Byte[] arr, int index, byte val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Short[] arr, short val, int index)
+	public static void set(Short[] arr, int index, short val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Integer[] arr, int val, int index)
+	public static void set(Integer[] arr, int index, int val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Long[] arr, long val, int index)
+	public static void set(Long[] arr, int index, long val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Float[] arr, float val, int index)
+	public static void set(Float[] arr, int index, float val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
 		arr[index] = val;
 	}
 	
-	public static void set(Double[] arr, double val, int index)
+	public static void set(Double[] arr, int index, double val)
 	{
 		if(index == -1)
 			index = arr.length - 1;

@@ -379,13 +379,21 @@ public class MCEObj {
 								list.add(getIntInsn(farr.index_end));
 								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([ZZII)V"));
 							}
-							else
+							else if(farr.index_start > 0)
 							{
 								//arr_bool[index_start] = v;
 								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
 								list.add(getIntInsn(farr.index_start));//set the index
 								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
 								list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+							}
+							else
+							{
+								//ArrUtils#set(arr_bool, v, index_start);
+								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
+								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
+								list.add(getIntInsn(farr.index_start));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([ZZI)V"));
 							}
 						}
 					}

@@ -2,6 +2,111 @@ package jredfox.mce;
 
 public class ArrUtils {
 	
+	public static void set(boolean[] arr, boolean val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(byte[] arr, byte val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(short[] arr, short val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(int[] arr, int val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(long[] arr, long val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(float[] arr, float val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(double[] arr, double val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(String[] arr, String val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Boolean[] arr, boolean val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Byte[] arr, byte val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Short[] arr, short val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Integer[] arr, int val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Long[] arr, long val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Float[] arr, float val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Double[] arr, double val, int index)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
 	public static void fill(boolean[] arr, boolean val, int start, int end) 
 	{
 		if(arr.length == 0)

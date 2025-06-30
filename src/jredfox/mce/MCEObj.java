@@ -454,6 +454,12 @@ public class MCEObj {
 	public static final String UNSUPPORTED = "Unsupported";
 
 	public static String getType(String desc) {
+		//Static array support
+		if(desc.startsWith("[")){
+			String type = getType(desc.replace("[", ""));
+			return UNSUPPORTED.equals(type) ? UNSUPPORTED : (desc.substring(0, desc.lastIndexOf('[') + 1) + type);
+		}
+		
 		return desc.equals("B") ? "byte"
 				: desc.equals("S") ? "short"
 						: desc.equals("I") ? "int"

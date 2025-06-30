@@ -1,11 +1,9 @@
 package jredfox.mce;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Stack;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -369,9 +367,22 @@ public class MCEObj {
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
 						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
-						list.add(getIntInsn(farr.index_start));//set the index
-						list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
-						list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+						//support ranges
+						if(farr.values.length == 1 && farr.index_start != farr.index_end)
+						{
+							for(int i=farr.index_start;i<=farr.index_end;i++)
+							{
+								list.add(getIntInsn(farr.index_start));//set the index
+								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
+								list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+							}
+						}
+						else
+						{
+							list.add(getIntInsn(farr.index_start));//set the index
+							list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
+							list.add(new InsnNode(Opcodes.BASTORE));//stores the value
+						}
 					}
 				}
 				

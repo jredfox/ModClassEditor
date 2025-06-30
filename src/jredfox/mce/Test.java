@@ -1,8 +1,5 @@
 package jredfox.mce;
 
-import org.ralleytn.simple.json.JSONObject;
-import org.ralleytn.simple.json.JSONParseException;
-
 public class Test {
 	
 	private static boolean id_bool = false;
@@ -24,8 +21,8 @@ public class Test {
 	private static Double wrapped_id_d = 3.0D;
 	
 	//Start static array primatives
-	private static boolean[] arr_bool = 	new boolean[40000];//{false, false, false, false, false, false};
-	private static byte[] arr_btye = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static boolean[] arr_bool = 	{false, false, false, false, false, false};
+	private static byte[] arr_byte = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static short[] arr_short = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static int[] arr_int = 			{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static long[] arr_long = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -35,7 +32,7 @@ public class Test {
 	
 	static
 	{
-//		arr_bool[0] = true;
+
 	}
 	
 //	private int o_id = new Integer(200);
@@ -59,7 +56,10 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		System.out.println(MCEObj.getType("[[Z"));
+		fill(arr_byte, (byte)21, 0, 1, 10);
+		for(byte b : arr_byte)
+			System.out.print(b + ", ");
+		System.out.println();
 	}
 
 }

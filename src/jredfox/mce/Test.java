@@ -35,17 +35,7 @@ public class Test {
 	
 	static
 	{
-//		wrapped_id_d = -1D;
-//		wrapped_id_d = (double) 0;
-//		wrapped_id_d = 1.0D;
-//		wrapped_id_d = 2D;
-//		wrapped_id_d = (double) 3;
-//		wrapped_id_d = 4D;
-//		wrapped_id_d = 5D;
-//		wrapped_id_d = (double) 6;
-//		wrapped_id_d = (double) Short.MAX_VALUE;
-//		wrapped_id_d = 2000D;
-//		wrapped_id_d = (double) Integer.MAX_VALUE;
+		arr_bool[0] = true;
 	}
 	
 //	private int o_id = new Integer(200);
@@ -53,11 +43,6 @@ public class Test {
 //	private byte o_id_b = (byte) 202;
 //	private long o_id_l = 203;
 //	private String o_id_str = "Entity Id";
-	
-	public Test()
-	{
-		System.out.println();
-	}
 	
 	private static void method_st(Object obj)
 	{

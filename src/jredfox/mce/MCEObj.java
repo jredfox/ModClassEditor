@@ -181,6 +181,7 @@ public class MCEObj {
 		public MCEArrField(String name, List values, String type, String method, String desc, String inject, String index, String increment)
 		{
 			super(name, null, type, method, desc, inject);
+			
 			//process values into the String[] array
 			if(values != null && values.isEmpty())
 			{
@@ -192,12 +193,12 @@ public class MCEObj {
 				this.values = new String[] {""};
 			
 			//process index
-			index = this.safeString(index, "0");
-			String[] arr = splitFirst(index, '-');
+			String[] arr = splitFirst(this.safeString(index, "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
 			this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
 			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : Integer.parseInt(str_end));
+			
 			//process increment
 			this.increment = parseInt(this.safeString(increment, "0"));
 		}

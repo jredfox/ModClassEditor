@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Stack;
 
 import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -359,6 +360,7 @@ public class MCEObj {
 					list.add(new LdcInsnNode(f.value));
 					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
 				}
+				//static array support
 				else if(type.startsWith("["))
 				{
 					MCEArrField farr = (MCEArrField) f;
@@ -366,10 +368,8 @@ public class MCEObj {
 					if(atype.equals("boolean"))
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
-						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
-						InsnNode insn = getConstantInsn(farr.index_start);
-						if(insn != null)
-							list.add(insn);//the index
+						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
+						list.add(getIntInsn(farr.index_start));//set the index
 						list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
 						list.add(new InsnNode(Opcodes.BASTORE));//stores the value
 					}
@@ -385,6 +385,18 @@ public class MCEObj {
 				}
 			}
 		}
+	}
+
+	public static AbstractInsnNode getIntInsn(int v) 
+	{
+		InsnNode insn = getConstantInsn(v);
+		if(insn != null)
+			return insn;
+		else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
+			return new IntInsnNode(Opcodes.BIPUSH, v);
+		else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
+			return new IntInsnNode(Opcodes.SIPUSH, v);
+		return new LdcInsnNode(new Integer(v));
 	}
 
 	/**

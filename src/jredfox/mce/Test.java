@@ -24,7 +24,7 @@ public class Test {
 	private static Double wrapped_id_d = 3.0D;
 	
 	//Start static array primatives
-	private static boolean[] arr_bool = 	{false, false, false, false, false, false};
+	private static boolean[] arr_bool = 	new boolean[40000];//{false, false, false, false, false, false};
 	private static byte[] arr_btye = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static short[] arr_short = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static int[] arr_int = 			{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};

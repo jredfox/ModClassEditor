@@ -2,6 +2,25 @@ package jredfox.mce;
 
 public class ArrUtils {
 	
+	public static enum Type
+	{
+		BOOLEAN,
+		BYTE,
+		SHORT,
+		INT,
+		LONG,
+		FLOAT,
+		DOUBLE,
+		STRING,
+		WRAPPED_BOOLEAN,
+		WRAPPED_BYTE,
+		WRAPPED_SHORT,
+		WRAPPED_INT,
+		WRAPPED_LONG,
+		WRAPPED_FLOAT,
+		WRAPPED_DOUBLE
+	}
+	
 	public static void set(boolean[] arr, int index, boolean val)
 	{
 		if(index == -1)

@@ -30,11 +30,13 @@ public class Test {
 	private static double[] arr_double = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static String[] arr_str = 		{"Entity Id"};
 	
+	private static boolean[] arr_tst = 	{false, false, true, false, false, false};
+	
 	static
 	{
-//		ArrUtils.fill(arr_bool, true, 21, 22);
-//		ArrUtils.set(arr_bool, 21, true);
-//		arr_bool[21] = true;
+//		Boolean[] b = new Boolean[] {true, true, false, true};
+//		ArrUtils.insert(arr_bool, new boolean[]{true, true}, 0);
+//		ArrUtils.insert(arr_tst, new boolean[]{true, false, true}, 1);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -53,6 +55,11 @@ public class Test {
 		
 		System.out.print("[");
 		for(boolean b : arr_bool)
+			System.out.print(b + ",");
+		System.out.println("]");
+		
+		System.out.print("[");
+		for(boolean b : arr_tst)
 			System.out.print(b + ",");
 		System.out.println("]");
 	}

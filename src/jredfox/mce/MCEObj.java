@@ -22,6 +22,8 @@ import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.ArrUtils.Type;
+
 public class MCEObj {
 	
 	public static final Map<String, MCEObj> registry = new HashMap();
@@ -368,13 +370,13 @@ public class MCEObj {
 					if(atype.equals("boolean"))
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
-						if(farr.values.length == 1)
+						if(farr.values.length < 2)
 						{
 							if(farr.index_start != farr.index_end)
 							{
 								//ArrUtils#fill(arr_bool, v, index_start, index_end);
 								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
-								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
+								list.add(getBoolInsn(v));
 								list.add(getIntInsn(farr.index_start));
 								list.add(getIntInsn(farr.index_end));
 								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([ZZII)V"));
@@ -385,12 +387,20 @@ public class MCEObj {
 								//or ArrUtils#set(arr_bool, index, v); when index is < 0 aka -1 for end etc..
 								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
 								list.add(getIntInsn(farr.index_start));//set the index
-								list.add(new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0));//set boolean value
+								list.add(getBoolInsn(v));//set boolean value
 								if(farr.index_start > 0)
 									list.add(new InsnNode(Opcodes.BASTORE));//stores the value
 								else
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([ZIZ)V"));
 							}
+						}
+						else
+						{
+							//ArrUtils#insert(arr, values, farr.index_start);
+							list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
+							genStaticArray(list, farr.values, ArrUtils.Type.BOOLEAN);
+							list.add(getIntInsn(farr.index_start));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([Z[ZI)V"));
 						}
 					}
 				}
@@ -405,6 +415,118 @@ public class MCEObj {
 				}
 			}
 		}
+	}
+
+	/**
+	 * Generates a static array initialized with specified values
+	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
+	 * @param values a string list of values representing any data type and will get parsed based on the type param
+	 * @param type defines what data type of static array to create
+	 */
+	public static void genStaticArray(InsnList list, String[] values, Type type) 
+	{
+		//array size
+		list.add(getIntInsn(values.length));
+		
+		//array type
+		int arrNew = 0;
+		int store = 0;
+		switch(type)
+		{
+			case BOOLEAN:
+				arrNew = Opcodes.T_BOOLEAN;
+				store = Opcodes.BASTORE;
+				break;
+			case BYTE:
+				break;
+			case DOUBLE:
+				break;
+			case FLOAT:
+				break;
+			case INT:
+				break;
+			case LONG:
+				break;
+			case SHORT:
+				break;
+			case STRING:
+				break;
+			case WRAPPED_BOOLEAN:
+				break;
+			case WRAPPED_BYTE:
+				break;
+			case WRAPPED_DOUBLE:
+				break;
+			case WRAPPED_FLOAT:
+				break;
+			case WRAPPED_INT:
+				break;
+			case WRAPPED_LONG:
+				break;
+			case WRAPPED_SHORT:
+				break;
+			default:
+				break;
+		}
+		list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
+		
+		//initialize NON-ZERO VALUES
+		for(int index=0; index < values.length; index++)
+		{
+			String str_v = values[index];
+			AbstractInsnNode valInsn = null;
+			switch(type)
+			{
+				case BOOLEAN:
+					boolean v_bool = Boolean.parseBoolean(str_v);
+					if(!v_bool)
+						continue;
+					valInsn = getBoolInsn(v_bool);
+				break;
+				case BYTE:
+				case SHORT:
+				case INT:
+					int v_int = Integer.parseInt(str_v);
+					if(v_int == 0)
+						continue;
+					valInsn = getIntInsn(v_int);
+				case LONG:
+					break;
+				case FLOAT:
+					break;
+				case DOUBLE:
+					break;
+				case STRING:
+					break;
+				case WRAPPED_BOOLEAN:
+					break;
+				case WRAPPED_BYTE:
+					break;
+				case WRAPPED_DOUBLE:
+					break;
+				case WRAPPED_FLOAT:
+					break;
+				case WRAPPED_INT:
+					break;
+				case WRAPPED_LONG:
+					break;
+				case WRAPPED_SHORT:
+					break;
+				default:
+					break;
+			}
+			
+			list.add(new InsnNode(Opcodes.DUP));
+			list.add(getIntInsn(index));
+			list.add(valInsn);
+			list.add(new InsnNode(store));
+		}
+		
+	}
+
+	public static InsnNode getBoolInsn(boolean v) 
+	{
+		return new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
 	}
 
 	public static AbstractInsnNode getIntInsn(int v) 

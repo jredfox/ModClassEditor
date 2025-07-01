@@ -406,7 +406,6 @@ public class MCEObj {
 						String desc_fill = null;
 						String desc_set = null;
 						String desc_insert = null;
-						int v = 0;
 						switch(arr_type)
 						{
 							case BYTE:
@@ -414,24 +413,25 @@ public class MCEObj {
 								desc_fill =   "([BBIII)V";
 								desc_set =    "([BIB)V";
 								desc_insert = "([B[BI)V";
-								v = parseByte(farr.values[0]);
 							break;
 							case SHORT:
 								store = Opcodes.SASTORE;
 								desc_fill =   "([SSIII)V";
 								desc_set =    "([SIS)V";
 								desc_insert = "([S[SI)V";
-								v = parseShort(farr.values[0]);
 							break;
 							case INT:
 								store = Opcodes.IASTORE;
 								desc_fill =   "([IIIII)V";
 								desc_set =    "([III)V";
 								desc_insert = "([I[II)V";
-								v = parseInt(farr.values[0]);
 							break;
 							case LONG:
-								break;
+								store = Opcodes.LASTORE;
+								desc_fill =   "([JJIII)V";
+								desc_set =    "([JIJ)V";
+								desc_insert = "([J[JI)V";
+							break;
 							case FLOAT:
 								break;
 							case DOUBLE:
@@ -461,7 +461,7 @@ public class MCEObj {
 							if(farr.index_start != farr.index_end)
 							{
 								//ArrUtils#fill(arr, v, index_start, index_end, increment);
-								list.add(getIntInsn(v));//value
+								list.add(getNumInsn(farr.values[0], arr_type));//value
 								list.add(getIntInsn(farr.index_start));//index_start
 								list.add(getIntInsn(farr.index_end));//index_end
 								list.add(getIntInsn(farr.increment));//inecrement
@@ -472,7 +472,7 @@ public class MCEObj {
 								//arr_short[index_start] = v;
 								//or ArrUtils#set(arr, index, v);
 								list.add(getIntInsn(farr.index_start));//set the index
-								list.add(getIntInsn(v));//set the value
+								list.add(getNumInsn(farr.values[0], arr_type));//set the value
 								if(farr.index_start > -1)
 									list.add(new InsnNode(store));//stores the value
 								else
@@ -481,7 +481,7 @@ public class MCEObj {
 						}
 						else
 						{
-							//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start, increment);
+							//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
 							genStaticArray(list, farr.values, arr_type);
 							list.add(getIntInsn(farr.index_start));
 							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
@@ -506,7 +506,7 @@ public class MCEObj {
 	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
 	 * @param values a string list of values representing any data type and will get parsed based on the type param
 	 * @param type defines what data type of static array to create
-	 * @WARNING: DO NOT USE. While the method works PERFECTLY from boolean - int primatives the java bytecode limit per method is 65535 which will be reached pretty quickly using java's default static array initializer don't believe me create a new static array {} filled from index 0 - {@value Short#MAX_VALUE} + 1 amd see the error for yourself
+	 * @WARNING: DO NOT USE. While the method works PERFECTLY from boolean - long primitives the java bytecode limit per method is 65535 which will be reached pretty quickly using java's default static array initializer don't believe me create a new static array {} filled from index 0 - {@value Short#MAX_VALUE} + 1 amd see the error for yourself
 	 */
 	@Deprecated
 	public static void genStaticArray(InsnList list, String[] values, Type type) 
@@ -536,7 +536,9 @@ public class MCEObj {
 				store = Opcodes.IASTORE;
 			break;
 			case LONG:
-				break;
+				arrNew = Opcodes.T_LONG;
+				store = Opcodes.LASTORE;
+			break;
 			case FLOAT:
 				break;
 			case DOUBLE:
@@ -568,6 +570,7 @@ public class MCEObj {
 			String str_v = values[index];
 			AbstractInsnNode valInsn = null;
 			int v_int = 0;
+			long v_l = 0;
 			switch(type)
 			{
 				case BOOLEAN:
@@ -595,7 +598,11 @@ public class MCEObj {
 					valInsn = getIntInsn(v_int);
 				break;
 				case LONG:
-					break;
+					v_l = parseLong(str_v);
+					if(v_l == 0)
+						continue;
+					valInsn = getLongInsn(v_l);
+				break;
 				case FLOAT:
 					break;
 				case DOUBLE:
@@ -621,10 +628,43 @@ public class MCEObj {
 			}
 			
 			list.add(new InsnNode(Opcodes.DUP));
-			list.add(getIntInsn(index));
-			list.add(valInsn);
+			list.add(getIntInsn(index));//indexes are always integer and follow the same rules as any boolean - int values on pushing
+			list.add(valInsn);//changes based on the data type
 			list.add(new InsnNode(store));
 		}
+	}
+	
+	public static AbstractInsnNode getNumInsn(String str_v, ArrUtils.Type type)
+	{
+		switch(type)
+		{
+			case BOOLEAN:
+			case WRAPPED_BOOLEAN:
+				return getBoolInsn(Boolean.parseBoolean(str_v));
+			case WRAPPED_BYTE:
+			case BYTE:
+				return getIntInsn(parseByte(str_v));
+			case WRAPPED_SHORT:
+			case SHORT:
+				return getIntInsn(parseShort(str_v));
+			case WRAPPED_INT:
+			case INT:
+				return getIntInsn(parseInt(str_v));
+			case LONG:
+			case WRAPPED_LONG:
+				return getLongInsn(parseLong(str_v));
+			case WRAPPED_FLOAT:
+			case FLOAT:
+				break;
+			case WRAPPED_DOUBLE:
+			case DOUBLE:
+				break;
+			case STRING:
+				break;
+			default:
+				break;
+		}
+		return null;
 	}
 
 	public static InsnNode getBoolInsn(boolean v) 
@@ -642,6 +682,12 @@ public class MCEObj {
 		else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
 			return new IntInsnNode(Opcodes.SIPUSH, v);
 		return new LdcInsnNode(new Integer(v));
+	}
+	
+	public static AbstractInsnNode getLongInsn(long v) 
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Long(v)) : cst;
 	}
 
 	/**

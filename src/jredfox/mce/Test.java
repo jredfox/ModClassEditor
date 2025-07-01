@@ -33,7 +33,12 @@ public class Test {
 	private static boolean[] arr_tst = 	{false, false, true, false, false, false};
 	static
 	{
-//		ArrUtils.fill(arr_short, (short)21, 2, -1, 2);
+		long[] l = new long[] {0L, 1L};
+//		arr_long[21] = 100L;
+//		long[] a = new long[200];
+//		long[] l = new long[]{2, 0, 1, 3, 4, 5, 6, 128, 40000, Long.MAX_VALUE};
+//		ArrUtils.insert(arr_long, l, 0);
+//		ArrUtils.fill(arr_long, 22, 0, -1, 0);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -51,8 +56,8 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(byte b : arr_byte)
-			System.out.print(b + ",");
+		for(long v : arr_long)
+			System.out.print(v + ",");
 		System.out.println("]");
 	}
 

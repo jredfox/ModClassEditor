@@ -406,6 +406,7 @@ public class MCEObj {
 						String desc_fill = null;
 						String desc_set = null;
 						String desc_insert = null;
+						int v = 0;
 						switch(arr_type)
 						{
 							case BYTE:
@@ -413,18 +414,21 @@ public class MCEObj {
 								desc_fill =   "([BBIII)V";
 								desc_set =    "([BIB)V";
 								desc_insert = "([B[BI)V";
+								v = parseByte(farr.values[0]);
 							break;
 							case SHORT:
 								store = Opcodes.SASTORE;
 								desc_fill =   "([SSIII)V";
 								desc_set =    "([SIS)V";
 								desc_insert = "([S[SI)V";
+								v = parseShort(farr.values[0]);
 							break;
 							case INT:
 								store = Opcodes.IASTORE;
 								desc_fill =   "([IIIII)V";
 								desc_set =    "([III)V";
 								desc_insert = "([I[II)V";
+								v = parseInt(farr.values[0]);
 							break;
 							case LONG:
 								break;
@@ -451,7 +455,6 @@ public class MCEObj {
 							default:
 								break;
 						}
-						int v = parseInt(farr.values[0]);
 						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 						if(farr.values.length < 2)
 						{
@@ -562,6 +565,7 @@ public class MCEObj {
 		{
 			String str_v = values[index];
 			AbstractInsnNode valInsn = null;
+			int v_int = 0;
 			switch(type)
 			{
 				case BOOLEAN:
@@ -571,9 +575,19 @@ public class MCEObj {
 					valInsn = getBoolInsn(v_bool);
 				break;
 				case BYTE:
+					v_int = parseByte(str_v);
+					if(v_int == 0)
+						continue;
+					valInsn = getIntInsn(v_int);
+				break;
 				case SHORT:
+					v_int = parseShort(str_v);
+					if(v_int == 0)
+						continue;
+					valInsn = getIntInsn(v_int);
+				break;
 				case INT:
-					int v_int = Integer.parseInt(str_v);
+					v_int = parseInt(str_v);
 					if(v_int == 0)
 						continue;
 					valInsn = getIntInsn(v_int);

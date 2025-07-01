@@ -385,7 +385,7 @@ public class MCEObj {
 								//or ArrUtils#set(arr_bool, index, v); when index is < 0 aka -1 for end etc..
 								list.add(getIntInsn(farr.index_start));//set the index
 								list.add(getBoolInsn(v));//set boolean value
-								if(farr.index_start > 0)
+								if(farr.index_start > -1)
 									list.add(new InsnNode(Opcodes.BASTORE));//stores the value
 								else
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([ZIZ)V"));
@@ -413,6 +413,18 @@ public class MCEObj {
 								list.add(getIntInsn(farr.index_end));//index_end
 								list.add(getIntInsn(farr.increment));//inecrement
 								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([SSIII)V"));
+							}
+							else
+							{
+								//arr_short[index_start] = v;
+								//or ArrUtils#set(arr_short, index, v);
+								list.add(getIntInsn(farr.index_start));//set the index
+								list.add(getIntInsn(v));//set the value
+								//TODO: changes based on type
+								if(farr.index_start > -1)
+									list.add(new InsnNode(Opcodes.SASTORE));//stores the value
+								else
+									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([SIS)V"));//TODO: changes on type
 							}
 						}
 					}

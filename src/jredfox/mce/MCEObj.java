@@ -427,6 +427,13 @@ public class MCEObj {
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([SIS)V"));//TODO: changes on type
 							}
 						}
+						else
+						{
+							//ArrUtils#insert(arr, new short[]{this.values}, farr.index_start, increment);
+							genStaticArray(list, farr.values, ArrUtils.Type.SHORT);
+							list.add(getIntInsn(farr.index_start));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([S[SI)V"));
+						}
 					}
 				}
 				
@@ -463,16 +470,22 @@ public class MCEObj {
 				store = Opcodes.BASTORE;
 			break;
 			case BYTE:
-				break;
-			case DOUBLE:
+				arrNew = Opcodes.T_BYTE;
+				store = Opcodes.BASTORE;
+			break;
+			case SHORT:
+				arrNew = Opcodes.T_SHORT;
+				store = Opcodes.SASTORE;
+			break;
+			case INT:
+				arrNew = Opcodes.T_INT;
+				store = Opcodes.IASTORE;
+			break;
+			case LONG:
 				break;
 			case FLOAT:
 				break;
-			case INT:
-				break;
-			case LONG:
-				break;
-			case SHORT:
+			case DOUBLE:
 				break;
 			case STRING:
 				break;
@@ -491,7 +504,7 @@ public class MCEObj {
 			case WRAPPED_SHORT:
 				break;
 			default:
-				break;
+				throw new RuntimeException("Unsupported Type:" + type);
 		}
 		list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
 		

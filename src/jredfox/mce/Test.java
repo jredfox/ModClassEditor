@@ -35,7 +35,7 @@ public class Test {
 	static
 	{
 //		ArrUtils.fill(arr_short, (short)10, 2, -1, 0);
-		arr_short[0] = 0;
+//		ArrUtils.insert(arr_short, new short[]{3, 4}, 2);
 	}
 	
 //	private int o_id = new Integer(200);

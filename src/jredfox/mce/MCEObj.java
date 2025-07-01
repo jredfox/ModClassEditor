@@ -365,7 +365,8 @@ public class MCEObj {
 				{
 					MCEArrField farr = (MCEArrField) f;
 					String atype = type.replace("[", "");
-					if(atype.equals("boolean"))
+					ArrUtils.Type arr_type = ArrUtils.getType(atype);
+					if(arr_type == Type.BOOLEAN)
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
 						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//Gets the Field
@@ -399,20 +400,69 @@ public class MCEObj {
 							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([Z[ZI)V"));
 						}
 					}
-					else if(atype.equals("short"))
+					else
 					{
-						short v = parseShort(farr.values[0]);
+						int store = Opcodes.BASTORE;
+						String desc_fill = null;
+						String desc_set = null;
+						String desc_insert = null;
+						switch(arr_type)
+						{
+							case BYTE:
+								store = Opcodes.BASTORE;
+								desc_fill =   "([BBIII)V";
+								desc_set =    "([BIB)V";
+								desc_insert = "([B[BI)V";
+							break;
+							case SHORT:
+								store = Opcodes.SASTORE;
+								desc_fill =   "([SSIII)V";
+								desc_set =    "([SIS)V";
+								desc_insert = "([S[SI)V";
+							break;
+							case INT:
+								store = Opcodes.IASTORE;
+								desc_fill =   "([IIIII)V";
+								desc_set =    "([III)V";
+								desc_insert = "([I[II)V";
+							break;
+							case LONG:
+								break;
+							case FLOAT:
+								break;
+							case DOUBLE:
+								break;
+							case STRING:
+								break;
+							case WRAPPED_BOOLEAN:
+								break;
+							case WRAPPED_BYTE:
+								break;
+							case WRAPPED_DOUBLE:
+								break;
+							case WRAPPED_FLOAT:
+								break;
+							case WRAPPED_INT:
+								break;
+							case WRAPPED_LONG:
+								break;
+							case WRAPPED_SHORT:
+								break;
+							default:
+								break;
+						}
+						int v = parseInt(farr.values[0]);
 						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 						if(farr.values.length < 2)
 						{
 							if(farr.index_start != farr.index_end)
 							{
-								//ArrUtils#fill(arr_short, v, index_start, index_end, increment);
+								//ArrUtils#fill(arr, v, index_start, index_end, increment);
 								list.add(getIntInsn(v));//value
 								list.add(getIntInsn(farr.index_start));//index_start
 								list.add(getIntInsn(farr.index_end));//index_end
 								list.add(getIntInsn(farr.increment));//inecrement
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([SSIII)V"));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", desc_fill));
 							}
 							else
 							{
@@ -420,19 +470,18 @@ public class MCEObj {
 								//or ArrUtils#set(arr_short, index, v);
 								list.add(getIntInsn(farr.index_start));//set the index
 								list.add(getIntInsn(v));//set the value
-								//TODO: changes based on type
 								if(farr.index_start > -1)
-									list.add(new InsnNode(Opcodes.SASTORE));//stores the value
+									list.add(new InsnNode(store));//stores the value
 								else
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([SIS)V"));//TODO: changes on type
+									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", desc_set));
 							}
 						}
 						else
 						{
 							//ArrUtils#insert(arr, new short[]{this.values}, farr.index_start, increment);
-							genStaticArray(list, farr.values, ArrUtils.Type.SHORT);
+							genStaticArray(list, farr.values, arr_type);
 							list.add(getIntInsn(farr.index_start));
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([S[SI)V"));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
 						}
 					}
 				}

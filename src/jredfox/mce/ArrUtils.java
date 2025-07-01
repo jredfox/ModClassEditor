@@ -1,5 +1,7 @@
 package jredfox.mce;
 
+import jredfox.mce.ArrUtils.Type;
+
 public class ArrUtils {
 	
 	public static enum Type
@@ -18,7 +20,8 @@ public class ArrUtils {
 		WRAPPED_INT,
 		WRAPPED_LONG,
 		WRAPPED_FLOAT,
-		WRAPPED_DOUBLE
+		WRAPPED_DOUBLE,
+		NULL
 	}
 	
 	public static void set(boolean[] arr, int index, boolean val)
@@ -565,6 +568,30 @@ public class ArrUtils {
 		int valIndex = 0;
 	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
 	        arr[i] = val[valIndex++];
+	}
+
+	public static Type getType(String type) 
+	{
+		boolean isWrapper = Character.isUpperCase(type.charAt(0));
+		type = type.toLowerCase();
+		if(type.equals("boolean"))
+			return !isWrapper ? Type.BOOLEAN : Type.WRAPPED_BOOLEAN;
+		else if(type.equals("byte"))
+			return !isWrapper ? Type.BYTE : Type.WRAPPED_BYTE;
+		else if(type.equals("short"))
+			return !isWrapper ? Type.SHORT : Type.WRAPPED_SHORT;
+		else if(type.equals("int"))
+			return !isWrapper ? Type.INT : Type.WRAPPED_INT;
+		else if(type.equals("long"))
+			return !isWrapper ? Type.LONG : Type.WRAPPED_LONG;
+		else if(type.equals("float"))
+			return !isWrapper ? Type.FLOAT : Type.WRAPPED_FLOAT;
+		else if(type.equals("double"))
+			return !isWrapper ? Type.DOUBLE : Type.WRAPPED_DOUBLE;
+		else if(type.equals("string"))
+			return Type.STRING;
+		
+		return Type.NULL;
 	}
 
 }

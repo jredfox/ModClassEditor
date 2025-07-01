@@ -367,141 +367,112 @@ public class MCEObj {
 					MCEArrField farr = (MCEArrField) f;
 					String atype = type.replace("[", "");
 					ArrUtils.Type arr_type = ArrUtils.getType(atype);
-					if(arr_type == Type.BOOLEAN)
+					
+					int store = Opcodes.BASTORE;
+					String desc_fill = null;
+					String desc_set = null;
+					String desc_insert = null;
+					boolean hasIncrem = true;
+					switch(arr_type)
 					{
-						boolean v = Boolean.parseBoolean(farr.values[0]);
-						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//Gets the Field
-						if(farr.values.length < 2)
+						case BOOLEAN:
+							store = Opcodes.BASTORE;
+							desc_fill = "([ZZII)V";
+							desc_set = "([ZIZ)V";
+							desc_insert = "([Z[ZI)V";
+							hasIncrem = false;
+						break;
+						case BYTE:
+							store = Opcodes.BASTORE;
+							desc_fill =   "([BBIII)V";
+							desc_set =    "([BIB)V";
+							desc_insert = "([B[BI)V";
+						break;
+						case SHORT:
+							store = Opcodes.SASTORE;
+							desc_fill =   "([SSIII)V";
+							desc_set =    "([SIS)V";
+							desc_insert = "([S[SI)V";
+						break;
+						case INT:
+							store = Opcodes.IASTORE;
+							desc_fill =   "([IIIII)V";
+							desc_set =    "([III)V";
+							desc_insert = "([I[II)V";
+						break;
+						case LONG:
+							store = Opcodes.LASTORE;
+							desc_fill =   "([JJIII)V";
+							desc_set =    "([JIJ)V";
+							desc_insert = "([J[JI)V";
+						break;
+						case FLOAT:
+							store = Opcodes.FASTORE;
+							desc_fill =   "([FFIII)V";
+							desc_set =    "([FIF)V";
+							desc_insert = "([F[FI)V";
+						break;
+						case DOUBLE:
+							store = Opcodes.DASTORE;
+							desc_fill =   "([DDIII)V";
+							desc_set =    "([DID)V";
+							desc_insert = "([D[DI)V";
+						break;
+						case STRING:
+							store = Opcodes.AASTORE;
+							desc_fill =   "([Ljava/lang/String;Ljava/lang/String;II)V";
+							desc_set =    "([Ljava/lang/String;ILjava/lang/String;)V";
+							desc_insert = "([Ljava/lang/String;[Ljava/lang/String;I)V";
+							hasIncrem = false;
+						break;
+						case WRAPPED_BOOLEAN:
+							break;
+						case WRAPPED_BYTE:
+							break;
+						case WRAPPED_DOUBLE:
+							break;
+						case WRAPPED_FLOAT:
+							break;
+						case WRAPPED_INT:
+							break;
+						case WRAPPED_LONG:
+							break;
+						case WRAPPED_SHORT:
+							break;
+						default:
+							break;
+					}
+					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
+					if(farr.values.length < 2)
+					{
+						if(farr.index_start != farr.index_end)
 						{
-							if(farr.index_start != farr.index_end)
-							{
-								//ArrUtils#fill(arr_bool, v, index_start, index_end);
-								list.add(getBoolInsn(v));
-								list.add(getIntInsn(farr.index_start));
-								list.add(getIntInsn(farr.index_end));
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([ZZII)V"));
-							}
-							else
-							{
-								//arr_bool[index_start] = v;
-								//or ArrUtils#set(arr_bool, index, v); when index is < 0 aka -1 for end etc..
-								list.add(getIntInsn(farr.index_start));//set the index
-								list.add(getBoolInsn(v));//set boolean value
-								if(farr.index_start > -1)
-									list.add(new InsnNode(Opcodes.BASTORE));//stores the value
-								else
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", "([ZIZ)V"));
-							}
+							//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
+							list.add(getNumInsn(farr.values[0], arr_type));//value
+							list.add(getIntInsn(farr.index_start));//index_start
+							list.add(getIntInsn(farr.index_end));//index_end
+							if(hasIncrem)
+								list.add(getIntInsn(farr.increment));//inecrement
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", desc_fill));
 						}
 						else
 						{
-							//ArrUtils#insert(arr, new boolean[]{this.values}, farr.index_start);
-							genStaticArray(list, farr.values, ArrUtils.Type.BOOLEAN);
-							list.add(getIntInsn(farr.index_start));
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([Z[ZI)V"));
+							//arr_short[index_start] = v;
+							//or ArrUtils#set(arr, index, v);
+							list.add(getIntInsn(farr.index_start));//set the index
+							list.add(getNumInsn(farr.values[0], arr_type));//set the value
+							if(farr.index_start > -1)
+								list.add(new InsnNode(store));//stores the value
+							else
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", desc_set));
 						}
 					}
 					else
 					{
-						int store = Opcodes.BASTORE;
-						String desc_fill = null;
-						String desc_set = null;
-						String desc_insert = null;
-						boolean hasIncrem = true;
-						switch(arr_type)
-						{
-							case BYTE:
-								store = Opcodes.BASTORE;
-								desc_fill =   "([BBIII)V";
-								desc_set =    "([BIB)V";
-								desc_insert = "([B[BI)V";
-							break;
-							case SHORT:
-								store = Opcodes.SASTORE;
-								desc_fill =   "([SSIII)V";
-								desc_set =    "([SIS)V";
-								desc_insert = "([S[SI)V";
-							break;
-							case INT:
-								store = Opcodes.IASTORE;
-								desc_fill =   "([IIIII)V";
-								desc_set =    "([III)V";
-								desc_insert = "([I[II)V";
-							break;
-							case LONG:
-								store = Opcodes.LASTORE;
-								desc_fill =   "([JJIII)V";
-								desc_set =    "([JIJ)V";
-								desc_insert = "([J[JI)V";
-							break;
-							case FLOAT:
-								store = Opcodes.FASTORE;
-								desc_fill =   "([FFIII)V";
-								desc_set =    "([FIF)V";
-								desc_insert = "([F[FI)V";
-							break;
-							case DOUBLE:
-								store = Opcodes.DASTORE;
-								desc_fill =   "([DDIII)V";
-								desc_set =    "([DID)V";
-								desc_insert = "([D[DI)V";
-							break;
-							case STRING:
-								store = Opcodes.AASTORE;
-								desc_fill =   "([Ljava/lang/String;Ljava/lang/String;II)V";
-								desc_set =    "([Ljava/lang/String;ILjava/lang/String;)V";
-								desc_insert = "([Ljava/lang/String;[Ljava/lang/String;I)V";
-								hasIncrem = false;
-							break;
-							case WRAPPED_BOOLEAN:
-								break;
-							case WRAPPED_BYTE:
-								break;
-							case WRAPPED_DOUBLE:
-								break;
-							case WRAPPED_FLOAT:
-								break;
-							case WRAPPED_INT:
-								break;
-							case WRAPPED_LONG:
-								break;
-							case WRAPPED_SHORT:
-								break;
-							default:
-								break;
-						}
-						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
-						if(farr.values.length < 2)
-						{
-							if(farr.index_start != farr.index_end)
-							{
-								//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
-								list.add(getNumInsn(farr.values[0], arr_type));//value
-								list.add(getIntInsn(farr.index_start));//index_start
-								list.add(getIntInsn(farr.index_end));//index_end
-								if(hasIncrem)
-									list.add(getIntInsn(farr.increment));//inecrement
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", desc_fill));
-							}
-							else
-							{
-								//arr_short[index_start] = v;
-								//or ArrUtils#set(arr, index, v);
-								list.add(getIntInsn(farr.index_start));//set the index
-								list.add(getNumInsn(farr.values[0], arr_type));//set the value
-								if(farr.index_start > -1)
-									list.add(new InsnNode(store));//stores the value
-								else
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", desc_set));
-							}
-						}
-						else
-						{
-							//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-							genStaticArray(list, farr.values, arr_type);
-							list.add(getIntInsn(farr.index_start));
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
-						}
+						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
+						genStaticArray(list, farr.values, arr_type);
+						list.add(getIntInsn(farr.index_start));
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
 					}
 				}
 				

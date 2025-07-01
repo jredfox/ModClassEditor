@@ -52,8 +52,13 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(String v : arr_str)
+		for(boolean v : arr_bool)
 			System.out.print(v + ",");
+		System.out.println("]");
+		
+		System.out.print("[");
+		for(boolean z : arr_tst)
+			System.out.print(z + ",");
 		System.out.println("]");
 	}
 

@@ -433,9 +433,17 @@ public class MCEObj {
 								desc_insert = "([J[JI)V";
 							break;
 							case FLOAT:
-								break;
+								store = Opcodes.FASTORE;
+								desc_fill =   "([FFIII)V";
+								desc_set =    "([FIF)V";
+								desc_insert = "([F[FI)V";
+							break;
 							case DOUBLE:
-								break;
+								store = Opcodes.DASTORE;
+								desc_fill =   "([DDIII)V";
+								desc_set =    "([DID)V";
+								desc_insert = "([D[DI)V";
+							break;
 							case STRING:
 								break;
 							case WRAPPED_BOOLEAN:
@@ -540,9 +548,13 @@ public class MCEObj {
 				store = Opcodes.LASTORE;
 			break;
 			case FLOAT:
-				break;
+				arrNew = Opcodes.T_FLOAT;
+				store = Opcodes.FASTORE;
+			break;
 			case DOUBLE:
-				break;
+				arrNew = Opcodes.T_DOUBLE;
+				store = Opcodes.DASTORE;
+			break;
 			case STRING:
 				break;
 			case WRAPPED_BOOLEAN:
@@ -571,6 +583,9 @@ public class MCEObj {
 			AbstractInsnNode valInsn = null;
 			int v_int = 0;
 			long v_l = 0;
+			float v_f = 0;
+			double v_d = 0;
+			String v_str = "";
 			switch(type)
 			{
 				case BOOLEAN:
@@ -604,9 +619,17 @@ public class MCEObj {
 					valInsn = getLongInsn(v_l);
 				break;
 				case FLOAT:
-					break;
+					v_f = parseFloat(str_v);
+					if(v_f == 0)
+						continue;
+					valInsn = getFloatInsn(v_f);
+				break;
 				case DOUBLE:
-					break;
+					v_d = parseDouble(str_v);
+					if(v_d == 0)
+						continue;
+					valInsn = getDoubleInsn(v_d);
+				break;
 				case STRING:
 					break;
 				case WRAPPED_BOOLEAN:
@@ -655,10 +678,10 @@ public class MCEObj {
 				return getLongInsn(parseLong(str_v));
 			case WRAPPED_FLOAT:
 			case FLOAT:
-				break;
+				return getFloatInsn(parseFloat(str_v));
 			case WRAPPED_DOUBLE:
 			case DOUBLE:
-				break;
+				return getDoubleInsn(parseDouble(str_v));
 			case STRING:
 				break;
 			default:
@@ -688,6 +711,18 @@ public class MCEObj {
 	{
 		AbstractInsnNode cst = getConstantInsn(v);
 		return cst == null ? new LdcInsnNode(new Long(v)) : cst;
+	}
+	
+	public static AbstractInsnNode getFloatInsn(float v)
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Float(v)) : cst;
+	}
+	
+	public static AbstractInsnNode getDoubleInsn(double v)
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Double(v)) : cst;
 	}
 
 	/**
@@ -837,6 +872,11 @@ public class MCEObj {
 	private static float parseFloat(String value) 
 	{
 		return Float.parseFloat(value);
+	}
+	
+	private static double parseDouble(String value) 
+	{
+		return Double.parseDouble(value);
 	}
 	
 	public static String[] splitFirst(String s, char delim)

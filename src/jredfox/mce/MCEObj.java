@@ -505,6 +505,7 @@ public class MCEObj {
 		int arrNew = 0;
 		int store = 0;
 		String arrNewObj = null;
+		String desc_wrapper = null;
 		switch(type)
 		{
 			case BOOLEAN:
@@ -540,9 +541,15 @@ public class MCEObj {
 				store = Opcodes.AASTORE;
 			break;
 			case WRAPPED_BOOLEAN:
-				break;
+				arrNewObj = "java/lang/Boolean";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(Z)Ljava/lang/Boolean;";
+			break;
 			case WRAPPED_BYTE:
-				break;
+				arrNewObj = "java/lang/Byte";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(B)Ljava/lang/Byte;";
+			break;
 			case WRAPPED_DOUBLE:
 				break;
 			case WRAPPED_FLOAT:
@@ -573,42 +580,49 @@ public class MCEObj {
 			String v_str = "";
 			switch(type)
 			{
+				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
 					boolean v_bool = Boolean.parseBoolean(str_v);
 					if(!v_bool)
 						continue;
 					valInsn = getBoolInsn(v_bool);
 				break;
+				case WRAPPED_BYTE:
 				case BYTE:
 					v_int = parseByte(str_v);
 					if(v_int == 0)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
+				case WRAPPED_SHORT:
 				case SHORT:
 					v_int = parseShort(str_v);
 					if(v_int == 0)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
+				case WRAPPED_INT:
 				case INT:
 					v_int = parseInt(str_v);
 					if(v_int == 0)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
+				case WRAPPED_LONG:
 				case LONG:
 					v_l = parseLong(str_v);
 					if(v_l == 0)
 						continue;
 					valInsn = getLongInsn(v_l);
 				break;
+				case WRAPPED_FLOAT:
 				case FLOAT:
 					v_f = parseFloat(str_v);
 					if(v_f == 0)
 						continue;
 					valInsn = getFloatInsn(v_f);
 				break;
+				case WRAPPED_DOUBLE:
 				case DOUBLE:
 					v_d = parseDouble(str_v);
 					if(v_d == 0)
@@ -618,20 +632,6 @@ public class MCEObj {
 				case STRING:
 					valInsn = new LdcInsnNode(str_v);
 				break;
-				case WRAPPED_BOOLEAN:
-					break;
-				case WRAPPED_BYTE:
-					break;
-				case WRAPPED_DOUBLE:
-					break;
-				case WRAPPED_FLOAT:
-					break;
-				case WRAPPED_INT:
-					break;
-				case WRAPPED_LONG:
-					break;
-				case WRAPPED_SHORT:
-					break;
 				default:
 					break;
 			}
@@ -639,6 +639,8 @@ public class MCEObj {
 			list.add(new InsnNode(Opcodes.DUP));
 			list.add(getIntInsn(index));//indexes are always integer and follow the same rules as any boolean - int values on pushing
 			list.add(valInsn);//changes based on the data type
+			if(desc_wrapper != null)
+				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, arrNewObj, "valueOf", desc_wrapper));//converts the datatype into it's Object form
 			list.add(new InsnNode(store));
 		}
 	}
@@ -647,8 +649,8 @@ public class MCEObj {
 	{
 		switch(type)
 		{
-			case BOOLEAN:
 			case WRAPPED_BOOLEAN:
+			case BOOLEAN:
 				return getBoolInsn(Boolean.parseBoolean(str_v));
 			case WRAPPED_BYTE:
 			case BYTE:

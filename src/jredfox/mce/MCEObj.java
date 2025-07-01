@@ -396,7 +396,7 @@ public class MCEObj {
 						}
 						else
 						{
-							//ArrUtils#insert(arr, values, farr.index_start);
+							//ArrUtils#insert(arr, new boolean[]{this.values}, farr.index_start);
 							list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
 							genStaticArray(list, farr.values, ArrUtils.Type.BOOLEAN);
 							list.add(getIntInsn(farr.index_start));
@@ -436,7 +436,7 @@ public class MCEObj {
 			case BOOLEAN:
 				arrNew = Opcodes.T_BOOLEAN;
 				store = Opcodes.BASTORE;
-				break;
+			break;
 			case BYTE:
 				break;
 			case DOUBLE:
@@ -490,6 +490,7 @@ public class MCEObj {
 					if(v_int == 0)
 						continue;
 					valInsn = getIntInsn(v_int);
+				break;
 				case LONG:
 					break;
 				case FLOAT:
@@ -521,7 +522,6 @@ public class MCEObj {
 			list.add(valInsn);
 			list.add(new InsnNode(store));
 		}
-		
 	}
 
 	public static InsnNode getBoolInsn(boolean v) 

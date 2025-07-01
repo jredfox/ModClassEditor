@@ -399,6 +399,23 @@ public class MCEObj {
 							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([Z[ZI)V"));
 						}
 					}
+					else if(atype.equals("short"))
+					{
+						short v = parseShort(farr.values[0]);
+						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
+						if(farr.values.length < 2)
+						{
+							if(farr.index_start != farr.index_end)
+							{
+								//ArrUtils#fill(arr_short, v, index_start, index_end, increment);
+								list.add(getIntInsn(v));//value
+								list.add(getIntInsn(farr.index_start));//index_start
+								list.add(getIntInsn(farr.index_end));//index_end
+								list.add(getIntInsn(farr.increment));//inecrement
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", "([SSIII)V"));
+							}
+						}
+					}
 				}
 				
 				//Injection Point

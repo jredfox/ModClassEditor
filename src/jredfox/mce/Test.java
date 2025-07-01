@@ -34,9 +34,7 @@ public class Test {
 	
 	static
 	{
-//		Boolean[] b = new Boolean[] {true, true, false, true};
-//		ArrUtils.insert(arr_bool, new boolean[]{true, true}, 0);
-//		ArrUtils.insert(arr_tst, new boolean[]{true, false, true}, 1);
+//		ArrUtils.fill(arr_short, (short)10, 2, -1, 0);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -54,12 +52,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(boolean b : arr_bool)
-			System.out.print(b + ",");
-		System.out.println("]");
-		
-		System.out.print("[");
-		for(boolean b : arr_tst)
+		for(short b : arr_short)
 			System.out.print(b + ",");
 		System.out.println("]");
 	}

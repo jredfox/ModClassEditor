@@ -467,7 +467,7 @@ public class MCEObj {
 							else
 							{
 								//arr_short[index_start] = v;
-								//or ArrUtils#set(arr_short, index, v);
+								//or ArrUtils#set(arr, index, v);
 								list.add(getIntInsn(farr.index_start));//set the index
 								list.add(getIntInsn(v));//set the value
 								if(farr.index_start > -1)

@@ -368,12 +368,12 @@ public class MCEObj {
 					if(atype.equals("boolean"))
 					{
 						boolean v = Boolean.parseBoolean(farr.values[0]);
+						list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//Gets the Field
 						if(farr.values.length < 2)
 						{
 							if(farr.index_start != farr.index_end)
 							{
 								//ArrUtils#fill(arr_bool, v, index_start, index_end);
-								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
 								list.add(getBoolInsn(v));
 								list.add(getIntInsn(farr.index_start));
 								list.add(getIntInsn(farr.index_end));
@@ -383,7 +383,6 @@ public class MCEObj {
 							{
 								//arr_bool[index_start] = v;
 								//or ArrUtils#set(arr_bool, index, v); when index is < 0 aka -1 for end etc..
-								list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//fetch the array
 								list.add(getIntInsn(farr.index_start));//set the index
 								list.add(getBoolInsn(v));//set boolean value
 								if(farr.index_start > 0)
@@ -395,7 +394,6 @@ public class MCEObj {
 						else
 						{
 							//ArrUtils#insert(arr, new boolean[]{this.values}, farr.index_start);
-							list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));
 							genStaticArray(list, farr.values, ArrUtils.Type.BOOLEAN);
 							list.add(getIntInsn(farr.index_start));
 							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", "([Z[ZI)V"));

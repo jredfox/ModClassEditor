@@ -53,7 +53,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(short b : arr_short)
+		for(short b : arr_byte)
 			System.out.print(b + ",");
 		System.out.println("]");
 	}
@@ -64,7 +64,7 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		
+		System.out.println((byte)259);
 	}
 
 }

@@ -506,7 +506,9 @@ public class MCEObj {
 	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
 	 * @param values a string list of values representing any data type and will get parsed based on the type param
 	 * @param type defines what data type of static array to create
+	 * @WARNING: DO NOT USE. While the method works PERFECTLY from boolean - int primatives the java bytecode limit per method is 65535 which will be reached pretty quickly using java's default static array initializer don't believe me create a new static array {} filled from index 0 - {@value Short#MAX_VALUE} + 1 amd see the error for yourself
 	 */
+	@Deprecated
 	public static void genStaticArray(InsnList list, String[] values, Type type) 
 	{
 		//array size

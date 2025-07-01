@@ -31,11 +31,9 @@ public class Test {
 	private static String[] arr_str = 		{"Entity Id"};
 	
 	private static boolean[] arr_tst = 	{false, false, true, false, false, false};
-	
 	static
 	{
-//		ArrUtils.fill(arr_short, (short)10, 2, -1, 0);
-//		ArrUtils.insert(arr_short, new short[]{3, 4}, 2);
+//		ArrUtils.fill(arr_short, (short)21, 2, -1, 2);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -53,7 +51,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(short b : arr_byte)
+		for(byte b : arr_byte)
 			System.out.print(b + ",");
 		System.out.println("]");
 	}
@@ -64,7 +62,8 @@ public class Test {
 	
 	public static void main(String[] args)
 	{
-		System.out.println((byte)259);
+		short b = 32001;
+		System.out.println((byte)b);
 	}
 
 }

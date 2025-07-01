@@ -28,12 +28,13 @@ public class Test {
 	private static long[] arr_long = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static float[] arr_float = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static double[] arr_double = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private static String[] arr_str = 		{"Entity Id"};
+	private static String[] arr_str = 		{"Entity Id", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9"};
 	
 	private static boolean[] arr_tst = 	{false, false, true, false, false, false};
 	static
 	{
-		
+//		ArrUtils.fill(arr_str, "a-z", 0, 1);
+//		ArrUtils.insert(arr_str, new String[]{"A String", "B String"}, 1);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -51,7 +52,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(float v : arr_float)
+		for(String v : arr_str)
 			System.out.print(v + ",");
 		System.out.println("]");
 	}

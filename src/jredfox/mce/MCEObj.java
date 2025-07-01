@@ -17,6 +17,7 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
@@ -406,6 +407,7 @@ public class MCEObj {
 						String desc_fill = null;
 						String desc_set = null;
 						String desc_insert = null;
+						boolean hasIncrem = true;
 						switch(arr_type)
 						{
 							case BYTE:
@@ -445,7 +447,12 @@ public class MCEObj {
 								desc_insert = "([D[DI)V";
 							break;
 							case STRING:
-								break;
+								store = Opcodes.AASTORE;
+								desc_fill =   "([Ljava/lang/String;Ljava/lang/String;II)V";
+								desc_set =    "([Ljava/lang/String;ILjava/lang/String;)V";
+								desc_insert = "([Ljava/lang/String;[Ljava/lang/String;I)V";
+								hasIncrem = false;
+							break;
 							case WRAPPED_BOOLEAN:
 								break;
 							case WRAPPED_BYTE:
@@ -468,11 +475,12 @@ public class MCEObj {
 						{
 							if(farr.index_start != farr.index_end)
 							{
-								//ArrUtils#fill(arr, v, index_start, index_end, increment);
+								//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
 								list.add(getNumInsn(farr.values[0], arr_type));//value
 								list.add(getIntInsn(farr.index_start));//index_start
 								list.add(getIntInsn(farr.index_end));//index_end
-								list.add(getIntInsn(farr.increment));//inecrement
+								if(hasIncrem)
+									list.add(getIntInsn(farr.increment));//inecrement
 								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", desc_fill));
 							}
 							else
@@ -514,7 +522,7 @@ public class MCEObj {
 	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
 	 * @param values a string list of values representing any data type and will get parsed based on the type param
 	 * @param type defines what data type of static array to create
-	 * @WARNING: DO NOT USE. While the method works PERFECTLY from boolean - long primitives the java bytecode limit per method is 65535 which will be reached pretty quickly using java's default static array initializer don't believe me create a new static array {} filled from index 0 - {@value Short#MAX_VALUE} + 1 amd see the error for yourself
+	 * @WARNING: DO NOT USE past 10 indexes as Java's max bytecode limit per method is 65535 bytes. This method works but is depreciated please use the ArrUtils#gen instead
 	 */
 	@Deprecated
 	public static void genStaticArray(InsnList list, String[] values, Type type) 
@@ -525,6 +533,7 @@ public class MCEObj {
 		//array type
 		int arrNew = 0;
 		int store = 0;
+		String arrNewObj = null;
 		switch(type)
 		{
 			case BOOLEAN:
@@ -556,7 +565,9 @@ public class MCEObj {
 				store = Opcodes.DASTORE;
 			break;
 			case STRING:
-				break;
+				arrNewObj = "java/lang/String";
+				store = Opcodes.AASTORE;
+			break;
 			case WRAPPED_BOOLEAN:
 				break;
 			case WRAPPED_BYTE:
@@ -574,7 +585,10 @@ public class MCEObj {
 			default:
 				throw new RuntimeException("Unsupported Type:" + type);
 		}
-		list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
+		if(arrNewObj == null)
+			list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
+		else
+			list.add(new TypeInsnNode(Opcodes.ANEWARRAY, arrNewObj));
 		
 		//initialize NON-ZERO VALUES
 		for(int index=0; index < values.length; index++)
@@ -631,7 +645,8 @@ public class MCEObj {
 					valInsn = getDoubleInsn(v_d);
 				break;
 				case STRING:
-					break;
+					valInsn = new LdcInsnNode(str_v);
+				break;
 				case WRAPPED_BOOLEAN:
 					break;
 				case WRAPPED_BYTE:
@@ -683,7 +698,7 @@ public class MCEObj {
 			case DOUBLE:
 				return getDoubleInsn(parseDouble(str_v));
 			case STRING:
-				break;
+				return new LdcInsnNode(str_v);
 			default:
 				break;
 		}

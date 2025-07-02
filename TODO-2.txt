@@ -1,0 +1,33 @@
+TODONOW:
+- Test Static ARR Long, Float, Double Wrappers
+- implement replace for static arrays
+- Create method for static array generation instead of bytecode as the limit will be reached pretty quick
+- Create dynamic setter methods containing all setter instructions on both before and after injection points. This is to prevent exceeding the bytecode limit. Custom Injection points will still have this issue theortically
+
+TODO 2:
+- Support Editing Static Arrays for primatives and wrappers based on indexes
+- Support Injection Points with Actual ASM injection points for before or after them including Line Numbers or RETURN
+- Support char, Char, char[] and Char[] types
+- Support null injection for Strings and Wrapper Primatives
+- Support Object Field Editing Assuming they have the Instance of the Object
+- Investigate proper solution for fields whose values need to be edited inside another class that is not where the field is loaded including
+- Support Static Arrays operations append and grow
+- Support Static Arrays 2d - 12d
+
+TODO 3:
+- Fields
+- Find and Replace with advanced features like increment id search and increment value
+- Change Params of methods
+- Change Params of method instructions
+- MCWriter 2 (Backported and or re-written version of MCWriter from EviLNotchLib)
+
+ChangeLog 0.4.0:
+- Added support for Static Arrays [String[], byte[], boolean[], short[], int[], long[], float[], double[], Byte[], Short[], Integer[], Long[], Float[], Double[] ]
+- Added Static Array opperation fill when values size is 1 and index is in range of x-y for example: "0-end" example2: "0-3" allows incrementing the value after each index
+- Added Static Array operration set when values size is 1 and index is specified as a fixed integer(not a ranged value)
+- Added Static Array opperation insert when values size is greater then 1
+- Added Bytecode Generation of Static Arrays of all supported data types. Won't be used as it will trigger the bytecode limit of 65535 bytes
+
+ChangeLog 0.3.1:
+- Added Wildcards for doing multiple methods at once using "*" and "?" wildcards for both Method names and Descriptors
+

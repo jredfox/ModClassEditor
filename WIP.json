@@ -1,5 +1,5 @@
 {
-  "_comment": "This will generate all field names with their values under <clinit> preinit init and even post init or NULL if not populated. it will also display the discriptor and type",
+  "_comment": "This will generate all field names with their values under <clinit> preinit init and even post init FOR STATIC FIELDS ONLY. it will also display the discriptor and type",
   "_comment0": "List of names of classes we will be editing. Changing the name to \"_\" or \"#\" at the start or end will comment it",
   "ModClasses":
   [
@@ -19,9 +19,10 @@
       },
       {
         "name": "id",
+		"__comment": "use @<clinit> @Construction @PreInit @Init or @PostInit to make the values generate at MCE's Loading Stages instead of the class your editing's Stages",
         "method": "preinit",
 		"desc": "*",
-		"_comment": "//inject values are [before, after, <injectionPoint>, <before:InjectionByteCodePoint>, <after:InjectionByteCodePoint>] it will be injected before the next label or before the next return",
+		"_comment": "//inject values are [before, after, <injectionPoint>, <before:InjectionByteCodePoint>] it will be injected before the next label or before the next return",
         "inject": "before",
         "value": 204
       },
@@ -66,7 +67,7 @@
         "find": 101,
         "replace": 1096,
 		"_comment": "index_range will start at index 0 and end replacing at index 10 so 11 indices will be replaced",
-        "index_range": "0-10"
+        "index": "0-10"
       }
     ],
     

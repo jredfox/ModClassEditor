@@ -520,19 +520,32 @@ public class MCEObj {
 				//Injection Point
 				if(f.inject.equals("after"))
 				{
-					LabelNode l1 = new LabelNode();
-					list.add(l1);
-					if(getASMVersion() < 5)
-						list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+					addLabelNode(list);
 					m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
 				}
 				else if(f.inject.equals("before"))
 				{
-					list.insert(new LabelNode());
+					insertLabelNode(list);
 					m.instructions.insert(list);
 				}
 			}
 		}
+	}
+
+	private static void addLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		list.add(l1);
+		if(getASMVersion() < 5)
+			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+	}
+	
+	private static void insertLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		list.insert(l1);
+		if(getASMVersion() < 5)
+			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 	}
 
 	/**

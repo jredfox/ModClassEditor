@@ -653,41 +653,6 @@ public class ArrUtils {
 	        arr[i] = val[valIndex++];
 	}
 	
-	public static boolean[] newArr_Z(String[] values)
-	{
-		return (boolean[]) newArr(values, DataType.BOOLEAN);
-	}
-	
-	public static byte[] newArr_B(String[] values)
-	{
-		return (byte[]) newArr(values, DataType.BYTE);
-	}
-	
-	public static short[] newArr_S(String[] values)
-	{
-		return (short[]) newArr(values, DataType.SHORT);
-	}
-	
-	public static int[] newArr_I(String[] values)
-	{
-		return (int[]) newArr(values, DataType.INT);
-	}
-	
-	public static long[] newArr_J(String[] values)
-	{
-		return (long[]) newArr(values, DataType.LONG);
-	}
-	
-	public static float[] newArr_F(String[] values)
-	{
-		return (float[]) newArr(values, DataType.FLOAT);
-	}
-	
-	public static double[] newArr_D(String[] values)
-	{
-		return (double[]) newArr(values, DataType.DOUBLE);
-	}
-	
 	/**
 	 * Dynamic new array creation assuming you have the string values
 	 */

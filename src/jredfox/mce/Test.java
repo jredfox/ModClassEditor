@@ -43,12 +43,12 @@ public class Test {
 	
 	static
 	{
-		System.out.println();
+		
 	}
 	
 	public Test()
 	{
-		
+//		ArrUtils.insert(o_arr_short, (Short[]) ArrCache.get(21), 1);
 	}
 	
 //	private int o_id = new Integer(200);
@@ -80,7 +80,7 @@ public class Test {
 		method_st(null);
 	}
 	
-//	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
+	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
 	
 	public static void main(String[] args)
 	{

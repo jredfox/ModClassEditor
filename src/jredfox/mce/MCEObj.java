@@ -511,7 +511,8 @@ public class MCEObj {
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArray(list, farr.values, arr_type, false);
+//						genStaticArray(list, farr.values, arr_type, false);
+						genStaticArraySafe(list, farr.values, arr_type, false);
 						list.add(getIntInsn(farr.index_start));
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
 					}
@@ -530,6 +531,61 @@ public class MCEObj {
 				}
 			}
 		}
+	}
+
+	public static void genStaticArraySafe(InsnList list, String[] values, DataType type, boolean wrappers)
+	{
+		if(values.length < 11)
+		{
+			genStaticArray(list, values, type, wrappers);
+			return;
+		}
+		if(!wrappers)
+			type = DataType.getPrimitive(type);
+		int id = ArrCache.register(ArrUtils.newArr(values, type));
+		list.add(getIntInsn(id));
+		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrCache", "get", "(I)Ljava/lang/Object;"));
+		list.add(new TypeInsnNode(Opcodes.CHECKCAST, "[" + getDescFromType(type)));
+	}
+
+	public static String getDescFromType(DataType type) 
+	{
+		switch(type)
+		{
+			case BOOLEAN:
+				return "Z";
+			case BYTE:
+				return "B";
+			case DOUBLE:
+				return "D";
+			case FLOAT:
+				return "F";
+			case INT:
+				return "I";
+			case LONG:
+				return "J";
+			case SHORT:
+				return "S";
+			case STRING:
+				return "Ljava/lang/String;";
+			case WRAPPED_BOOLEAN:
+				return "Ljava/lang/Boolean;";
+			case WRAPPED_BYTE:
+				return "Ljava/lang/Byte;";
+			case WRAPPED_DOUBLE:
+				return "Ljava/lang/Double;";
+			case WRAPPED_FLOAT:
+				return "Ljava/lang/Float;";
+			case WRAPPED_INT:
+				return "Ljava/lang/Integer;";
+			case WRAPPED_LONG:
+				return  "Ljava/lang/Long;";
+			case WRAPPED_SHORT:
+				return "Ljava/lang/Short;";
+			default:
+				break;
+		}
+		return null;
 	}
 
 	public static void addLabelNode(InsnList list)

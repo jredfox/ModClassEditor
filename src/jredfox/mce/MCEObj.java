@@ -430,28 +430,51 @@ public class MCEObj {
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Boolean;ZII)V";
 							desc_set = "([Ljava/lang/Boolean;IZ)V";
-//							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
 							desc_insert = "([Ljava/lang/Boolean;[Ljava/lang/Boolean;I)V";
 							wrapperInsn = new PairStr("java/lang/Boolean", "(Z)Ljava/lang/Boolean;");
 							hasIncrem = false;
 						break;
 						case WRAPPED_BYTE:
 							store = Opcodes.AASTORE;
-						break;
-						case WRAPPED_DOUBLE:
-							store = Opcodes.AASTORE;
-						break;
-						case WRAPPED_FLOAT:
-							store = Opcodes.AASTORE;
-						break;
-						case WRAPPED_INT:
-							store = Opcodes.AASTORE;
-						break;
-						case WRAPPED_LONG:
-							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Byte;BIII)V";
+							desc_set = "([Ljava/lang/Byte;IB)V";
+							desc_insert = "([Ljava/lang/Byte;[Ljava/lang/Byte;I)V";
+							wrapperInsn = new PairStr("java/lang/Byte", "(B)Ljava/lang/Byte;");
 						break;
 						case WRAPPED_SHORT:
 							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Short;SIII)V";
+							desc_set = "([Ljava/lang/Short;IS)V";
+							desc_insert = "([Ljava/lang/Short;[Ljava/lang/Short;I)V";
+							wrapperInsn = new PairStr("java/lang/Short", "(S)Ljava/lang/Short;");
+						break;
+						case WRAPPED_INT:
+							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Integer;IIII)V";
+							desc_set = "([Ljava/lang/Integer;II)V";
+							desc_insert = "([Ljava/lang/Integer;[Ljava/lang/Integer;I)V";
+							wrapperInsn = new PairStr("java/lang/Integer", "(I)Ljava/lang/Integer;");
+						break;
+						case WRAPPED_LONG:
+							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Long;JIII)V";
+							desc_set = "([Ljava/lang/Long;IJ)V";
+							desc_insert = "([Ljava/lang/Long;[Ljava/lang/Long;I)V";
+							wrapperInsn = new PairStr("java/lang/Long", "(J)Ljava/lang/Long;");
+						break;
+						case WRAPPED_FLOAT:
+							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Float;FIII)V";
+							desc_set = "([Ljava/lang/Float;IF)V";
+							desc_insert = "([Ljava/lang/Float;[Ljava/lang/Float;I)V";
+							wrapperInsn = new PairStr("java/lang/Float", "(F)Ljava/lang/Float;");
+						break;
+						case WRAPPED_DOUBLE:
+							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Double;DIII)V";
+							desc_set = "([Ljava/lang/Double;ID)V";
+							desc_insert = "([Ljava/lang/Double;[Ljava/lang/Double;I)V";
+							wrapperInsn = new PairStr("java/lang/Double", "(D)Ljava/lang/Double;");
 						break;
 						default:
 							break;
@@ -477,7 +500,7 @@ public class MCEObj {
 							list.add(getNumInsn(farr.values[0], arr_type));//set the value
 							if(farr.index_start > -1)
 							{
-								//convert the primative datatype into it's object form before using AASTORE
+								//convert the primitive datatype into it's object form before using AASTORE
 								if(wrapperInsn != null)
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, wrapperInsn.x, "valueOf", wrapperInsn.y));
 								list.add(new InsnNode(store));//stores the value

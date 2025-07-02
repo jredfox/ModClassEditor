@@ -66,7 +66,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(int v : o_arr_int)
+		for(double v : o_arr_double)
 			System.out.print(v + ",");
 		System.out.println("]");
 		

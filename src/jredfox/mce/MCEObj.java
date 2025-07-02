@@ -366,7 +366,7 @@ public class MCEObj {
 				{
 					MCEArrField farr = (MCEArrField) f;
 					String atype = type.replace("[", "");
-					ArrUtils.Type arr_type = ArrUtils.getType(atype);
+					ArrUtils.Type arr_type = ArrUtils.Type.getType(atype);
 					
 					int store = Opcodes.BASTORE;
 					String desc_fill = null;
@@ -430,7 +430,7 @@ public class MCEObj {
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Boolean;ZII)V";
 							desc_set = "([Ljava/lang/Boolean;IZ)V";
-							desc_insert = "([Ljava/lang/Boolean;[Ljava/lang/Boolean;I)V";
+							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
 							wrapperInsn = new PairStr("java/lang/Boolean", "(Z)Ljava/lang/Boolean;");
 							hasIncrem = false;
 						break;
@@ -438,42 +438,42 @@ public class MCEObj {
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Byte;BIII)V";
 							desc_set = "([Ljava/lang/Byte;IB)V";
-							desc_insert = "([Ljava/lang/Byte;[Ljava/lang/Byte;I)V";
+							desc_insert = "([Ljava/lang/Byte;[BI)V";
 							wrapperInsn = new PairStr("java/lang/Byte", "(B)Ljava/lang/Byte;");
 						break;
 						case WRAPPED_SHORT:
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Short;SIII)V";
 							desc_set = "([Ljava/lang/Short;IS)V";
-							desc_insert = "([Ljava/lang/Short;[Ljava/lang/Short;I)V";
+							desc_insert = "([Ljava/lang/Short;[SI)V";
 							wrapperInsn = new PairStr("java/lang/Short", "(S)Ljava/lang/Short;");
 						break;
 						case WRAPPED_INT:
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Integer;IIII)V";
 							desc_set = "([Ljava/lang/Integer;II)V";
-							desc_insert = "([Ljava/lang/Integer;[Ljava/lang/Integer;I)V";
+							desc_insert = "([Ljava/lang/Integer;[II)V";
 							wrapperInsn = new PairStr("java/lang/Integer", "(I)Ljava/lang/Integer;");
 						break;
 						case WRAPPED_LONG:
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Long;JIII)V";
 							desc_set = "([Ljava/lang/Long;IJ)V";
-							desc_insert = "([Ljava/lang/Long;[Ljava/lang/Long;I)V";
+							desc_insert = "([Ljava/lang/Long;[JI)V";
 							wrapperInsn = new PairStr("java/lang/Long", "(J)Ljava/lang/Long;");
 						break;
 						case WRAPPED_FLOAT:
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Float;FIII)V";
 							desc_set = "([Ljava/lang/Float;IF)V";
-							desc_insert = "([Ljava/lang/Float;[Ljava/lang/Float;I)V";
+							desc_insert = "([Ljava/lang/Float;[FI)V";
 							wrapperInsn = new PairStr("java/lang/Float", "(F)Ljava/lang/Float;");
 						break;
 						case WRAPPED_DOUBLE:
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Double;DIII)V";
 							desc_set = "([Ljava/lang/Double;ID)V";
-							desc_insert = "([Ljava/lang/Double;[Ljava/lang/Double;I)V";
+							desc_insert = "([Ljava/lang/Double;[DI)V";
 							wrapperInsn = new PairStr("java/lang/Double", "(D)Ljava/lang/Double;");
 						break;
 						default:
@@ -512,7 +512,7 @@ public class MCEObj {
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArray(list, farr.values, arr_type);
+						genStaticArray(list, farr.values, arr_type, false);
 						list.add(getIntInsn(farr.index_start));
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
 					}
@@ -538,8 +538,11 @@ public class MCEObj {
 	 * @WARNING: DO NOT USE past 10 indexes as Java's max bytecode limit per method is 65535 bytes. This method works but is depreciated please use the ArrUtils#gen instead
 	 */
 	@Deprecated
-	public static void genStaticArray(InsnList list, String[] values, Type type) 
+	public static void genStaticArray(InsnList list, String[] values, Type type, boolean wrappers) 
 	{
+		if(!wrappers)
+			type = Type.getPrimitive(type);
+		
 		//array size
 		list.add(getIntInsn(values.length));
 		

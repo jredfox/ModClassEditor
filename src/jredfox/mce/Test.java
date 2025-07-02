@@ -70,10 +70,7 @@ public class Test {
 			System.out.print(v + ",");
 		System.out.println("]");
 		
-//		System.out.print("[");
-//		for(int big : arr_biggums)
-//			System.out.print(big + ",");
-//		System.out.println("]");
+		
 	}
 
 	public static void load() {
@@ -89,6 +86,20 @@ public class Test {
 //			System.out.print(i + ",");
 //		System.out.println();
 //		System.out.println((byte)128);
+		DataType t = DataType.WRAPPED_BOOLEAN;
+		switch(t)
+		{
+			case WRAPPED_BOOLEAN:
+				System.out.println("Wrapped BOOLEAN");
+			case BOOLEAN:
+			{
+				System.out.println("BOOLEAN");
+				break;
+			}
+		
+			default:
+				break;
+		}
 	}
 
 }

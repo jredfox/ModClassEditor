@@ -472,65 +472,75 @@ public class MCEObj {
 		{
 			String str_v = values[index];
 			AbstractInsnNode valInsn = null;
-			int v_int = 0;
-			long v_l = 0;
-			float v_f = 0;
-			double v_d = 0;
-			String v_str = "";
 			switch(type)
 			{
 				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
-					boolean v_bool = Boolean.parseBoolean(str_v);
-					if(!v_bool && !isWrapper)
+				{
+					boolean v = Boolean.parseBoolean(str_v);
+					if(!isWrapper && !v)
 						continue;
-					valInsn = getBoolInsn(v_bool);
+					valInsn = getBoolInsn(v);
+				}
 				break;
 				case WRAPPED_BYTE:
 				case BYTE:
-					v_int = parseByte(str_v);
-					if(v_int == 0 && !isWrapper)
+				{
+					byte v = parseByte(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getIntInsn(v_int);
+					valInsn = getIntInsn(v);
+				}
 				break;
 				case WRAPPED_SHORT:
 				case SHORT:
-					v_int = parseShort(str_v);
-					if(v_int == 0 && !isWrapper)
+				{
+					short v = parseShort(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getIntInsn(v_int);
+					valInsn = getIntInsn(v);
+				}
 				break;
 				case WRAPPED_INT:
 				case INT:
-					v_int = parseInt(str_v);
-					if(v_int == 0 && !isWrapper)
+				{
+					int v = parseInt(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getIntInsn(v_int);
+					valInsn = getIntInsn(v);
+				}
 				break;
 				case WRAPPED_LONG:
 				case LONG:
-					v_l = parseLong(str_v);
-					if(v_l == 0 && !isWrapper)
+				{
+					long v = parseLong(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getLongInsn(v_l);
+					valInsn = getLongInsn(v);
+				}
 				break;
 				case WRAPPED_FLOAT:
 				case FLOAT:
-					v_f = parseFloat(str_v);
-					if(v_f == 0 && !isWrapper)
+				{
+					float v = parseFloat(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getFloatInsn(v_f);
+					valInsn = getFloatInsn(v);
+				}
 				break;
 				case WRAPPED_DOUBLE:
 				case DOUBLE:
-					v_d = parseDouble(str_v);
-					if(v_d == 0 && !isWrapper)
+				{
+					double v = parseDouble(str_v);
+					if(!isWrapper && v == 0)
 						continue;
-					valInsn = getDoubleInsn(v_d);
+					valInsn = getDoubleInsn(v);
+				}
 				break;
 				case STRING:
 					valInsn = new LdcInsnNode(str_v);
 				break;
+				
 				default:
 					break;
 			}

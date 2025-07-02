@@ -45,7 +45,7 @@ public enum DataType {
 		this.arrayStore = store;
 		this.isWrapper = valueOfDesc != null && !valueOfDesc.isEmpty();
 		this.isObject = isObject;
-		this.hasIncrement = fillDesc.endsWith("III)V");
+		this.hasIncrement = fillDesc != null && fillDesc.endsWith("III)V");
 	}
 	
 	/**

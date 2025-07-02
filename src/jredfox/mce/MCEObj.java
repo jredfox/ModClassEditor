@@ -15,6 +15,7 @@ import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
@@ -518,7 +519,13 @@ public class MCEObj {
 				
 				//Injection Point
 				if(f.inject.equals("after"))
-					m.instructions.insertBefore(CoreUtils.getLastReturn(m), list);
+				{
+					LabelNode l1 = new LabelNode();
+					list.add(l1);
+					if(getASMVersion() < 5)
+						list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+					m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+				}
 				else if(f.inject.equals("before"))
 				{
 					list.insert(new LabelNode());
@@ -877,6 +884,28 @@ public class MCEObj {
 										: desc.equals("Ljava/lang/Float;") ? "Float"
 								: desc.equals("Ljava/lang/Double;") ? "Double"
 						: UNSUPPORTED;
+	}
+	
+	private static int ASM_VERSION = 0;
+	public static int getASMVersion() 
+	{
+		if(ASM_VERSION > 0)
+			return ASM_VERSION;
+		ASM_VERSION = detectASMVersion();
+		return ASM_VERSION;
+	}
+
+	private static int detectASMVersion() 
+	{
+		for(int i=5;i<=9;i++)
+		{
+			try 
+			{
+				if (Opcodes.class.getField("ASM" + i) != null)
+					return i;
+			} catch (Throwable ignored) {}
+		}
+		return 4;
 	}
 	
 	//Start UTIL METHODS__________________________________________

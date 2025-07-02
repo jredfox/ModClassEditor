@@ -721,8 +721,8 @@ public class MCEObj {
 			case WRAPPED_INT:
 			case INT:
 				return getIntInsn(parseInt(str_v));
-			case LONG:
 			case WRAPPED_LONG:
+			case LONG:
 				return getLongInsn(parseLong(str_v));
 			case WRAPPED_FLOAT:
 			case FLOAT:

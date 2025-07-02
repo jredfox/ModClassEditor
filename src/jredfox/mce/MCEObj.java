@@ -228,7 +228,7 @@ public class MCEObj {
 		//Configure Fields
 		for(MCEField f : mce.fields)
 		{
-			String type = f.type;
+			String str_type = f.type;
 			FieldNode fn = CoreUtils.getFieldNode(f.name, classNode);
 			
 			//Sanity Checks
@@ -244,11 +244,15 @@ public class MCEObj {
 			}
 			
 			//Populate the Type
-			if(type.isEmpty())
-				type = getType(fn.desc);
+			if(str_type.isEmpty())
+				str_type = getType(fn.desc);
+			
+			//Convert the type into a useable thing
+			boolean  isArr = str_type.startsWith("[");
+			DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
 			
 			//disallow unsupported field opperations to prevent runtime crashing
-			if(type == UNSUPPORTED)
+			if(type == DataType.NULL)
 			{
 				System.err.println("Unsupported Type for Field:" + f.name + " in:" + mce.className);
 				continue;
@@ -264,116 +268,19 @@ public class MCEObj {
 			
 			for(MethodNode m : methodList)
 			{
-				boolean isWrapper = Character.isUpperCase(type.charAt(0));
 				InsnList list = new InsnList();
-				if(type.equalsIgnoreCase("boolean"))
+				if(!isArr)
 				{
-					list.add(new InsnNode(Boolean.parseBoolean(f.value) ? Opcodes.ICONST_1 : Opcodes.ICONST_0));
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Boolean", "valueOf", "(Z)Ljava/lang/Boolean;"));
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Boolean;" : "Z") ));
-				}
-				else if(type.equalsIgnoreCase("byte"))
-				{
-					byte b = parseByte(f.value);
-					InsnNode insn = getConstantInsn(b);
-					if(insn != null)
-						list.add(insn);
-					else
-						list.add(new IntInsnNode(Opcodes.BIPUSH, b));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Byte", "valueOf", "(B)Ljava/lang/Byte;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Byte;" : "B") ));
-				}
-				else if(type.equalsIgnoreCase("short"))
-				{
-					short s = parseShort(f.value);
-					InsnNode insn = getConstantInsn(s);
-					if(insn != null)
-						list.add(insn);
-					else if (s >= Byte.MIN_VALUE && s <= Byte.MAX_VALUE)
-						list.add(new IntInsnNode(Opcodes.BIPUSH, s));
-					else
-						list.add(new IntInsnNode(Opcodes.SIPUSH, s));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Short", "valueOf", "(S)Ljava/lang/Short;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Short;" : "S") ));
-				}
-				else if(type.equals("int") || type.equals("Integer"))
-				{
-					int v = parseInt(f.value);
-					InsnNode insn = getConstantInsn(v);
-					if(insn != null)
-						list.add(insn);
-					else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
-						list.add(new IntInsnNode(Opcodes.BIPUSH, v));
-					else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
-						list.add(new IntInsnNode(Opcodes.SIPUSH, v));
-					else
-						list.add(new LdcInsnNode(new Integer(v)));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Integer", "valueOf", "(I)Ljava/lang/Integer;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Integer;" : "I") ));
-				}
-				else if(type.equalsIgnoreCase("long"))
-				{
-					long v = parseLong(f.value);
-					InsnNode insn = getConstantInsn(v);
-					if(insn != null)
-						list.add(insn);
-					else
-						list.add(new LdcInsnNode(new Long(v)));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Long", "valueOf", "(J)Ljava/lang/Long;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Long;" : "J") ));
-				}
-				else if(type.equalsIgnoreCase("float"))
-				{
-					float v = parseFloat(f.value);
-					InsnNode insn = getConstantInsn(v);
-					if(insn != null)
-						list.add(insn);
-					else
-						list.add(new LdcInsnNode(new Float(v)));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Float", "valueOf", "(F)Ljava/lang/Float;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Float;" : "F") ));
-				}
-				else if(type.equalsIgnoreCase("double"))
-				{
-					double v = Double.parseDouble(f.value);
-					InsnNode insn = getConstantInsn(v);
-					if(insn != null)
-						list.add(insn);
-					else
-						list.add(new LdcInsnNode(new Double(v)));
-					
-					if(isWrapper)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "java/lang/Double", "valueOf", "(D)Ljava/lang/Double;"));
-					
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, (isWrapper ? "Ljava/lang/Double;" : "D") ));
-				}
-				else if(type.equals("string"))
-				{
-					list.add(new LdcInsnNode(f.value));
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, "Ljava/lang/String;"));
+					list.add(getNumInsn(f.value, type));
+					if(type.isWrapper)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, type.desc));
 				}
 				//static array support
-				else if(type.startsWith("["))
+				else
 				{
 					MCEArrField farr = (MCEArrField) f;
-					String atype = type.replace("[", "");
-					DataType arr_type = DataType.getType(atype);
+					DataType arr_type = type;
 					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 					if(farr.values.length < 2)
 					{

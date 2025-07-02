@@ -102,31 +102,4 @@ public enum DataType {
 		return NULL;
 	}
 
-	public static DataType getTypeFromDesc(String desc, boolean remArr) 
-	{
-		if(desc.startsWith("["))
-		{
-			if(!remArr)
-				return NULL;
-			desc = desc.replace("[", "");
-		}
-		
-		return desc.equals("B") ? BYTE
-				: desc.equals("S") ? SHORT
-						: desc.equals("I") ? INT
-								: desc.equals("J") ? LONG
-										: desc.equals("Ljava/lang/String;") ? STRING
-												: desc.equals("Z") ? BOOLEAN
-														: desc.equals("F") ? FLOAT
-																: desc.equals("D") ? DOUBLE
-																		: desc.equals("Ljava/lang/Boolean;") ? WRAPPED_BOOLEAN
-																: desc.equals("Ljava/lang/Byte;") ? WRAPPED_BYTE
-															: desc.equals("Ljava/lang/Short;") ? WRAPPED_SHORT
-														: desc.equals("Ljava/lang/Integer;") ? WRAPPED_INT
-												: desc.equals("Ljava/lang/Long;") ? WRAPPED_LONG
-										: desc.equals("Ljava/lang/Float;") ? WRAPPED_FLOAT
-								: desc.equals("Ljava/lang/Double;") ? WRAPPED_DOUBLE
-						: NULL;
-	}
-
 }

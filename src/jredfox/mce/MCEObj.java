@@ -569,16 +569,32 @@ public class MCEObj {
 				store = Opcodes.AASTORE;
 				desc_wrapper = "(B)Ljava/lang/Byte;";
 			break;
-			case WRAPPED_DOUBLE:
-				break;
-			case WRAPPED_FLOAT:
-				break;
-			case WRAPPED_INT:
-				break;
-			case WRAPPED_LONG:
-				break;
 			case WRAPPED_SHORT:
-				break;
+				arrNewObj = "java/lang/Short";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(S)Ljava/lang/Short;";
+			break;
+			case WRAPPED_INT:
+				arrNewObj = "java/lang/Integer";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(I)Ljava/lang/Integer;";
+			break;
+			case WRAPPED_LONG:
+				arrNewObj = "java/lang/Long";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(J)Ljava/lang/Long;";
+			break;
+			case WRAPPED_FLOAT:
+				arrNewObj = "java/lang/Float";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(F)Ljava/lang/Float;";
+			break;
+			case WRAPPED_DOUBLE:
+				arrNewObj = "java/lang/Double";
+				store = Opcodes.AASTORE;
+				desc_wrapper = "(D)Ljava/lang/Double;";
+			break;
+
 			default:
 				throw new RuntimeException("Unsupported Type:" + type);
 		}

@@ -47,7 +47,7 @@ public class Test {
 //		ArrUtils.fill(o_arr_bool, true, 0, -1);
 //		ArrUtils.set(o_arr_byte, 21, (byte)127);
 //		o_arr_bool[21] = true;
-//		o_arr_bool[0] = true;
+		Double[] arr = new Double[]{-1D,1D,3D};
 	}
 	
 //	private int o_id = new Integer(200);

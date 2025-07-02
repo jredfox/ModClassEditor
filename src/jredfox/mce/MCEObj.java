@@ -139,6 +139,8 @@ public class MCEObj {
 		{
 			return (s == null || s.isEmpty()) ? def : s;
 		}
+
+		public void gc() {}
 	}
 	
 	public static class MCEArrField extends MCEField
@@ -202,6 +204,11 @@ public class MCEObj {
 			
 			//process increment
 			this.increment = parseInt(this.safeString(increment, "0"));
+		}
+		
+		public void gc() 
+		{
+			this.values = null;
 		}
 	}
 
@@ -511,7 +518,6 @@ public class MCEObj {
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-//						genStaticArray(list, farr.values, arr_type, false);
 						genStaticArraySafe(list, farr.values, arr_type, false);
 						list.add(getIntInsn(farr.index_start));
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
@@ -530,6 +536,9 @@ public class MCEObj {
 					m.instructions.insert(list);
 				}
 			}
+			
+			//prevents memory leaks of arrays and allows the GC to clean it later
+			f.gc();
 		}
 	}
 
@@ -621,7 +630,6 @@ public class MCEObj {
 	 * @param type defines what data type of static array to create
 	 * @WARNING: DO NOT USE past 10 indexes as Java's max bytecode limit per method is 65535 bytes. This method works but is depreciated please use the ArrUtils#gen instead
 	 */
-	@Deprecated
 	public static void genStaticArray(InsnList list, String[] values, DataType type, boolean wrappers) 
 	{
 		if(!wrappers)

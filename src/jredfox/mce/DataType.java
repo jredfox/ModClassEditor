@@ -104,8 +104,12 @@ public enum DataType {
 
 	public static DataType getTypeFromDesc(String desc, boolean remArr) 
 	{
-		if(remArr && desc.startsWith("["))
+		if(desc.startsWith("["))
+		{
+			if(!remArr)
+				return NULL;
 			desc = desc.replace("[", "");
+		}
 		
 		return desc.equals("B") ? BYTE
 				: desc.equals("S") ? SHORT

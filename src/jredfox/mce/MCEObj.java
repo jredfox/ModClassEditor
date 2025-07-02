@@ -373,6 +373,7 @@ public class MCEObj {
 					String desc_set = null;
 					String desc_insert = null;
 					boolean hasIncrem = true;
+					PairStr wrapperInsn = null;
 					switch(arr_type)
 					{
 						case BOOLEAN:
@@ -426,19 +427,31 @@ public class MCEObj {
 							hasIncrem = false;
 						break;
 						case WRAPPED_BOOLEAN:
-							break;
+							store = Opcodes.AASTORE;
+							desc_fill = "([Ljava/lang/Boolean;ZII)V";
+							desc_set = "([Ljava/lang/Boolean;IZ)V";
+							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
+							wrapperInsn = new PairStr("java/lang/Byte", "(B)Ljava/lang/Byte;");
+							hasIncrem = false;
+						break;
 						case WRAPPED_BYTE:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						case WRAPPED_DOUBLE:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						case WRAPPED_FLOAT:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						case WRAPPED_INT:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						case WRAPPED_LONG:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						case WRAPPED_SHORT:
-							break;
+							store = Opcodes.AASTORE;
+						break;
 						default:
 							break;
 					}
@@ -462,7 +475,12 @@ public class MCEObj {
 							list.add(getIntInsn(farr.index_start));//set the index
 							list.add(getNumInsn(farr.values[0], arr_type));//set the value
 							if(farr.index_start > -1)
+							{
+								//convert the primative datatype into it's object form before using AASTORE
+								if(wrapperInsn != null)
+									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, wrapperInsn.x, "valueOf", wrapperInsn.y));
 								list.add(new InsnNode(store));//stores the value
+							}
 							else
 								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", desc_set));
 						}

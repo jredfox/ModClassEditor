@@ -29,12 +29,23 @@ public class Test {
 	private static float[] arr_float = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static double[] arr_double = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static String[] arr_str = 		{"Entity Id", "Index 1", "Index 2", "Index 3", "Index 4", "Index 5", "Index 6", "Index 7", "Index 8", "Index 9"};
-	
 	private static boolean[] arr_tst = 	{false, false, true, false, false, false};
+	
+	//Start static array wrappers
+	private static Boolean[] o_arr_bool = 	{false, false, false, false, false, false};
+	private static Byte[] o_arr_byte = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static Short[] o_arr_short = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static Integer[] o_arr_int = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
+	private static Long[] o_arr_long = 		{0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L};
+	private static Float[] o_arr_float = 	{0F, 1F, (float)2, 3.0F, 4F, 5F, 6F, 7F, 8F, 9F};
+	private static Double[] o_arr_double = 	{0D, 1D, 2D, 3D, 4D, 5D, 6D, 7D, 8D, 9D};
+	
 	static
 	{
-//		ArrUtils.fill(arr_str, "a-z", 0, 1);
-//		ArrUtils.insert(arr_str, new String[]{"A String", "B String"}, 1);
+//		ArrUtils.insert(o_arr_bool, new boolean[]{true}, 0);
+//		ArrUtils.fill(o_arr_bool, true, 0, -1);
+//		ArrUtils.set(o_arr_byte, 21, (byte)127);
+		o_arr_bool[21] = true;
 	}
 	
 //	private int o_id = new Integer(200);

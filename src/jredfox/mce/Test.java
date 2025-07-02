@@ -33,6 +33,7 @@ public class Test {
 	
 	//Start static array wrappers
 	private static Boolean[] o_arr_bool = 	{false, false, false, false, false, false};
+	private static Boolean[] o_arr_tst = 	{false, false, true, false, false, false};
 	private static Byte[] o_arr_byte = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static Short[] o_arr_short = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
 	private static Integer[] o_arr_int = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
@@ -45,7 +46,8 @@ public class Test {
 //		ArrUtils.insert(o_arr_bool, new boolean[]{true}, 0);
 //		ArrUtils.fill(o_arr_bool, true, 0, -1);
 //		ArrUtils.set(o_arr_byte, 21, (byte)127);
-		o_arr_bool[21] = true;
+//		o_arr_bool[21] = true;
+//		o_arr_bool[0] = true;
 	}
 	
 //	private int o_id = new Integer(200);
@@ -63,12 +65,12 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(boolean v : arr_bool)
+		for(boolean v : o_arr_bool)
 			System.out.print(v + ",");
 		System.out.println("]");
 		
 		System.out.print("[");
-		for(boolean z : arr_tst)
+		for(Boolean z : o_arr_tst)
 			System.out.print(z + ",");
 		System.out.println("]");
 	}

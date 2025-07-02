@@ -593,5 +593,115 @@ public class ArrUtils {
 		
 		return Type.NULL;
 	}
+	
+	//START_TEST_METHODS
+	//____________________________________________________________________
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Boolean[] arr, Boolean[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Byte[] arr, Byte[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Short[] arr, Short[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Integer[] arr, Integer[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Long[] arr, Long[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Float[] arr, Float[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Double[] arr, Double[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	//_____________________________________________________________________
+	//END_TEST_METHODS
 
 }

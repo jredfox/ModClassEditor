@@ -430,8 +430,9 @@ public class MCEObj {
 							store = Opcodes.AASTORE;
 							desc_fill = "([Ljava/lang/Boolean;ZII)V";
 							desc_set = "([Ljava/lang/Boolean;IZ)V";
-							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
-							wrapperInsn = new PairStr("java/lang/Byte", "(B)Ljava/lang/Byte;");
+//							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
+							desc_insert = "([Ljava/lang/Boolean;[Ljava/lang/Boolean;I)V";
+							wrapperInsn = new PairStr("java/lang/Boolean", "(Z)Ljava/lang/Boolean;");
 							hasIncrem = false;
 						break;
 						case WRAPPED_BYTE:
@@ -581,6 +582,7 @@ public class MCEObj {
 			default:
 				throw new RuntimeException("Unsupported Type:" + type);
 		}
+		boolean isWrapper = desc_wrapper != null;
 		if(arrNewObj == null)
 			list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
 		else
@@ -601,49 +603,49 @@ public class MCEObj {
 				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
 					boolean v_bool = Boolean.parseBoolean(str_v);
-					if(!v_bool)
+					if(!v_bool && !isWrapper)
 						continue;
 					valInsn = getBoolInsn(v_bool);
 				break;
 				case WRAPPED_BYTE:
 				case BYTE:
 					v_int = parseByte(str_v);
-					if(v_int == 0)
+					if(v_int == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
 				case WRAPPED_SHORT:
 				case SHORT:
 					v_int = parseShort(str_v);
-					if(v_int == 0)
+					if(v_int == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
 				case WRAPPED_INT:
 				case INT:
 					v_int = parseInt(str_v);
-					if(v_int == 0)
+					if(v_int == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v_int);
 				break;
 				case WRAPPED_LONG:
 				case LONG:
 					v_l = parseLong(str_v);
-					if(v_l == 0)
+					if(v_l == 0 && !isWrapper)
 						continue;
 					valInsn = getLongInsn(v_l);
 				break;
 				case WRAPPED_FLOAT:
 				case FLOAT:
 					v_f = parseFloat(str_v);
-					if(v_f == 0)
+					if(v_f == 0 && !isWrapper)
 						continue;
 					valInsn = getFloatInsn(v_f);
 				break;
 				case WRAPPED_DOUBLE:
 				case DOUBLE:
 					v_d = parseDouble(str_v);
-					if(v_d == 0)
+					if(v_d == 0 && !isWrapper)
 						continue;
 					valInsn = getDoubleInsn(v_d);
 				break;
@@ -657,7 +659,7 @@ public class MCEObj {
 			list.add(new InsnNode(Opcodes.DUP));
 			list.add(getIntInsn(index));//indexes are always integer and follow the same rules as any boolean - int values on pushing
 			list.add(valInsn);//changes based on the data type
-			if(desc_wrapper != null)
+			if(isWrapper)
 				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, arrNewObj, "valueOf", desc_wrapper));//converts the datatype into it's Object form
 			list.add(new InsnNode(store));
 		}

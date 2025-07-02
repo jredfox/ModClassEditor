@@ -937,7 +937,7 @@ public class MCEObj {
 	/**
 	 * Parse a Byte Safely
 	 */
-	private static byte parseByte(String value) 
+	public static byte parseByte(String value) 
 	{
 		return (byte) Long.parseLong(value, 10);
 	}
@@ -945,7 +945,7 @@ public class MCEObj {
 	/**
 	 * Parse a Short Safely
 	 */
-	private static short parseShort(String value) 
+	public static short parseShort(String value) 
 	{
 		return (short) Long.parseLong(value, 10);
 	}
@@ -953,7 +953,7 @@ public class MCEObj {
 	/**
 	 * Parse a Int Safely
 	 */
-	private static int parseInt(String value) 
+	public static int parseInt(String value) 
 	{
 		return (int) Long.parseLong(value, 10);
 	}
@@ -961,7 +961,7 @@ public class MCEObj {
 	/**
 	 * Parse a Int Safely
 	 */
-	private static long parseLong(String value) 
+	public static long parseLong(String value) 
 	{
 		return Long.parseLong(value, 10);
 	}
@@ -969,12 +969,12 @@ public class MCEObj {
 	/**
 	 * Parse a Int Safely
 	 */
-	private static float parseFloat(String value) 
+	public static float parseFloat(String value) 
 	{
 		return Float.parseFloat(value);
 	}
 	
-	private static double parseDouble(String value) 
+	public static double parseDouble(String value) 
 	{
 		return Double.parseDouble(value);
 	}

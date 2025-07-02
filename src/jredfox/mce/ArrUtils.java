@@ -652,5 +652,161 @@ public class ArrUtils {
 	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
 	        arr[i] = val[valIndex++];
 	}
+	
+	public static boolean[] newArr_Z(String[] values)
+	{
+		return (boolean[]) newArr(values, DataType.BOOLEAN);
+	}
+	
+	public static byte[] newArr_B(String[] values)
+	{
+		return (byte[]) newArr(values, DataType.BYTE);
+	}
+	
+	public static short[] newArr_S(String[] values)
+	{
+		return (short[]) newArr(values, DataType.SHORT);
+	}
+	
+	public static int[] newArr_I(String[] values)
+	{
+		return (int[]) newArr(values, DataType.INT);
+	}
+	
+	public static long[] newArr_J(String[] values)
+	{
+		return (long[]) newArr(values, DataType.LONG);
+	}
+	
+	public static float[] newArr_F(String[] values)
+	{
+		return (float[]) newArr(values, DataType.FLOAT);
+	}
+	
+	public static double[] newArr_D(String[] values)
+	{
+		return (double[]) newArr(values, DataType.DOUBLE);
+	}
+	
+	/**
+	 * Dynamic new array creation assuming you have the string values
+	 */
+	public static Object newArr(String[] values, DataType type)
+	{
+		int size = values.length;
+		
+		switch(type)
+		{
+			case BOOLEAN:
+			{
+				boolean[] arr = new boolean[size];
+				for(int i=0;i<size;i++)
+					arr[i] = Boolean.parseBoolean(values[i]);
+				return arr;
+			}
+			case BYTE:
+			{
+				byte[] arr = new byte[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseByte(values[i]);
+				return arr;
+			}
+			case SHORT:
+			{
+				short[] arr = new short[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseShort(values[i]);
+				return arr;
+			}
+			case INT:
+			{
+				int[] arr = new int[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseInt(values[i]);
+				return arr;
+			}
+			case LONG:
+			{
+				long[] arr = new long[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseLong(values[i]);
+				return arr;
+			}
+			case FLOAT:
+			{
+				float[] arr = new float[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseFloat(values[i]);
+				return arr;
+			}
+			case DOUBLE:
+			{
+				double[] arr = new double[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseDouble(values[i]);
+				return arr;
+			}
+			case STRING:
+			{
+				String[] arr = new String[size];
+				for(int i=0;i<size;i++)
+					arr[i] = values[i];
+				return arr;
+			}
+			case WRAPPED_BOOLEAN:
+			{
+				Boolean[] arr = new Boolean[size];
+				for(int i=0;i<size;i++)
+					arr[i] = Boolean.parseBoolean(values[i]);
+				return arr;
+			}
+			case WRAPPED_BYTE:
+			{
+				Byte[] arr = new Byte[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseByte(values[i]);
+				return arr;
+			}
+			case WRAPPED_SHORT:
+			{
+				Short[] arr = new Short[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseShort(values[i]);
+				return arr;
+			}
+			case WRAPPED_INT:
+			{
+				Integer[] arr = new Integer[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseInt(values[i]);
+				return arr;
+			}
+			case WRAPPED_LONG:
+			{
+				Long[] arr = new Long[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseLong(values[i]);
+				return arr;
+			}
+			case WRAPPED_FLOAT:
+			{
+				Float[] arr = new Float[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseFloat(values[i]);
+				return arr;
+			}
+			case WRAPPED_DOUBLE:
+			{
+				Double[] arr = new Double[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseDouble(values[i]);
+				return arr;
+			}
+			
+			default:
+				break;
+		}
+		return null;
+	}
 
 }

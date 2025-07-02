@@ -478,7 +478,7 @@ public class MCEObj {
 				case BOOLEAN:
 				{
 					boolean v = Boolean.parseBoolean(str_v);
-					if(!isWrapper && !v)
+					if(!v && !isWrapper)
 						continue;
 					valInsn = getBoolInsn(v);
 				}
@@ -487,7 +487,7 @@ public class MCEObj {
 				case BYTE:
 				{
 					byte v = parseByte(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
 				}
@@ -496,7 +496,7 @@ public class MCEObj {
 				case SHORT:
 				{
 					short v = parseShort(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
 				}
@@ -505,7 +505,7 @@ public class MCEObj {
 				case INT:
 				{
 					int v = parseInt(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
 				}
@@ -514,7 +514,7 @@ public class MCEObj {
 				case LONG:
 				{
 					long v = parseLong(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getLongInsn(v);
 				}
@@ -523,7 +523,7 @@ public class MCEObj {
 				case FLOAT:
 				{
 					float v = parseFloat(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getFloatInsn(v);
 				}
@@ -532,7 +532,7 @@ public class MCEObj {
 				case DOUBLE:
 				{
 					double v = parseDouble(str_v);
-					if(!isWrapper && v == 0)
+					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getDoubleInsn(v);
 				}

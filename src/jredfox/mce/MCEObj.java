@@ -280,43 +280,42 @@ public class MCEObj {
 				else
 				{
 					MCEArrField farr = (MCEArrField) f;
-					DataType arr_type = type;
 					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 					if(farr.values.length < 2)
 					{
 						if(farr.index_start != farr.index_end)
 						{
 							//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
-							list.add(getNumInsn(farr.values[0], arr_type));//value
+							list.add(getNumInsn(farr.values[0], type));//value
 							list.add(getIntInsn(farr.index_start));//index_start
 							list.add(getIntInsn(farr.index_end));//index_end
-							if(arr_type.hasIncrement)
+							if(type.hasIncrement)
 								list.add(getIntInsn(farr.increment));//inecrement
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", arr_type.descFill));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.descFill));
 						}
 						else
 						{
 							//arr_short[index_start] = v;
 							//or ArrUtils#set(arr, index, v);
 							list.add(getIntInsn(farr.index_start));//set the index
-							list.add(getNumInsn(farr.values[0], arr_type));//set the value
+							list.add(getNumInsn(farr.values[0], type));//set the value
 							if(farr.index_start > -1)
 							{
 								//convert the primitive datatype into it's object form before using AASTORE
-								if(arr_type.isWrapper)
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, arr_type.clazz, "valueOf", arr_type.descValueOf));
-								list.add(new InsnNode(arr_type.arrayStore));//stores the value
+								if(type.isWrapper)
+									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
+								list.add(new InsnNode(type.arrayStore));//stores the value
 							}
 							else
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", arr_type.descSet));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.descSet));
 						}
 					}
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArraySafe(list, farr.values, arr_type, false);
+						genStaticArraySafe(list, farr.values, type, false);
 						list.add(getIntInsn(farr.index_start));
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", arr_type.descInsert));
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.descInsert));
 					}
 				}
 				

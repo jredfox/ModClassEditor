@@ -274,7 +274,7 @@ public class MCEObj {
 					list.add(getNumInsn(f.value, type));
 					if(type.isWrapper)
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, type.desc));
+					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, fn.desc));
 				}
 				//static array support
 				else

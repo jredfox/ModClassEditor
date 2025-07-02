@@ -1,5 +1,10 @@
 package jredfox.mce;
 
+import java.io.File;
+
+import org.ralleytn.simple.json.JSONArray;
+import org.ralleytn.simple.json.JSONObject;
+
 public class Test {
 	
 	private static boolean id_bool = false;
@@ -34,20 +39,16 @@ public class Test {
 	//Start static array wrappers
 	private static Boolean[] o_arr_bool = 	{false, false, false, false, false, false};
 	private static Boolean[] o_arr_tst = 	{false, false, true, false, false, false};
-	private static Byte[] o_arr_byte = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private static Short[] o_arr_short = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private static Integer[] o_arr_int = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9};
-	private static Long[] o_arr_long = 		{0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L};
-	private static Float[] o_arr_float = 	{0F, 1F, (float)2, 3.0F, 4F, 5F, 6F, 7F, 8F, 9F};
-	private static Double[] o_arr_double = 	{0D, 1D, 2D, 3D, 4D, 5D, 6D, 7D, 8D, 9D};
+	private static Byte[] o_arr_byte = 		{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+	private static Short[] o_arr_short = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+	private static Integer[] o_arr_int = 	{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20};
+	private static Long[] o_arr_long = 		{0L, 1L, 2L, 3L, 4L, 5L, 6L, 7L, 8L, 9L, 10L, 11L, 12L, 13L, 14L, 15L, 16L, 17L, 18L, 19L, 20L};
+	private static Float[] o_arr_float = 	{0F, 1F, 2F, 3F, 4F, 5F, 6F, 7F, 8F, 9F, 10F, 11F, 12F, 13F, 14F, 15F, 16F, 17F, 18F, 19F, 20F};
+	private static Double[] o_arr_double = 	{0D, 1D, 2D, 3D, 4D, 5D, 6D, 7D, 8D, 9D, 10D, 11D, 12D, 13D, 14D, 15D, 16D, 17D, 18D, 19D, 20D};
 	
 	static
 	{
-//		ArrUtils.insert(o_arr_bool, new boolean[]{true}, 0);
-//		ArrUtils.fill(o_arr_bool, true, 0, -1);
-//		ArrUtils.set(o_arr_byte, 21, (byte)127);
-//		o_arr_bool[21] = true;
-		Double[] arr = new Double[]{-1D,1D,3D};
+		
 	}
 	
 //	private int o_id = new Integer(200);
@@ -65,24 +66,29 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		System.out.print("[");
-		for(boolean v : o_arr_bool)
+		for(byte v : o_arr_byte)
 			System.out.print(v + ",");
 		System.out.println("]");
 		
-		System.out.print("[");
-		for(Boolean z : o_arr_tst)
-			System.out.print(z + ",");
-		System.out.println("]");
+//		System.out.print("[");
+//		for(int big : arr_biggums)
+//			System.out.print(big + ",");
+//		System.out.println("]");
 	}
 
 	public static void load() {
 		method_st(null);
 	}
 	
+//	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
+	
 	public static void main(String[] args)
 	{
-		short b = 32001;
-		System.out.println((byte)b);
+//		int size = Short.MAX_VALUE + 1;
+//		for(int i=0;i<=size;i++)
+//			System.out.print(i + ",");
+//		System.out.println();
+//		System.out.println((byte)128);
 	}
 
 }

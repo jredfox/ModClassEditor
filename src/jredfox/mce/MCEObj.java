@@ -206,6 +206,7 @@ public class MCEObj {
 			this.increment = parseInt(this.safeString(increment, "0"));
 		}
 		
+		@Override
 		public void gc() 
 		{
 			this.values = null;
@@ -430,6 +431,9 @@ public class MCEObj {
 		}
 	}
 
+	/**
+	 * Generates a Static Array Safely and if biggere then size of 10 will generate it now and cache it to prevent exceeding the bytecode limit
+	 */
 	public static void genStaticArraySafe(InsnList list, String[] values, DataType type, boolean wrappers)
 	{
 		if(values.length < 11)

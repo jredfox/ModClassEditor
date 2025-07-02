@@ -21,8 +21,6 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
-import jredfox.mce.ArrUtils.Type;
-
 public class MCEObj {
 	
 	public static final Map<String, MCEObj> registry = new HashMap();
@@ -366,7 +364,7 @@ public class MCEObj {
 				{
 					MCEArrField farr = (MCEArrField) f;
 					String atype = type.replace("[", "");
-					ArrUtils.Type arr_type = ArrUtils.Type.getType(atype);
+					DataType arr_type = DataType.getType(atype);
 					
 					int store = Opcodes.BASTORE;
 					String desc_fill = null;
@@ -538,10 +536,10 @@ public class MCEObj {
 	 * @WARNING: DO NOT USE past 10 indexes as Java's max bytecode limit per method is 65535 bytes. This method works but is depreciated please use the ArrUtils#gen instead
 	 */
 	@Deprecated
-	public static void genStaticArray(InsnList list, String[] values, Type type, boolean wrappers) 
+	public static void genStaticArray(InsnList list, String[] values, DataType type, boolean wrappers) 
 	{
 		if(!wrappers)
-			type = Type.getPrimitive(type);
+			type = DataType.getPrimitive(type);
 		
 		//array size
 		list.add(getIntInsn(values.length));
@@ -707,7 +705,7 @@ public class MCEObj {
 		}
 	}
 	
-	public static AbstractInsnNode getNumInsn(String str_v, ArrUtils.Type type)
+	public static AbstractInsnNode getNumInsn(String str_v, DataType type)
 	{
 		switch(type)
 		{

@@ -1,10 +1,5 @@
 package jredfox.mce;
 
-import java.io.File;
-
-import org.ralleytn.simple.json.JSONArray;
-import org.ralleytn.simple.json.JSONObject;
-
 public class Test {
 	
 	private static boolean id_bool = false;

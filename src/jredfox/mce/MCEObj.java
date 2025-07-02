@@ -445,32 +445,6 @@ public class MCEObj {
 		list.add(new TypeInsnNode(Opcodes.CHECKCAST, "[" + type.desc));
 	}
 
-	public static void addLabelNode(InsnList list)
-	{
-		LabelNode l1 = new LabelNode();
-		list.add(l1);
-		if(getASMVersion() < 5)
-			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
-	}
-	
-	public static void insertLabelNode(InsnList list)
-	{
-		LabelNode l1 = new LabelNode();
-		list.insert(l1);
-		if(getASMVersion() < 5)
-			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
-	}
-	
-	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
-	{
-		InsnList l = new InsnList();
-		LabelNode label = new LabelNode();
-		l.add(label);
-		if(getASMVersion() < 5)
-			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
-		list.insert(spot, l);
-	}
-
 	/**
 	 * Generates a static array initialized with specified values
 	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
@@ -742,6 +716,32 @@ public class MCEObj {
 										: desc.equals("Ljava/lang/Float;") ? "Float"
 								: desc.equals("Ljava/lang/Double;") ? "Double"
 						: UNSUPPORTED;
+	}
+	
+	public static void addLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		list.add(l1);
+		if(getASMVersion() < 5)
+			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+	}
+	
+	public static void insertLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		list.insert(l1);
+		if(getASMVersion() < 5)
+			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+	}
+	
+	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
+	{
+		InsnList l = new InsnList();
+		LabelNode label = new LabelNode();
+		l.add(label);
+		if(getASMVersion() < 5)
+			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
+		list.insert(spot, l);
 	}
 	
 	private static int ASM_VERSION = 0;

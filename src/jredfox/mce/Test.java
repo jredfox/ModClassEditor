@@ -43,6 +43,11 @@ public class Test {
 	
 	static
 	{
+		System.out.println();
+	}
+	
+	public Test()
+	{
 		
 	}
 	

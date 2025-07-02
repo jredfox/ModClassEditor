@@ -532,7 +532,7 @@ public class MCEObj {
 		}
 	}
 
-	private static void addLabelNode(InsnList list)
+	public static void addLabelNode(InsnList list)
 	{
 		LabelNode l1 = new LabelNode();
 		list.add(l1);
@@ -540,12 +540,22 @@ public class MCEObj {
 			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 	}
 	
-	private static void insertLabelNode(InsnList list)
+	public static void insertLabelNode(InsnList list)
 	{
 		LabelNode l1 = new LabelNode();
 		list.insert(l1);
 		if(getASMVersion() < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+	}
+	
+	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
+	{
+		InsnList l = new InsnList();
+		LabelNode label = new LabelNode();
+		l.add(label);
+		if(getASMVersion() < 5)
+			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
+		list.insert(spot, l);
 	}
 
 	/**

@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.LocalVariableNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
@@ -85,6 +86,9 @@ public class MCEGen {
 			
 			//Save Changes in Mod's <clinit> after all fields have their values generated
 			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+			
+			//Add LabelNode
+			MCEObj.insertLabelNode(clinit.instructions, spot.getPrevious());
 			
 			//Save Progres
 			this.save();
@@ -196,6 +200,7 @@ public class MCEGen {
 		{
 			try
 			{
+				int line = 0;
 				String cn = actualName.replace('.', '/');
 				ClassNode classNode = new ClassNode();
 				//Define Required Class Fields
@@ -210,10 +215,12 @@ public class MCEGen {
 				InsnList l = new InsnList();
 				LabelNode l0 = new LabelNode();
 				l.add(l0);
+				l.add(new LineNumberNode(line++, l0));
 				l.add(new VarInsnNode(Opcodes.ALOAD, 0));
 				l.add(new MethodInsnNode(Opcodes.INVOKESPECIAL, "java/lang/Object", "<init>", "()V"));
 				LabelNode l1 = new LabelNode();
 				l.add(l1);
+				l.add(new LineNumberNode(line++, l1));
 				l.add(new InsnNode(Opcodes.RETURN));
 				LabelNode l2 = new LabelNode();
 				l.add(l2);
@@ -226,10 +233,13 @@ public class MCEGen {
 				classNode.methods.add(init);
 				InsnList initList = new InsnList();
 				LabelNode l0_ = new LabelNode();
+				LineNumberNode ln0_ = new LineNumberNode(line++, l0_);
 				initList.add(l0_);
-				initList.insert(l0_, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+				initList.add(ln0_);
+				initList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 				LabelNode l1_ = new LabelNode();
 				initList.add(l1_);
+				initList.add(new LineNumberNode(line++, l1_));
 				initList.add(new InsnNode(Opcodes.RETURN));
 				LabelNode l2_ = new LabelNode();
 				initList.add(l2_);
@@ -243,7 +253,7 @@ public class MCEGen {
 					if(!(pair.getValue() instanceof JSONArray))
 						continue;
 					JSONArray arr = (JSONArray) pair.getValue();
-					AbstractInsnNode genSpot = l0_;
+					AbstractInsnNode genSpot = ln0_;
 					for(Object ov : arr)
 					{
 						if(!(ov instanceof JSONObject))
@@ -264,10 +274,13 @@ public class MCEGen {
 						li.add(new LdcInsnNode(orgClName));
 						li.add(new LdcInsnNode(fieldName));
 						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fieldName, desc));
-						MethodInsnNode lastInsn = new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V");
-						li.add(lastInsn);
+						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V"));
+						LabelNode label_gen = new LabelNode();
+						li.add(label_gen);
+						AbstractInsnNode lastLine = new LineNumberNode(line++, label_gen);
+						li.add(lastLine);
 						init.instructions.insert(genSpot, li);
-						genSpot = lastInsn;
+						genSpot = lastLine;
 					}
 				}
 				

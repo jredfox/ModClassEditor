@@ -373,118 +373,6 @@ public class MCEObj {
 					MCEArrField farr = (MCEArrField) f;
 					String atype = type.replace("[", "");
 					DataType arr_type = DataType.getType(atype);
-					
-					int store = Opcodes.BASTORE;
-					String desc_fill = null;
-					String desc_set = null;
-					String desc_insert = null;
-					boolean hasIncrem = true;
-					PairStr wrapperInsn = null;
-					switch(arr_type)
-					{
-						case BOOLEAN:
-							store = Opcodes.BASTORE;
-							desc_fill = "([ZZII)V";
-							desc_set = "([ZIZ)V";
-							desc_insert = "([Z[ZI)V";
-							hasIncrem = false;
-						break;
-						case BYTE:
-							store = Opcodes.BASTORE;
-							desc_fill =   "([BBIII)V";
-							desc_set =    "([BIB)V";
-							desc_insert = "([B[BI)V";
-						break;
-						case SHORT:
-							store = Opcodes.SASTORE;
-							desc_fill =   "([SSIII)V";
-							desc_set =    "([SIS)V";
-							desc_insert = "([S[SI)V";
-						break;
-						case INT:
-							store = Opcodes.IASTORE;
-							desc_fill =   "([IIIII)V";
-							desc_set =    "([III)V";
-							desc_insert = "([I[II)V";
-						break;
-						case LONG:
-							store = Opcodes.LASTORE;
-							desc_fill =   "([JJIII)V";
-							desc_set =    "([JIJ)V";
-							desc_insert = "([J[JI)V";
-						break;
-						case FLOAT:
-							store = Opcodes.FASTORE;
-							desc_fill =   "([FFIII)V";
-							desc_set =    "([FIF)V";
-							desc_insert = "([F[FI)V";
-						break;
-						case DOUBLE:
-							store = Opcodes.DASTORE;
-							desc_fill =   "([DDIII)V";
-							desc_set =    "([DID)V";
-							desc_insert = "([D[DI)V";
-						break;
-						case STRING:
-							store = Opcodes.AASTORE;
-							desc_fill =   "([Ljava/lang/String;Ljava/lang/String;II)V";
-							desc_set =    "([Ljava/lang/String;ILjava/lang/String;)V";
-							desc_insert = "([Ljava/lang/String;[Ljava/lang/String;I)V";
-							hasIncrem = false;
-						break;
-						case WRAPPED_BOOLEAN:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Boolean;ZII)V";
-							desc_set = "([Ljava/lang/Boolean;IZ)V";
-							desc_insert = "([Ljava/lang/Boolean;[ZI)V";
-							wrapperInsn = new PairStr("java/lang/Boolean", "(Z)Ljava/lang/Boolean;");
-							hasIncrem = false;
-						break;
-						case WRAPPED_BYTE:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Byte;BIII)V";
-							desc_set = "([Ljava/lang/Byte;IB)V";
-							desc_insert = "([Ljava/lang/Byte;[BI)V";
-							wrapperInsn = new PairStr("java/lang/Byte", "(B)Ljava/lang/Byte;");
-						break;
-						case WRAPPED_SHORT:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Short;SIII)V";
-							desc_set = "([Ljava/lang/Short;IS)V";
-							desc_insert = "([Ljava/lang/Short;[SI)V";
-							wrapperInsn = new PairStr("java/lang/Short", "(S)Ljava/lang/Short;");
-						break;
-						case WRAPPED_INT:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Integer;IIII)V";
-							desc_set = "([Ljava/lang/Integer;II)V";
-							desc_insert = "([Ljava/lang/Integer;[II)V";
-							wrapperInsn = new PairStr("java/lang/Integer", "(I)Ljava/lang/Integer;");
-						break;
-						case WRAPPED_LONG:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Long;JIII)V";
-							desc_set = "([Ljava/lang/Long;IJ)V";
-							desc_insert = "([Ljava/lang/Long;[JI)V";
-							wrapperInsn = new PairStr("java/lang/Long", "(J)Ljava/lang/Long;");
-						break;
-						case WRAPPED_FLOAT:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Float;FIII)V";
-							desc_set = "([Ljava/lang/Float;IF)V";
-							desc_insert = "([Ljava/lang/Float;[FI)V";
-							wrapperInsn = new PairStr("java/lang/Float", "(F)Ljava/lang/Float;");
-						break;
-						case WRAPPED_DOUBLE:
-							store = Opcodes.AASTORE;
-							desc_fill = "([Ljava/lang/Double;DIII)V";
-							desc_set = "([Ljava/lang/Double;ID)V";
-							desc_insert = "([Ljava/lang/Double;[DI)V";
-							wrapperInsn = new PairStr("java/lang/Double", "(D)Ljava/lang/Double;");
-						break;
-						default:
-							break;
-					}
 					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 					if(farr.values.length < 2)
 					{
@@ -494,9 +382,9 @@ public class MCEObj {
 							list.add(getNumInsn(farr.values[0], arr_type));//value
 							list.add(getIntInsn(farr.index_start));//index_start
 							list.add(getIntInsn(farr.index_end));//index_end
-							if(hasIncrem)
+							if(arr_type.hasIncrement)
 								list.add(getIntInsn(farr.increment));//inecrement
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", desc_fill));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", arr_type.descFill));
 						}
 						else
 						{
@@ -507,12 +395,12 @@ public class MCEObj {
 							if(farr.index_start > -1)
 							{
 								//convert the primitive datatype into it's object form before using AASTORE
-								if(wrapperInsn != null)
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, wrapperInsn.x, "valueOf", wrapperInsn.y));
-								list.add(new InsnNode(store));//stores the value
+								if(arr_type.isWrapper)
+									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, arr_type.clazz, "valueOf", arr_type.descValueOf));
+								list.add(new InsnNode(arr_type.arrayStore));//stores the value
 							}
 							else
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", desc_set));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", arr_type.descSet));
 						}
 					}
 					else
@@ -520,7 +408,7 @@ public class MCEObj {
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
 						genStaticArraySafe(list, farr.values, arr_type, false);
 						list.add(getIntInsn(farr.index_start));
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", desc_insert));
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", arr_type.descInsert));
 					}
 				}
 				
@@ -554,47 +442,7 @@ public class MCEObj {
 		int id = ArrCache.register(ArrUtils.newArr(values, type));
 		list.add(getIntInsn(id));
 		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrCache", "get", "(I)Ljava/lang/Object;"));
-		list.add(new TypeInsnNode(Opcodes.CHECKCAST, "[" + getDescFromType(type)));
-	}
-
-	public static String getDescFromType(DataType type) 
-	{
-		switch(type)
-		{
-			case BOOLEAN:
-				return "Z";
-			case BYTE:
-				return "B";
-			case DOUBLE:
-				return "D";
-			case FLOAT:
-				return "F";
-			case INT:
-				return "I";
-			case LONG:
-				return "J";
-			case SHORT:
-				return "S";
-			case STRING:
-				return "Ljava/lang/String;";
-			case WRAPPED_BOOLEAN:
-				return "Ljava/lang/Boolean;";
-			case WRAPPED_BYTE:
-				return "Ljava/lang/Byte;";
-			case WRAPPED_DOUBLE:
-				return "Ljava/lang/Double;";
-			case WRAPPED_FLOAT:
-				return "Ljava/lang/Float;";
-			case WRAPPED_INT:
-				return "Ljava/lang/Integer;";
-			case WRAPPED_LONG:
-				return  "Ljava/lang/Long;";
-			case WRAPPED_SHORT:
-				return "Ljava/lang/Short;";
-			default:
-				break;
-		}
-		return null;
+		list.add(new TypeInsnNode(Opcodes.CHECKCAST, "[" + type.desc));
 	}
 
 	public static void addLabelNode(InsnList list)
@@ -639,90 +487,13 @@ public class MCEObj {
 		list.add(getIntInsn(values.length));
 		
 		//array type
-		int arrNew = 0;
-		int store = 0;
-		String arrNewObj = null;
-		String desc_wrapper = null;
-		switch(type)
-		{
-			case BOOLEAN:
-				arrNew = Opcodes.T_BOOLEAN;
-				store = Opcodes.BASTORE;
-			break;
-			case BYTE:
-				arrNew = Opcodes.T_BYTE;
-				store = Opcodes.BASTORE;
-			break;
-			case SHORT:
-				arrNew = Opcodes.T_SHORT;
-				store = Opcodes.SASTORE;
-			break;
-			case INT:
-				arrNew = Opcodes.T_INT;
-				store = Opcodes.IASTORE;
-			break;
-			case LONG:
-				arrNew = Opcodes.T_LONG;
-				store = Opcodes.LASTORE;
-			break;
-			case FLOAT:
-				arrNew = Opcodes.T_FLOAT;
-				store = Opcodes.FASTORE;
-			break;
-			case DOUBLE:
-				arrNew = Opcodes.T_DOUBLE;
-				store = Opcodes.DASTORE;
-			break;
-			case STRING:
-				arrNewObj = "java/lang/String";
-				store = Opcodes.AASTORE;
-			break;
-			case WRAPPED_BOOLEAN:
-				arrNewObj = "java/lang/Boolean";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(Z)Ljava/lang/Boolean;";
-			break;
-			case WRAPPED_BYTE:
-				arrNewObj = "java/lang/Byte";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(B)Ljava/lang/Byte;";
-			break;
-			case WRAPPED_SHORT:
-				arrNewObj = "java/lang/Short";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(S)Ljava/lang/Short;";
-			break;
-			case WRAPPED_INT:
-				arrNewObj = "java/lang/Integer";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(I)Ljava/lang/Integer;";
-			break;
-			case WRAPPED_LONG:
-				arrNewObj = "java/lang/Long";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(J)Ljava/lang/Long;";
-			break;
-			case WRAPPED_FLOAT:
-				arrNewObj = "java/lang/Float";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(F)Ljava/lang/Float;";
-			break;
-			case WRAPPED_DOUBLE:
-				arrNewObj = "java/lang/Double";
-				store = Opcodes.AASTORE;
-				desc_wrapper = "(D)Ljava/lang/Double;";
-			break;
-
-			default:
-				throw new RuntimeException("Unsupported Type:" + type);
-		}
-		boolean isWrapper = desc_wrapper != null;
-		if(arrNewObj == null)
-			list.add(new IntInsnNode(Opcodes.NEWARRAY, arrNew));
+		if(!type.isObject)
+			list.add(new IntInsnNode(Opcodes.NEWARRAY, type.newArrayType));
 		else
-			list.add(new TypeInsnNode(Opcodes.ANEWARRAY, arrNewObj));
+			list.add(new TypeInsnNode(Opcodes.ANEWARRAY, type.clazz));
 		
 		//initialize NON-ZERO VALUES
+		boolean isWrapper = type.isWrapper;
 		for(int index=0; index < values.length; index++)
 		{
 			String str_v = values[index];
@@ -794,8 +565,8 @@ public class MCEObj {
 			list.add(getIntInsn(index));//indexes are always integer and follow the same rules as any boolean - int values on pushing
 			list.add(valInsn);//changes based on the data type
 			if(isWrapper)
-				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, arrNewObj, "valueOf", desc_wrapper));//converts the datatype into it's Object form
-			list.add(new InsnNode(store));
+				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));//converts the datatype into it's Object form
+			list.add(new InsnNode(type.arrayStore));
 		}
 	}
 	

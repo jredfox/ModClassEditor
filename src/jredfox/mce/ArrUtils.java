@@ -580,7 +580,7 @@ public class ArrUtils {
 			return !isWrapper ? Type.BYTE : Type.WRAPPED_BYTE;
 		else if(type.equals("short"))
 			return !isWrapper ? Type.SHORT : Type.WRAPPED_SHORT;
-		else if(type.equals("int"))
+		else if(type.equals("int") || type.equals("integer"))
 			return !isWrapper ? Type.INT : Type.WRAPPED_INT;
 		else if(type.equals("long"))
 			return !isWrapper ? Type.LONG : Type.WRAPPED_LONG;

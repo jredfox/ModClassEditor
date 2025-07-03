@@ -78,6 +78,7 @@ public class Test {
 	private static void method_st(Object obj)
 	{
 		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
+		System.out.println("wrapped_id_c:" + wrapped_id_c + " valueOf:" + (int) wrapped_id_c.charValue());
 		System.out.println("id:" +     id);
 		System.out.println("id_s:" +   id_s);
 		System.out.println("id_b:" +   id_b);

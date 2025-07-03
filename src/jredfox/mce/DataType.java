@@ -5,8 +5,6 @@ import org.objectweb.asm.Opcodes;
 public enum DataType {
 	
 	CHAR("C", "", "", "([CIC)V", "([CCIII)V", "([C[CI)V", Opcodes.T_CHAR, Opcodes.CASTORE, false),
-	WRAPPED_CHAR("Ljava/lang/Character;", "java/lang/Character", "(C)Ljava/lang/Character;", "([Ljava/lang/Character;IC)V", "([Ljava/lang/Character;CIII)V", "([Ljava/lang/Character;[CI)V", -1, Opcodes.AASTORE, true),
-	
 	BOOLEAN("Z", "", "", "([ZIZ)V", "([ZZII)V", "([Z[ZI)V", Opcodes.T_BOOLEAN, Opcodes.BASTORE, false),
 	BYTE("B", "", "", "([BIB)V", "([BBIII)V", "([B[BI)V", Opcodes.T_BYTE, Opcodes.BASTORE, false),
 	SHORT("S", "", "", "([SIS)V", "([SSIII)V", "([S[SI)V", Opcodes.T_SHORT, Opcodes.SASTORE, false),
@@ -15,6 +13,7 @@ public enum DataType {
 	FLOAT("F", "", "", "([FIF)V", "([FFIII)V", "([F[FI)V", Opcodes.T_FLOAT, Opcodes.FASTORE, false),
 	DOUBLE("D", "", "", "([DID)V", "([DDIII)V", "([D[DI)V", Opcodes.T_DOUBLE, Opcodes.DASTORE, false),
 	STRING("Ljava/lang/String;", "java/lang/String", "", "([Ljava/lang/String;ILjava/lang/String;)V", "([Ljava/lang/String;Ljava/lang/String;II)V", "([Ljava/lang/String;[Ljava/lang/String;I)V", -1, Opcodes.AASTORE, true),
+	WRAPPED_CHAR("Ljava/lang/Character;", "java/lang/Character", "(C)Ljava/lang/Character;", "([Ljava/lang/Character;IC)V", "([Ljava/lang/Character;CIII)V", "([Ljava/lang/Character;[CI)V", -1, Opcodes.AASTORE, true),
 	WRAPPED_BOOLEAN("Ljava/lang/Boolean;", "java/lang/Boolean", "(Z)Ljava/lang/Boolean;", "([Ljava/lang/Boolean;IZ)V", "([Ljava/lang/Boolean;ZII)V", "([Ljava/lang/Boolean;[ZI)V", -1, Opcodes.AASTORE, true),
 	WRAPPED_BYTE("Ljava/lang/Byte;", "java/lang/Byte", "(B)Ljava/lang/Byte;", "([Ljava/lang/Byte;IB)V", "([Ljava/lang/Byte;BIII)V", "([Ljava/lang/Byte;[BI)V", -1, Opcodes.AASTORE, true),
 	WRAPPED_SHORT("Ljava/lang/Short;", "java/lang/Short", "(S)Ljava/lang/Short;", "([Ljava/lang/Short;IS)V", "([Ljava/lang/Short;SIII)V", "([Ljava/lang/Short;[SI)V", -1, Opcodes.AASTORE, true),

@@ -338,7 +338,7 @@ public class MCEObj {
 	}
 
 	/**
-	 * Generates a Static Array Safely and if biggere then size of 10 will generate it now and cache it to prevent exceeding the bytecode limit
+	 * Generates a Static Array Safely and if bigger then size of 10 will generate it now and cache it to prevent exceeding the bytecode limit
 	 */
 	public static void genStaticArraySafe(InsnList list, String[] values, DataType type, boolean wrappers)
 	{

@@ -42,6 +42,16 @@ public class MCEGen {
 		this.root = new JSONObject();
 	}
 	
+	/**
+	 * Prevent Memory leak delete the entire JSONObject holding everything
+	 */
+	public void gc()
+	{
+		this.root = null;
+		this.enabled = false;
+		this.file_gen = null;
+	}
+	
 	public void gen(String actualName, ClassNode classNode)
 	{
 		if(!this.enabled) 
@@ -171,6 +181,11 @@ public class MCEGen {
 	public static void capValue(String className, String fieldName, Character v) {
 		Transformer.gen.capValue0(className, fieldName, String.valueOf(v));
 	}
+	
+	public static void gc0()
+	{
+		Transformer.gen.gc();
+	}
 
 	private void capValue0(String className, String fieldName, Object v)
 	{
@@ -245,6 +260,14 @@ public class MCEGen {
 				initList.add(l0_);
 				initList.add(ln0_);
 				initList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+				//Call GC to prevent memory leak
+				if(cn.equals("jredfox/mce/MCEGenInitPost"))
+				{
+					LabelNode L_0 = new LabelNode();
+					initList.add(L_0);
+					initList.add(new LineNumberNode(line++, L_0));
+					initList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "gc0", "()V"));
+				}
 				LabelNode l1_ = new LabelNode();
 				initList.add(l1_);
 				initList.add(new LineNumberNode(line++, l1_));

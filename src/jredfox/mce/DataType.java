@@ -105,7 +105,7 @@ public enum DataType {
 			return STRING;
 		else if(type.equals("char"))
 			return CHAR;
-		else if(type.equals("Character"))
+		else if(type.equals("character"))
 			return WRAPPED_CHAR;
 		
 		return NULL;

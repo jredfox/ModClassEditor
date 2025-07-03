@@ -254,7 +254,7 @@ public class MCEObj {
 			//disallow unsupported field opperations to prevent runtime crashing
 			if(type == DataType.NULL)
 			{
-				System.err.println("Unsupported Type for Field:" + f.name + " in:" + mce.className);
+				System.err.println("Unsupported Type for Field:" + f.name + " desc:" + fn.desc + " in:" + mce.className);
 				continue;
 			}
 			

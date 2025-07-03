@@ -774,4 +774,145 @@ public class ArrUtils {
 		return null;
 	}
 
+	public static void print(Object o)
+	{
+		System.out.print("[");
+		if(o instanceof boolean[])
+		{
+			boolean[] arr = (boolean[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof byte[])
+		{
+			byte[] arr = (byte[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof short[])
+		{
+			short[] arr = (short[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof int[])
+		{
+			int[] arr = (int[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof long[])
+		{
+			long[] arr = (long[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof float[])
+		{
+			float[] arr = (float[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof double[])
+		{
+			double[] arr = (double[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof String[])
+		{
+			String[] arr = (String[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Boolean[])
+		{
+			Boolean[] arr = (Boolean[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Byte[])
+		{
+			Byte[] arr = (Byte[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Short[])
+		{
+			Short[] arr = (Short[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Integer[])
+		{
+			Integer[] arr = (Integer[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Long[])
+		{
+			Long[] arr = (Long[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Float[])
+		{
+			Float[] arr = (Float[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Double[])
+		{
+			Double[] arr = (Double[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		System.out.println("]");
+	}
+
 }

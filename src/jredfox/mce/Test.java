@@ -65,12 +65,7 @@ public class Test {
 		System.out.println("id_l:" +   id_l);
 		System.out.println("id_str:" + id_str);
 		
-		System.out.print("[");
-		for(double v : o_arr_double)
-			System.out.print(v + ",");
-		System.out.println("]");
-		
-		
+		ArrUtils.print(o_arr_bool);
 	}
 
 	public static void load() {

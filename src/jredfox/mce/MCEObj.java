@@ -117,7 +117,7 @@ public class MCEObj {
 		
 		public MCEField(JSONObject json)
 		{
-			this(json.getString("name"), json.getAsString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
+			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
 		}
 		
 		public MCEField(String name, String value, String type, String method, String desc, String inject)
@@ -190,7 +190,10 @@ public class MCEObj {
 			{
 				this.values = new String[values.size()];
 				for(int i=0;i<values.size();i++)
+				{
+					//TODO: support null values here
 					this.values[i] = String.valueOf(values.get(i));
+				}
 			}
 			else
 				this.values = new String[] {""};
@@ -272,7 +275,7 @@ public class MCEObj {
 				if(!isArr)
 				{
 					list.add(getNumInsn(f.value, type));
-					if(type.isWrapper)
+					if(type.isWrapper && f.value != null)
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
 					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, fn.desc));
 				}
@@ -364,6 +367,7 @@ public class MCEObj {
 	 */
 	public static void genStaticArray(InsnList list, String[] values, DataType type, boolean wrappers) 
 	{
+		//TODO: support null static array values here
 		if(!wrappers)
 			type = DataType.getPrimitive(type);
 		
@@ -475,6 +479,33 @@ public class MCEObj {
 	
 	public static AbstractInsnNode getNumInsn(String str_v, DataType type)
 	{
+		//NULL support
+		if(str_v == null)
+		{
+			if(type.isObject)
+				return new InsnNode(Opcodes.ACONST_NULL);
+			
+			//Handle NULL Primitives
+			switch(type)
+			{
+				case CHAR:
+				case BOOLEAN:
+				case BYTE:
+				case SHORT:
+				case INT:
+					return getIntInsn(0);
+				case LONG:
+					return getLongInsn(0);
+				case FLOAT:
+					return getFloatInsn(0);
+				case DOUBLE:
+					return getDoubleInsn(0);
+
+				default:
+					break;
+			}
+		}
+		
 		switch(type)
 		{
 			case WRAPPED_BOOLEAN:

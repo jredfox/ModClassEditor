@@ -625,6 +625,21 @@ public class ArrUtils {
 	/**
 	 * Insert an array into another one replacing it's indexesd
 	 */
+	public static void insert(Character[] arr, Character[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
 	public static void insert(Boolean[] arr, Boolean[] val, int index)
 	{
 		if(arr.length == 0)

@@ -2,7 +2,6 @@ package jredfox.mce;
 
 public class Test {
 	
-	private static Character o_id_c = 'o';
 	private static char id_c = 'a';
 	private static boolean id_bool = false;
 	private static byte id_b = (byte) 202;
@@ -21,6 +20,7 @@ public class Test {
 	private static Long wrapped_id_l = 128L;
 	private static Float wrapped_id_f = 2.0F;
 	private static Double wrapped_id_d = 3.0D;
+	private static Character wrapped_id_c = 'o';
 	
 	//Start static array primatives
 	private static boolean[] arr_bool = 	{false, false, false, false, false, false};
@@ -45,21 +45,21 @@ public class Test {
 	
 	static
 	{
-		id_c = (char) -1;
-		id_c = 0;
-		id_c = 1;
-		id_c = 2;
-		id_c = 3;
-		id_c = 4;
-		id_c = 5;
-		id_c = 6;
-		id_c = 128;
-		id_c = 'a';
-		id_c = 'z';
-		id_c = '!';
-		id_c = Character.MAX_VALUE;
-		id_c = '0';
-		id_c = Short.MAX_VALUE;
+//		id_c = (char) -1;
+//		id_c = 0;
+//		id_c = 1;
+//		id_c = 2;
+//		id_c = 3;
+//		id_c = 4;
+//		id_c = 5;
+//		id_c = 6;
+//		id_c = 128;
+//		id_c = 'a';
+//		id_c = 'z';
+//		id_c = '!';
+//		id_c = Character.MAX_VALUE;
+//		id_c = '0';
+//		id_c = Short.MAX_VALUE;
 //		char[] c = new char[] {'a', 'b'};
 //		Character[] ca = new Character[] {'a', 'b'};
 	}
@@ -77,6 +77,7 @@ public class Test {
 	
 	private static void method_st(Object obj)
 	{
+		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
 		System.out.println("id:" +     id);
 		System.out.println("id_s:" +   id_s);
 		System.out.println("id_b:" +   id_b);

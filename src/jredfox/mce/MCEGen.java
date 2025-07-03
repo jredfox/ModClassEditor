@@ -163,6 +163,14 @@ public class MCEGen {
 	public static void capValue(String className, String fieldName, Double v) {
 		Transformer.gen.capValue0(className, fieldName, v);
 	}
+	
+	public static void capValue(String className, String fieldName, char v) {
+		Transformer.gen.capValue0(className, fieldName, String.valueOf(v));
+	}
+	
+	public static void capValue(String className, String fieldName, Character v) {
+		Transformer.gen.capValue0(className, fieldName, String.valueOf(v));
+	}
 
 	private void capValue0(String className, String fieldName, Object v)
 	{

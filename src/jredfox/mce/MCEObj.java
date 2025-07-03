@@ -150,6 +150,10 @@ public class MCEObj {
 		 */
 		public String[] values;
 		/**
+		 * whether or not the values has a null value used to support wrapper objects and strings
+		 */
+		public boolean hasNULL;
+		/**
 		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
 		 */
 		public int index_start;
@@ -191,8 +195,11 @@ public class MCEObj {
 				this.values = new String[values.size()];
 				for(int i=0;i<values.size();i++)
 				{
-					//TODO: support null values here
-					this.values[i] = String.valueOf(values.get(i));
+					Object o = values.get(i);
+					if(o != null)
+						this.values[i] = String.valueOf(o);
+					else
+						this.hasNULL = true;
 				}
 			}
 			else
@@ -286,10 +293,11 @@ public class MCEObj {
 					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 					if(farr.values.length < 2)
 					{
+						String val = farr.values[0];
 						if(farr.index_start != farr.index_end)
 						{
 							//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
-							list.add(getNumInsn(farr.values[0], type));//value
+							list.add(getNumInsn(val, type));//value
 							list.add(getIntInsn(farr.index_start));//index_start
 							list.add(getIntInsn(farr.index_end));//index_end
 							if(type.hasIncrement)
@@ -301,11 +309,11 @@ public class MCEObj {
 							//arr_short[index_start] = v;
 							//or ArrUtils#set(arr, index, v);
 							list.add(getIntInsn(farr.index_start));//set the index
-							list.add(getNumInsn(farr.values[0], type));//set the value
+							list.add(getNumInsn(val, type));//set the value
 							if(farr.index_start > -1)
 							{
 								//convert the primitive datatype into it's object form before using AASTORE
-								if(type.isWrapper)
+								if(type.isWrapper && val != null)
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
 								list.add(new InsnNode(type.arrayStore));//stores the value
 							}
@@ -316,7 +324,7 @@ public class MCEObj {
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArraySafe(list, farr.values, type, false);
+						genStaticArraySafe(list, farr.values, type, farr.hasNULL);
 						list.add(getIntInsn(farr.index_start));
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.descInsert));
 					}
@@ -502,7 +510,7 @@ public class MCEObj {
 					return getDoubleInsn(0);
 
 				default:
-					break;
+					return null;
 			}
 		}
 		

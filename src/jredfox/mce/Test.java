@@ -50,17 +50,7 @@ public class Test {
 	
 	static
 	{
-//		wrapped_id_bool = null;
-//		wrapped_id_b = null;
-//		wrapped_id = null;
-//		wrapped_id_s = null;
-//		wrapped_id_l = null;
-//		wrapped_id_f = null;
-//		wrapped_id_d = null;
-//		wrapped_id_c = null;
-//		o_arr_byte[21] = null;
-//		id_str = null;
-		id_c = 0;
+		o_arr_bool[2] = null;
 	}
 	
 	public Test()

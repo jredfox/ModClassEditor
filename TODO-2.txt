@@ -1,15 +1,14 @@
 TODONOW:
-- Test Static ARR Long, Float, Double Wrappers
-- implement replace for static arrays
-- Create method for static array generation instead of bytecode as the limit will be reached pretty quick
+- retest STATIC ARRAYS [boolean, byte, short, int, long, float, double, String, Boolean, Byte, Short, Integer, Long, Float, Double]
 - Create dynamic setter methods containing all setter instructions on both before and after injection points. This is to prevent exceeding the bytecode limit. Custom Injection points will still have this issue theortically
+- implement replace for static arrays
 
 TODO 2:
-- Support Editing Static Arrays for primatives and wrappers based on indexes
 - Support Injection Points with Actual ASM injection points for before or after them including Line Numbers or RETURN
+- Support Object Field Editing Assuming they have the Instance of the Object
+- Support Editing Static Arrays for opperations append, and grow
 - Support char, Char, char[] and Char[] types
 - Support null injection for Strings and Wrapper Primatives
-- Support Object Field Editing Assuming they have the Instance of the Object
 - Investigate proper solution for fields whose values need to be edited inside another class that is not where the field is loaded including
 - Support Static Arrays operations append and grow
 - Support Static Arrays 2d - 12d
@@ -21,12 +20,18 @@ TODO 3:
 - Change Params of method instructions
 - MCWriter 2 (Backported and or re-written version of MCWriter from EviLNotchLib)
 
-ChangeLog 0.4.0:
+ChangeLog 0.4.0 Pre-2:
+- Cleaned up & Optimized code (Re-Wrote alot of the code into clean readable methods and even moved data to DataType ENUM)
+
+ChangeLog 0.4.0 Pre-1:
 - Added support for Static Arrays [String[], byte[], boolean[], short[], int[], long[], float[], double[], Byte[], Short[], Integer[], Long[], Float[], Double[] ]
 - Added Static Array opperation fill when values size is 1 and index is in range of x-y for example: "0-end" example2: "0-3" allows incrementing the value after each index
 - Added Static Array operration set when values size is 1 and index is specified as a fixed integer(not a ranged value)
 - Added Static Array opperation insert when values size is greater then 1
 - Added Bytecode Generation of Static Arrays of all supported data types. Won't be used as it will trigger the bytecode limit of 65535 bytes
+- Added Large array support which triggers when the static array is past 10 indexes (0-10) tested with int[Short#MAX_VALUE + 1]
+- Added LabelNode ASM 4x Compatible (Forces a new LabelNode by creating a new LineNumberNode with the line number of 0)
+- Fixed JIT not optimizing classes due to lack of LabelNode for both MCEGen and MCEObj
 
 ChangeLog 0.3.1:
 - Added Wildcards for doing multiple methods at once using "*" and "?" wildcards for both Method names and Descriptors

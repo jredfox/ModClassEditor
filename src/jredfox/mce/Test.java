@@ -43,7 +43,7 @@ public class Test {
 	
 	static
 	{
-		
+//		id_b = 6;
 	}
 	
 	public Test()

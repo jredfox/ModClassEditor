@@ -2,6 +2,8 @@ package jredfox.mce;
 
 public class Test {
 	
+	private static Character o_id_c = 'o';
+	private static char id_c = 'a';
 	private static boolean id_bool = false;
 	private static byte id_b = (byte) 202;
 	private static short id_s = 201;
@@ -43,7 +45,23 @@ public class Test {
 	
 	static
 	{
-		
+		id_c = (char) -1;
+		id_c = 0;
+		id_c = 1;
+		id_c = 2;
+		id_c = 3;
+		id_c = 4;
+		id_c = 5;
+		id_c = 6;
+		id_c = 128;
+		id_c = 'a';
+		id_c = 'z';
+		id_c = '!';
+		id_c = Character.MAX_VALUE;
+		id_c = '0';
+		id_c = Short.MAX_VALUE;
+//		char[] c = new char[] {'a', 'b'};
+//		Character[] ca = new Character[] {'a', 'b'};
 	}
 	
 	public Test()
@@ -65,8 +83,7 @@ public class Test {
 		System.out.println("id_l:" +   id_l);
 		System.out.println("id_str:" + id_str);
 		
-		ArrUtils.print(o_arr_bool);
-		ArrUtils.print(o_arr_tst);
+		ArrUtils.print(arr_str);
 	}
 
 	public static void load() {

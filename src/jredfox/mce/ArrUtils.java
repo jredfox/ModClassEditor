@@ -2,6 +2,13 @@ package jredfox.mce;
 
 public class ArrUtils {
 	
+	public static void set(char[] arr, int index, char val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
 	public static void set(boolean[] arr, int index, boolean val)
 	{
 		if(index == -1)
@@ -52,6 +59,13 @@ public class ArrUtils {
 	}
 	
 	public static void set(String[] arr, int index, String val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Character[] arr, int index, char val)
 	{
 		if(index == -1)
 			index = arr.length - 1;
@@ -117,6 +131,21 @@ public class ArrUtils {
 		
 		for(int i=start; i <= end; i++)
 			arr[i] = val;
+	}
+	
+	public static void fill(char[] arr, char val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			val += increment;
+		}
 	}
 	
 	public static void fill(byte[] arr, byte val, int start, int end, int increment) 
@@ -221,6 +250,21 @@ public class ArrUtils {
 			arr[i] = val;
 	}
 	
+	public static void fill(Character[] arr, char val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			val += increment;
+		}
+	}
+	
 	public static void fill(Boolean[] arr, boolean val, int start, int end) 
 	{
 		if(arr.length == 0)
@@ -321,6 +365,21 @@ public class ArrUtils {
 			arr[i] = val;
 			val += increment;
 		}
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(char[] arr, char[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
 	}
 	
 	/**
@@ -447,6 +506,21 @@ public class ArrUtils {
 	 * Insert an array into another one replacing it's indexesd
 	 */
 	public static void insert(Boolean[] arr, boolean[] val, int index)
+	{
+		if(arr.length == 0)
+			return;
+		if(index == -1)
+			index = arr.length - 1;
+		
+		int valIndex = 0;
+	    for (int i = index; i < arr.length && valIndex < val.length; i++) 
+	        arr[i] = val[valIndex++];
+	}
+	
+	/**
+	 * Insert an array into another one replacing it's indexesd
+	 */
+	public static void insert(Character[] arr, char[] val, int index)
 	{
 		if(arr.length == 0)
 			return;
@@ -718,6 +792,13 @@ public class ArrUtils {
 					arr[i] = values[i];
 				return arr;
 			}
+			case CHAR:
+			{
+				char[] arr = new char[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseChar(values[i]);
+				return arr;
+			}
 			case WRAPPED_BOOLEAN:
 			{
 				Boolean[] arr = new Boolean[size];
@@ -767,6 +848,13 @@ public class ArrUtils {
 					arr[i] = MCEObj.parseDouble(values[i]);
 				return arr;
 			}
+			case WRAPPED_CHAR:
+			{
+				Character[] arr = new Character[size];
+				for(int i=0;i<size;i++)
+					arr[i] = MCEObj.parseChar(values[i]);
+				return arr;
+			}
 			
 			default:
 				break;
@@ -777,6 +865,15 @@ public class ArrUtils {
 	public static void print(Object o)
 	{
 		System.out.print("[");
+		if(o instanceof char[])
+		{
+			char[] arr = (char[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
 		if(o instanceof boolean[])
 		{
 			boolean[] arr = (boolean[]) o;
@@ -843,6 +940,15 @@ public class ArrUtils {
 		else if(o instanceof String[])
 		{
 			String[] arr = (String[]) o;
+			for(int i=0;i<arr.length;i++)
+			{
+				String c = (i + 1) < arr.length ? "," : "";
+				System.out.print(arr[i] + c);
+			}
+		}
+		else if(o instanceof Character[])
+		{
+			Character[] arr = (Character[]) o;
 			for(int i=0;i<arr.length;i++)
 			{
 				String c = (i + 1) < arr.length ? "," : "";

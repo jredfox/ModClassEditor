@@ -451,6 +451,15 @@ public class MCEObj {
 					valInsn = new LdcInsnNode(str_v);
 				break;
 				
+				case WRAPPED_CHAR:
+				case CHAR:
+				{
+					char v = parseChar(str_v);
+					if(v == (char)0 && !isWrapper)
+						continue;
+					valInsn = getIntInsn(v);
+				}
+				
 				default:
 					break;
 			}
@@ -491,6 +500,9 @@ public class MCEObj {
 				return getDoubleInsn(parseDouble(str_v));
 			case STRING:
 				return new LdcInsnNode(str_v);
+			case WRAPPED_CHAR:
+			case CHAR:
+				return getIntInsn(parseChar(str_v));
 			default:
 				break;
 		}
@@ -628,6 +640,7 @@ public class MCEObj {
 												: desc.equals("Z") ? "boolean"
 														: desc.equals("F") ? "float"
 																: desc.equals("D") ? "double"
+																			: desc.equals("C") ? "char"
 																		: desc.equals("Ljava/lang/Boolean;") ? "Boolean"
 																: desc.equals("Ljava/lang/Byte;") ? "Byte"
 															: desc.equals("Ljava/lang/Short;") ? "Short"
@@ -635,6 +648,7 @@ public class MCEObj {
 												: desc.equals("Ljava/lang/Long;") ? "Long"
 										: desc.equals("Ljava/lang/Float;") ? "Float"
 								: desc.equals("Ljava/lang/Double;") ? "Double"
+							: desc.equals("Ljava/lang/Character;") ? "Character"
 						: UNSUPPORTED;
 	}
 	
@@ -688,6 +702,26 @@ public class MCEObj {
 	
 	//Start UTIL METHODS__________________________________________
 	//____________________________________________________________
+	
+	/**
+	 * Parse a char Safely
+	 */
+	public static char parseChar(String value) 
+	{
+		try
+		{
+			return (char) Long.parseLong(value, 10);
+		}
+		catch(NumberFormatException num)
+		{
+			return value.charAt(0);
+		}
+		catch(Throwable t)
+		{
+			t.printStackTrace();
+		}
+		return (char) 0;
+	}
 	
 	/**
 	 * Parse a Byte Safely

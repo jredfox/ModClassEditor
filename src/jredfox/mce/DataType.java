@@ -4,6 +4,9 @@ import org.objectweb.asm.Opcodes;
 
 public enum DataType {
 	
+	CHAR("C", "", "", "([CIC)V", "([CCIII)V", "([C[CI)V", Opcodes.T_CHAR, Opcodes.CASTORE, false),
+	WRAPPED_CHAR("Ljava/lang/Character;", "java/lang/Character", "(C)Ljava/lang/Character;", "([Ljava/lang/Character;IC)V", "([Ljava/lang/Character;CIII)V", "([Ljava/lang/Character;[CI)V", -1, Opcodes.AASTORE, true),
+	
 	BOOLEAN("Z", "", "", "([ZIZ)V", "([ZZII)V", "([Z[ZI)V", Opcodes.T_BOOLEAN, Opcodes.BASTORE, false),
 	BYTE("B", "", "", "([BIB)V", "([BBIII)V", "([B[BI)V", Opcodes.T_BYTE, Opcodes.BASTORE, false),
 	SHORT("S", "", "", "([SIS)V", "([SSIII)V", "([S[SI)V", Opcodes.T_SHORT, Opcodes.SASTORE, false),
@@ -69,6 +72,8 @@ public enum DataType {
 				return FLOAT;
 			case WRAPPED_DOUBLE:
 				return DOUBLE;
+			case WRAPPED_CHAR:
+				return CHAR;
 			default:
 				break;
 		}
@@ -98,6 +103,10 @@ public enum DataType {
 			return !isWrapper ? DOUBLE : WRAPPED_DOUBLE;
 		else if(type.equals("string"))
 			return STRING;
+		else if(type.equals("char"))
+			return CHAR;
+		else if(type.equals("Character"))
+			return WRAPPED_CHAR;
 		
 		return NULL;
 	}

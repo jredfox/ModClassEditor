@@ -43,7 +43,7 @@ public class Test {
 	
 	static
 	{
-//		id_b = 6;
+		
 	}
 	
 	public Test()
@@ -77,7 +77,7 @@ public class Test {
 		method_st(null);
 	}
 	
-	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
+//	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
 	
 	public static void main(String[] args)
 	{

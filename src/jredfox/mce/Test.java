@@ -66,6 +66,7 @@ public class Test {
 		System.out.println("id_str:" + id_str);
 		
 		ArrUtils.print(o_arr_bool);
+		ArrUtils.print(o_arr_tst);
 	}
 
 	public static void load() {

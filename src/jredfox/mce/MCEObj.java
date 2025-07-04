@@ -754,6 +754,8 @@ public class MCEObj {
 	 */
 	public static char parseChar(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return (char) Long.parseLong(value, 10);
@@ -797,6 +799,8 @@ public class MCEObj {
 	 */
 	public static byte parseByte(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return (byte) Long.parseLong(value.trim(), 10);
@@ -812,6 +816,8 @@ public class MCEObj {
 	 */
 	public static short parseShort(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return (short) Long.parseLong(value.trim(), 10);
@@ -827,6 +833,8 @@ public class MCEObj {
 	 */
 	public static int parseInt(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return (int) Long.parseLong(value.trim(), 10);
@@ -842,6 +850,8 @@ public class MCEObj {
 	 */
 	public static long parseLong(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return Long.parseLong(value.trim(), 10);
@@ -857,6 +867,8 @@ public class MCEObj {
 	 */
 	public static float parseFloat(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return Float.parseFloat(value.trim());
@@ -869,6 +881,8 @@ public class MCEObj {
 	
 	public static double parseDouble(String value) 
 	{
+		if(value == null) return 0;
+		
 		try
 		{
 			return Double.parseDouble(value.trim());

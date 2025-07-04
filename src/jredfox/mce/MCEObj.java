@@ -318,7 +318,7 @@ public class MCEObj {
 								list.add(new InsnNode(type.arrayStore));//stores the value
 							}
 							else
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.descSet));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.getDescSet(val)));
 						}
 					}
 					else

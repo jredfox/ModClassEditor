@@ -50,7 +50,14 @@ public class Test {
 	static
 	{
 //		o_arr_bool[2] = null;
-
+		id_c = 0;
+		id_bool = false;
+		id = 0;
+		id_b = 0;
+		id_s = 0;
+		id_l = 0L;
+		id_f = 0F;
+		id_d = 0D;
 	}
 	
 	public Test()
@@ -90,7 +97,7 @@ public class Test {
 //		System.out.println("wrapped_id_d:" + wrapped_id_d);
 //		System.out.println("wrapped_id_c:" + wrapped_id_c);
 		
-		ArrUtils.print(o_arr_int);
+		ArrUtils.print(o_arr_byte);
 		
 		System.out.println();
 		System.out.println("__________________________________________________");
@@ -105,7 +112,7 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		
+		System.out.println(DataType.WRAPPED_BYTE.descSetN);
 	}
 
 }

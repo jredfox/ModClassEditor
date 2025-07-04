@@ -1099,5 +1099,62 @@ public class ArrUtils {
 		}
 		System.out.println("]");
 	}
+	
+	//_START NULL FILLERS__\\
+	public static void set(Character[] arr, int index, Character val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Boolean[] arr, int index, Boolean val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Byte[] arr, int index, Byte val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Short[] arr, int index, Short val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Integer[] arr, int index, Integer val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Long[] arr, int index, Long val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Float[] arr, int index, Float val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
+	
+	public static void set(Double[] arr, int index, Double val)
+	{
+		if(index == -1)
+			index = arr.length - 1;
+		arr[index] = val;
+	}
 
 }

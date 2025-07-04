@@ -1,22 +1,27 @@
-TODONOW:
-- static array replace
-
 TODO 2:
-- Support Static Array Operation replace
-- Support Editing Static Arrays for opperations append, and grow
-- Support null injection for Strings and Wrapper Primatives
 - Support Injection Points with Actual ASM injection points for before or after them including Line Numbers or RETURN
 - Support Object Field Editing Assuming they have the Instance of the Object
+- Support Editing Static Arrays for opperations replace, append, and grow
 - Dynamic Setter methods for before / after and when enabled per custom injection point
 - Investigate proper solution for fields whose values need to be edited inside another class that is not where the field is loaded including
 
 TODO 3:
 - Fields
+- Configureable Modids and annotations!
 - Find and Replace with advanced features like increment id search and increment value
 - Change Params of methods
 - Change Params of method instructions
 - MCWriter 2 (Backported and or re-written version of MCWriter from EviLNotchLib)
 - Support Static Arrays 2d - 12d
+
+ChangeLog 0.5.1:
+- Fixed Mod Throwing NumberFormatException when a number was parsed that wasn't a number it now quietly returns 0
+- The Mod makes sure that it is thrown into the coremods folder and not the mods folder now by checking if the coremod has loaded
+
+ChangeLog 0.5.0:
+- Added null support for (Character, Boolean, Short, Integer, Long, Float, Double, String)
+- Added null support for Static Arrays (Character[], Boolean[], Short[], Integer[], Long[], Float[], Double[], String[])
+- Added keyword start to represent index 0 for all array operations
 
 ChangeLog 0.4.0:
 - Cleaned up & Optimized code (Re-Wrote alot of the code into clean readable methods and even moved data to DataType ENUM)

@@ -69,24 +69,24 @@ public enum DataType {
 		return (this.isWrapper && val == null) ? this.descSetN : this.descSet;
 	}
 	
-	public String getDescFill(String val)
-	{
-		return (this.isWrapper && val == null) ? this.descFillN : this.descFill;
-	}
-	
-	public String getDescInsert(String val)
-	{
-		return (this.isWrapper && val == null) ? this.descInsertN : this.descInsert;
-	}
-	
 	public String getDescSet(boolean isNull)
 	{
 		return (this.isWrapper && isNull) ? this.descSetN : this.descSet;
 	}
 	
+	public String getDescFill(String val)
+	{
+		return (this.isWrapper && val == null) ? this.descFillN : this.descFill;
+	}
+	
 	public String getDescFill(boolean isNull)
 	{
 		return (this.isWrapper && isNull) ? this.descFillN : this.descFill;
+	}
+	
+	public String getDescInsert(String val)
+	{
+		return (this.isWrapper && val == null) ? this.descInsertN : this.descInsert;
 	}
 	
 	public String getDescInsert(boolean isNull)

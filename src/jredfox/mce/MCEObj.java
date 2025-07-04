@@ -375,7 +375,6 @@ public class MCEObj {
 	 */
 	public static void genStaticArray(InsnList list, String[] values, DataType type, boolean wrappers) 
 	{
-		//TODO: support null static array values here
 		if(!wrappers)
 			type = DataType.getPrimitive(type);
 		
@@ -393,6 +392,8 @@ public class MCEObj {
 		for(int index=0; index < values.length; index++)
 		{
 			String str_v = values[index];
+			if(str_v == null)
+				continue;//SKIP NULL or 0 Values as it's already null / zero from creating the new array
 			AbstractInsnNode valInsn = null;
 			switch(type)
 			{
@@ -489,30 +490,7 @@ public class MCEObj {
 	{
 		//NULL support
 		if(str_v == null)
-		{
-			if(type.isObject)
-				return new InsnNode(Opcodes.ACONST_NULL);
-			
-			//Handle NULL Primitives
-			switch(type)
-			{
-				case CHAR:
-				case BOOLEAN:
-				case BYTE:
-				case SHORT:
-				case INT:
-					return getIntInsn(0);
-				case LONG:
-					return getLongInsn(0);
-				case FLOAT:
-					return getFloatInsn(0);
-				case DOUBLE:
-					return getDoubleInsn(0);
-
-				default:
-					return null;
-			}
-		}
+			return getNullInsn(type);
 		
 		switch(type)
 		{
@@ -546,6 +524,32 @@ public class MCEObj {
 				break;
 		}
 		return null;
+	}
+
+	public static AbstractInsnNode getNullInsn(DataType type) 
+	{
+		if(type.isObject)
+			return new InsnNode(Opcodes.ACONST_NULL);
+		
+		//Handle NULL Primitives
+		switch(type)
+		{
+			case CHAR:
+			case BOOLEAN:
+			case BYTE:
+			case SHORT:
+			case INT:
+				return getIntInsn(0);
+			case LONG:
+				return getLongInsn(0);
+			case FLOAT:
+				return getFloatInsn(0);
+			case DOUBLE:
+				return getDoubleInsn(0);
+
+			default:
+				return null;
+		}
 	}
 
 	public static InsnNode getBoolInsn(boolean v) 
@@ -741,7 +745,6 @@ public class MCEObj {
 	
 	//Start UTIL METHODS__________________________________________
 	//____________________________________________________________
-	
 	/**
 	 * Parse a char Safely
 	 */

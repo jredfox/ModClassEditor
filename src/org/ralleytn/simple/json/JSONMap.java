@@ -95,9 +95,16 @@ public class JSONMap extends LinkedHashMap<Object, Object>{
 		return this.getString(key).charAt(0);
 	}
 	
+	public String getAsStringN(Object key)
+	{
+		Object v = this.get(key);
+		return v == null ? null : v.toString();
+	}
+	
 	public String getAsString(Object key)
 	{
-		return String.valueOf(this.get(key));
+		Object v = this.get(key);
+		return v == null ? "" : v.toString();
 	}
 	
 	public String getString(Object key)

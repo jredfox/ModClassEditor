@@ -117,7 +117,7 @@ public class MCEObj {
 		
 		public MCEField(JSONObject json)
 		{
-			this(json.getString("name"), json.getAsString("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
+			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
 		}
 		
 		public MCEField(String name, String value, String type, String method, String desc, String inject)
@@ -149,6 +149,10 @@ public class MCEObj {
 		 * The list of values going to be applied to the static array
 		 */
 		public String[] values;
+		/**
+		 * whether or not the values has a null value used to support wrapper objects and strings
+		 */
+		public boolean hasNULL;
 		/**
 		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
 		 */
@@ -190,13 +194,19 @@ public class MCEObj {
 			{
 				this.values = new String[values.size()];
 				for(int i=0;i<values.size();i++)
-					this.values[i] = String.valueOf(values.get(i));
+				{
+					Object o = values.get(i);
+					if(o != null)
+						this.values[i] = String.valueOf(o);
+					else
+						this.hasNULL = true;
+				}
 			}
 			else
 				this.values = new String[] {""};
 			
 			//process index
-			String[] arr = splitFirst(this.safeString(index, "0"), '-');
+			String[] arr = splitFirst(this.safeString(index, "0").replace("start", "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
 			this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
@@ -272,7 +282,7 @@ public class MCEObj {
 				if(!isArr)
 				{
 					list.add(getNumInsn(f.value, type));
-					if(type.isWrapper)
+					if(type.isWrapper && f.value != null)
 						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
 					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, fn.desc));
 				}
@@ -283,39 +293,40 @@ public class MCEObj {
 					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
 					if(farr.values.length < 2)
 					{
+						String val = farr.values[0];
 						if(farr.index_start != farr.index_end)
 						{
 							//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
-							list.add(getNumInsn(farr.values[0], type));//value
+							list.add(getNumInsn(val, type));//value
 							list.add(getIntInsn(farr.index_start));//index_start
 							list.add(getIntInsn(farr.index_end));//index_end
 							if(type.hasIncrement)
 								list.add(getIntInsn(farr.increment));//inecrement
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.descFill));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.getDescFill(val)));
 						}
 						else
 						{
 							//arr_short[index_start] = v;
 							//or ArrUtils#set(arr, index, v);
 							list.add(getIntInsn(farr.index_start));//set the index
-							list.add(getNumInsn(farr.values[0], type));//set the value
+							list.add(getNumInsn(val, type));//set the value
 							if(farr.index_start > -1)
 							{
 								//convert the primitive datatype into it's object form before using AASTORE
-								if(type.isWrapper)
+								if(type.isWrapper && val != null)
 									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
 								list.add(new InsnNode(type.arrayStore));//stores the value
 							}
 							else
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.descSet));
+								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.getDescSet(val)));
 						}
 					}
 					else
 					{
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArraySafe(list, farr.values, type, false);
+						genStaticArraySafe(list, farr.values, type, farr.hasNULL);
 						list.add(getIntInsn(farr.index_start));
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.descInsert));
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.getDescInsert(farr.hasNULL)));
 					}
 				}
 				
@@ -381,6 +392,8 @@ public class MCEObj {
 		for(int index=0; index < values.length; index++)
 		{
 			String str_v = values[index];
+			if(str_v == null)
+				continue;//SKIP NULL or 0 Values as it's already null / zero from creating the new array
 			AbstractInsnNode valInsn = null;
 			switch(type)
 			{
@@ -475,6 +488,10 @@ public class MCEObj {
 	
 	public static AbstractInsnNode getNumInsn(String str_v, DataType type)
 	{
+		//NULL support
+		if(str_v == null)
+			return getNullInsn(type);
+		
 		switch(type)
 		{
 			case WRAPPED_BOOLEAN:
@@ -507,6 +524,32 @@ public class MCEObj {
 				break;
 		}
 		return null;
+	}
+
+	public static AbstractInsnNode getNullInsn(DataType type) 
+	{
+		if(type.isObject)
+			return new InsnNode(Opcodes.ACONST_NULL);
+		
+		//Handle NULL Primitives
+		switch(type)
+		{
+			case CHAR:
+			case BOOLEAN:
+			case BYTE:
+			case SHORT:
+			case INT:
+				return getIntInsn(0);
+			case LONG:
+				return getLongInsn(0);
+			case FLOAT:
+				return getFloatInsn(0);
+			case DOUBLE:
+				return getDoubleInsn(0);
+
+			default:
+				return null;
+		}
 	}
 
 	public static InsnNode getBoolInsn(boolean v) 
@@ -702,7 +745,6 @@ public class MCEObj {
 	
 	//Start UTIL METHODS__________________________________________
 	//____________________________________________________________
-	
 	/**
 	 * Parse a char Safely
 	 */

@@ -1,5 +1,7 @@
 package jredfox.mce;
 
+import org.ralleytn.simple.json.JSONParseException;
+
 public class Test {
 	
 	private static char id_c = 'a';
@@ -47,7 +49,7 @@ public class Test {
 	
 	static
 	{
-//		Character[] ca = new Character[] {'a', 'b'};
+		
 	}
 	
 	public Test()
@@ -63,16 +65,33 @@ public class Test {
 	
 	private static void method_st(Object obj)
 	{
-		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
-		System.out.println("wrapped_id_c:" + wrapped_id_c + " valueOf:" + (int) wrapped_id_c.charValue());
-		System.out.println("id:" +     id);
-		System.out.println("id_s:" +   id_s);
-		System.out.println("id_b:" +   id_b);
-		System.out.println("id_l:" +   id_l);
-		System.out.println("id_str:" + id_str);
+		System.out.println();
+		System.out.println("__________________________________________________\n\n");
+//		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
+//		System.out.println("id:" + id);
+//		System.out.println("id_str:" + id_str);
+//		System.out.println("wrapped_id_bool:" + wrapped_id_bool);
+//		System.out.println("wrapped_id_b:" + wrapped_id_b);
+//		System.out.println("wrapped_id_s:" + wrapped_id_s);
+//		System.out.println("wrapped_id:" + wrapped_id);
+//		System.out.println("wrapped_id_l:" + wrapped_id_l);
+//		System.out.println("wrapped_id_f:" + wrapped_id_f);
+//		System.out.println("wrapped_id_d:" + wrapped_id_d);
+//		System.out.println("wrapped_id_c:" + wrapped_id_c); 
 		
-		ArrUtils.print(arr_char);
 		ArrUtils.print(o_arr_char);
+		ArrUtils.print(o_arr_bool);
+		ArrUtils.print(o_arr_byte);
+		ArrUtils.print(o_arr_short);
+		ArrUtils.print(o_arr_int);
+		ArrUtils.print(o_arr_long);
+		ArrUtils.print(o_arr_float);
+		ArrUtils.print(o_arr_double);
+		ArrUtils.print(arr_str);
+		
+		System.out.println();
+		System.out.println("__________________________________________________");
+
 	}
 
 	public static void load() {
@@ -81,13 +100,9 @@ public class Test {
 	
 //	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
 	
-	public static void main(String[] args)
+	public static void main(String[] args) throws JSONParseException
 	{
-//		int size = Short.MAX_VALUE + 1;
-//		for(int i=0;i<=size;i++)
-//			System.out.print(i + ",");
-//		System.out.println();
-//		System.out.println((byte)128);
+		
 	}
 
 }

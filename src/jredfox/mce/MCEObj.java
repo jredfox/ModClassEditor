@@ -22,6 +22,10 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+/**
+ * Allows Classes Fields to be edited as if they were a configuration file
+ * @author jredfox
+ */
 public class MCEObj {
 	
 	public static final Map<String, MCEObj> registry = new HashMap();

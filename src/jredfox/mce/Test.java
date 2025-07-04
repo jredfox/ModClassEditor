@@ -1,5 +1,8 @@
 package jredfox.mce;
 
+import org.objectweb.asm.Opcodes;
+import org.ralleytn.simple.json.JSONArray;
+import org.ralleytn.simple.json.JSONObject;
 import org.ralleytn.simple.json.JSONParseException;
 
 public class Test {
@@ -96,6 +99,14 @@ public class Test {
 
 	public static void load() {
 		method_st(null);
+	}
+	
+	public static boolean parseBoolean(String s)
+	{
+		if(s == null || s.isEmpty())
+			return false;
+		char c = s.charAt(0);
+		return c == 't' || c == 'T' || c == '1';
 	}
 	
 //	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];

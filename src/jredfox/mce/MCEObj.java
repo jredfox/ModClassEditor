@@ -209,8 +209,8 @@ public class MCEObj {
 			String[] arr = splitFirst(this.safeString(index, "0").replace("start", "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
-			this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);
-			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : Integer.parseInt(str_end));
+			this.index_start = str_start.equals("end") ? -1 : parseInt(str_start);
+			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : parseInt(str_end));
 			
 			//process increment
 			this.increment = parseInt(this.safeString(increment, "0"));
@@ -400,7 +400,7 @@ public class MCEObj {
 				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
 				{
-					boolean v = Boolean.parseBoolean(str_v);
+					boolean v = parseBoolean(str_v);
 					if(!v && !isWrapper)
 						continue;
 					valInsn = getBoolInsn(v);
@@ -496,7 +496,7 @@ public class MCEObj {
 		{
 			case WRAPPED_BOOLEAN:
 			case BOOLEAN:
-				return getBoolInsn(Boolean.parseBoolean(str_v));
+				return getBoolInsn(parseBoolean(str_v));
 			case WRAPPED_BYTE:
 			case BYTE:
 				return getIntInsn(parseByte(str_v));
@@ -770,7 +770,7 @@ public class MCEObj {
 	 */
 	public static byte parseByte(String value) 
 	{
-		return (byte) Long.parseLong(value, 10);
+		return (byte) Long.parseLong(value.trim(), 10);
 	}
 	
 	/**
@@ -778,7 +778,7 @@ public class MCEObj {
 	 */
 	public static short parseShort(String value) 
 	{
-		return (short) Long.parseLong(value, 10);
+		return (short) Long.parseLong(value.trim(), 10);
 	}
 	
 	/**
@@ -786,7 +786,7 @@ public class MCEObj {
 	 */
 	public static int parseInt(String value) 
 	{
-		return (int) Long.parseLong(value, 10);
+		return (int) Long.parseLong(value.trim(), 10);
 	}
 	
 	/**
@@ -794,7 +794,7 @@ public class MCEObj {
 	 */
 	public static long parseLong(String value) 
 	{
-		return Long.parseLong(value, 10);
+		return Long.parseLong(value.trim(), 10);
 	}
 	
 	/**
@@ -802,12 +802,24 @@ public class MCEObj {
 	 */
 	public static float parseFloat(String value) 
 	{
-		return Float.parseFloat(value);
+		return Float.parseFloat(value.trim());
 	}
 	
 	public static double parseDouble(String value) 
 	{
-		return Double.parseDouble(value);
+		return Double.parseDouble(value.trim());
+	}
+	
+	/**
+	 * parses a boolean allowing for 0 to be false and 1 to be true
+	 * if string is null or empty it's returning false which is equal to 0 which is also what null converted to a primative is
+	 */
+	public static boolean parseBoolean(String s)
+	{
+		if(s == null || s.isEmpty())
+			return false;
+		char c = s.trim().charAt(0);
+		return c == 't' || c == 'T' || c == '1';
 	}
 	
 	public static String[] splitFirst(String s, char delim)

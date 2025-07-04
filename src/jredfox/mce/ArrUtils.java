@@ -758,7 +758,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = Boolean.parseBoolean(s);
+						arr[i] = MCEObj.parseBoolean(s);
 				}
 				return arr;
 			}
@@ -853,7 +853,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = Boolean.parseBoolean(s);
+						arr[i] = MCEObj.parseBoolean(s);
 				}
 				return arr;
 			}

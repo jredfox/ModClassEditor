@@ -766,6 +766,18 @@ public class MCEObj {
 	}
 	
 	/**
+	 * parses a boolean allowing for 0 to be false and 1 to be true
+	 * if string is null or empty it's returning false which is equal to 0 which is also what null converted to a primative is
+	 */
+	public static boolean parseBoolean(String s)
+	{
+		if(s == null || s.isEmpty())
+			return false;
+		char c = s.trim().charAt(0);
+		return c == 't' || c == 'T' || c == '1';
+	}
+	
+	/**
 	 * Parse a Byte Safely
 	 */
 	public static byte parseByte(String value) 
@@ -808,18 +820,6 @@ public class MCEObj {
 	public static double parseDouble(String value) 
 	{
 		return Double.parseDouble(value.trim());
-	}
-	
-	/**
-	 * parses a boolean allowing for 0 to be false and 1 to be true
-	 * if string is null or empty it's returning false which is equal to 0 which is also what null converted to a primative is
-	 */
-	public static boolean parseBoolean(String s)
-	{
-		if(s == null || s.isEmpty())
-			return false;
-		char c = s.trim().charAt(0);
-		return c == 't' || c == 'T' || c == '1';
 	}
 	
 	public static String[] splitFirst(String s, char delim)

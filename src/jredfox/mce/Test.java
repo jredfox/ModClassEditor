@@ -1,6 +1,5 @@
 package jredfox.mce;
 
-import org.objectweb.asm.Opcodes;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 import org.ralleytn.simple.json.JSONParseException;
@@ -101,19 +100,15 @@ public class Test {
 		method_st(null);
 	}
 	
-	public static boolean parseBoolean(String s)
-	{
-		if(s == null || s.isEmpty())
-			return false;
-		char c = s.charAt(0);
-		return c == 't' || c == 'T' || c == '1';
-	}
-	
 //	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		
+		MCEObj.parseBoolean("f");
+		long ms = System.currentTimeMillis();
+		for(int i=0;i<50000;i++)
+			MCEObj.parseBoolean("1");
+		System.out.println(System.currentTimeMillis() - ms);
 	}
 
 }

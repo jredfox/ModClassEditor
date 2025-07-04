@@ -68,16 +68,6 @@ public class Test {
 		System.out.println();
 		System.out.println("__________________________________________________\n\n");
 //		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
-//		System.out.println("wrapped_id_c:" + wrapped_id_c + " valueOf:" + (wrapped_id_c == null ? 0 : (int)wrapped_id_c.charValue()));
-//		System.out.println("id:" +     id);
-//		System.out.println("id_s:" +   id_s);
-//		System.out.println("id_b:" +   id_b);
-//		System.out.println("id_l:" +   id_l);
-//		System.out.println("id_str:" + id_str);
-		
-//		ArrUtils.print(arr_char);
-//		ArrUtils.print(o_arr_char);
-		
 //		System.out.println("id:" + id);
 //		System.out.println("id_str:" + id_str);
 //		System.out.println("wrapped_id_bool:" + wrapped_id_bool);
@@ -88,7 +78,6 @@ public class Test {
 //		System.out.println("wrapped_id_f:" + wrapped_id_f);
 //		System.out.println("wrapped_id_d:" + wrapped_id_d);
 //		System.out.println("wrapped_id_c:" + wrapped_id_c);
-		
 		
 		ArrUtils.print(o_arr_char);
 		ArrUtils.print(o_arr_bool);

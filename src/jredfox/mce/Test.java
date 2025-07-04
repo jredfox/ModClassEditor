@@ -89,7 +89,16 @@ public class Test {
 //		System.out.println("wrapped_id_d:" + wrapped_id_d);
 //		System.out.println("wrapped_id_c:" + wrapped_id_c);
 		
+		
+		ArrUtils.print(o_arr_char);
+		ArrUtils.print(o_arr_bool);
 		ArrUtils.print(o_arr_byte);
+		ArrUtils.print(o_arr_short);
+		ArrUtils.print(o_arr_int);
+		ArrUtils.print(o_arr_long);
+		ArrUtils.print(o_arr_float);
+		ArrUtils.print(o_arr_double);
+		ArrUtils.print(arr_str);
 		
 		System.out.println();
 		System.out.println("__________________________________________________");

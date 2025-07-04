@@ -79,6 +79,21 @@ public enum DataType {
 		return (this.isWrapper && val == null) ? this.descInsertN : this.descInsert;
 	}
 	
+	public String getDescSet(boolean isNull)
+	{
+		return (this.isWrapper && isNull) ? this.descSetN : this.descSet;
+	}
+	
+	public String getDescFill(boolean isNull)
+	{
+		return (this.isWrapper && isNull) ? this.descFillN : this.descFill;
+	}
+	
+	public String getDescInsert(boolean isNull)
+	{
+		return (this.isWrapper && isNull) ? this.descInsertN : this.descInsert;
+	}
+	
 	/**
 	 * Get's the Primitive form of the Type
 	 */

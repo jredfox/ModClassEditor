@@ -206,7 +206,7 @@ public class MCEObj {
 				this.values = new String[] {""};
 			
 			//process index
-			String[] arr = splitFirst(this.safeString(index, "0"), '-');
+			String[] arr = splitFirst(this.safeString(index, "0").replace("start", "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
 			this.index_start = str_start.equals("end") ? -1 : Integer.parseInt(str_start);

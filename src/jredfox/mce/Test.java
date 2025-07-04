@@ -77,7 +77,7 @@ public class Test {
 //		System.out.println("wrapped_id_l:" + wrapped_id_l);
 //		System.out.println("wrapped_id_f:" + wrapped_id_f);
 //		System.out.println("wrapped_id_d:" + wrapped_id_d);
-//		System.out.println("wrapped_id_c:" + wrapped_id_c);
+//		System.out.println("wrapped_id_c:" + wrapped_id_c); 
 		
 		ArrUtils.print(o_arr_char);
 		ArrUtils.print(o_arr_bool);

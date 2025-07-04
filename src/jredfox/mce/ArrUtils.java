@@ -755,119 +755,183 @@ public class ArrUtils {
 			{
 				boolean[] arr = new boolean[size];
 				for(int i=0;i<size;i++)
-					arr[i] = Boolean.parseBoolean(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = Boolean.parseBoolean(s);
+				}
 				return arr;
 			}
 			case BYTE:
 			{
 				byte[] arr = new byte[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseByte(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseByte(s);
+				}
 				return arr;
 			}
 			case SHORT:
 			{
 				short[] arr = new short[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseShort(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseShort(s);
+				}
 				return arr;
 			}
 			case INT:
 			{
 				int[] arr = new int[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseInt(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseInt(s);
+				}
 				return arr;
 			}
 			case LONG:
 			{
 				long[] arr = new long[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseLong(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseLong(s);
+				}
 				return arr;
 			}
 			case FLOAT:
 			{
 				float[] arr = new float[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseFloat(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseFloat(s);
+				}
 				return arr;
 			}
 			case DOUBLE:
 			{
 				double[] arr = new double[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseDouble(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseDouble(s);
+				}
 				return arr;
 			}
 			case STRING:
 			{
 				String[] arr = new String[size];
 				for(int i=0;i<size;i++)
-					arr[i] = values[i];
+					arr[i] = values[i];//it's ok for string to not skip null values as it doesn't parse anything
 				return arr;
 			}
 			case CHAR:
 			{
 				char[] arr = new char[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseChar(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseChar(s);
+				}
 				return arr;
 			}
 			case WRAPPED_BOOLEAN:
 			{
 				Boolean[] arr = new Boolean[size];
 				for(int i=0;i<size;i++)
-					arr[i] = Boolean.parseBoolean(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = Boolean.parseBoolean(s);
+				}
 				return arr;
 			}
 			case WRAPPED_BYTE:
 			{
 				Byte[] arr = new Byte[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseByte(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseByte(s);
+				}
 				return arr;
 			}
 			case WRAPPED_SHORT:
 			{
 				Short[] arr = new Short[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseShort(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseShort(s);
+				}
 				return arr;
 			}
 			case WRAPPED_INT:
 			{
 				Integer[] arr = new Integer[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseInt(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseInt(s);
+				}
 				return arr;
 			}
 			case WRAPPED_LONG:
 			{
 				Long[] arr = new Long[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseLong(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseLong(s);
+				}
 				return arr;
 			}
 			case WRAPPED_FLOAT:
 			{
 				Float[] arr = new Float[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseFloat(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseFloat(s);
+				}
 				return arr;
 			}
 			case WRAPPED_DOUBLE:
 			{
 				Double[] arr = new Double[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseDouble(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseDouble(s);
+				}
 				return arr;
 			}
 			case WRAPPED_CHAR:
 			{
 				Character[] arr = new Character[size];
 				for(int i=0;i<size;i++)
-					arr[i] = MCEObj.parseChar(values[i]);
+				{
+					String s = values[i];
+					if(s != null)
+						arr[i] = MCEObj.parseChar(s);
+				}
 				return arr;
 			}
 			

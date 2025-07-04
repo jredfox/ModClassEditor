@@ -102,9 +102,7 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		int increm = 21;
-		double v = 2;
-		v += increm;
+		
 	}
 
 }

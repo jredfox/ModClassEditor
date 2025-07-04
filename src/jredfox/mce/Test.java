@@ -102,7 +102,9 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		System.out.println(DataType.WRAPPED_BYTE.descSetN);
+		int increm = 21;
+		double v = 2;
+		v += increm;
 	}
 
 }

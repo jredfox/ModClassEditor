@@ -302,7 +302,7 @@ public class MCEObj {
 							list.add(getIntInsn(farr.index_end));//index_end
 							if(type.hasIncrement)
 								list.add(getIntInsn(farr.increment));//inecrement
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.descFill));
+							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.getDescFill(val)));
 						}
 						else
 						{

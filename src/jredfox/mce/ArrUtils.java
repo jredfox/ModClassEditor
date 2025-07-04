@@ -1156,5 +1156,129 @@ public class ArrUtils {
 			index = arr.length - 1;
 		arr[index] = val;
 	}
+	
+	public static void fill(Character[] arr, Character val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (char) (val + increment);
+		}
+	}
+	
+	public static void fill(Boolean[] arr, Boolean val, int start, int end) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+			arr[i] = val;
+	}
+	
+	public static void fill(Byte[] arr, Byte val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (byte) (val + increment);
+		}
+	}
+	
+	public static void fill(Short[] arr, Short val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (short) (val + increment);
+		}
+	}
+	
+	public static void fill(Integer[] arr, Integer val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (int) (val + increment);
+		}
+	}
+	
+	public static void fill(Long[] arr, Long val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (long) (val + increment);
+		}
+	}
+	
+	public static void fill(Float[] arr, Float val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (float) (val + increment);
+		}
+	}
+	
+	public static void fill(Double[] arr, Double val, int start, int end, int increment) 
+	{
+		if(arr.length == 0)
+			return;//MT ARRAY
+		
+		if(end == -1)
+			end = arr.length - 1;
+		
+		for(int i=start; i <= end; i++)
+		{
+			arr[i] = val;
+			if(val != null)
+				val = (double) (val + increment);
+		}
+	}
 
 }

@@ -102,9 +102,10 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
+		System.out.println((int)MCEObj.parseChar("B"));
 //		long ms = System.currentTimeMillis();
-//		for(int i=0;i<100000;i++)
-//			parseBoolean(" t");
+//		for(int i=0;i<50000;i++)
+//			parseBU(" 1  ");
 //		System.out.println(System.currentTimeMillis() - ms);
 	}
 

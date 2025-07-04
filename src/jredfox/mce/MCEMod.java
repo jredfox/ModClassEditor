@@ -16,6 +16,8 @@ public class MCEMod {
 	@Mod.PreInit
 	public void mcePreinit(FMLPreInitializationEvent e)
 	{
+		if(Transformer.gen == null)
+			throw new RuntimeException("Mod Class Editor Must be thrown into the \"coremods\" folder!");
 		Transformer.gen.stage = "preInit";
 		MCEGenInitPre.init();
 	}

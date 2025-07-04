@@ -760,13 +760,8 @@ public class MCEObj {
 		}
 		catch(NumberFormatException num)
 		{
-			return value.charAt(0);
+			return value.isEmpty() ? ((char) 0) : value.charAt(0);
 		}
-		catch(Throwable t)
-		{
-			t.printStackTrace();
-		}
-		return (char) 0;
 	}
 	
 	/**
@@ -802,7 +797,14 @@ public class MCEObj {
 	 */
 	public static byte parseByte(String value) 
 	{
-		return (byte) Long.parseLong(value.trim(), 10);
+		try
+		{
+			return (byte) Long.parseLong(value.trim(), 10);
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -810,7 +812,14 @@ public class MCEObj {
 	 */
 	public static short parseShort(String value) 
 	{
-		return (short) Long.parseLong(value.trim(), 10);
+		try
+		{
+			return (short) Long.parseLong(value.trim(), 10);
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -818,7 +827,14 @@ public class MCEObj {
 	 */
 	public static int parseInt(String value) 
 	{
-		return (int) Long.parseLong(value.trim(), 10);
+		try
+		{
+			return (int) Long.parseLong(value.trim(), 10);
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -826,7 +842,14 @@ public class MCEObj {
 	 */
 	public static long parseLong(String value) 
 	{
-		return Long.parseLong(value.trim(), 10);
+		try
+		{
+			return Long.parseLong(value.trim(), 10);
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	/**
@@ -834,12 +857,26 @@ public class MCEObj {
 	 */
 	public static float parseFloat(String value) 
 	{
-		return Float.parseFloat(value.trim());
+		try
+		{
+			return Float.parseFloat(value.trim());
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	public static double parseDouble(String value) 
 	{
-		return Double.parseDouble(value.trim());
+		try
+		{
+			return Double.parseDouble(value.trim());
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
 	}
 	
 	public static String[] splitFirst(String s, char delim)

@@ -104,11 +104,10 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		MCEObj.parseBoolean("f");
-		long ms = System.currentTimeMillis();
-		for(int i=0;i<50000;i++)
-			MCEObj.parseBoolean("1");
-		System.out.println(System.currentTimeMillis() - ms);
+//		long ms = System.currentTimeMillis();
+//		for(int i=0;i<100000;i++)
+//			parseBoolean(" t");
+//		System.out.println(System.currentTimeMillis() - ms);
 	}
 
 }

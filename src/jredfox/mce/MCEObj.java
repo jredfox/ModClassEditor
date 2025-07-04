@@ -771,10 +771,26 @@ public class MCEObj {
 	 */
 	public static boolean parseBoolean(String s)
 	{
-		if(s == null || s.isEmpty())
+		if(s == null)
 			return false;
-		char c = s.trim().charAt(0);
-		return c == 't' || c == 'T' || c == '1';
+        int l = s.length();
+        
+        //if string is empty return false
+        if(l == 0)
+        	return false;
+        
+        //start left side trim if required
+        int i = 0;
+        while ((i < l) && (s.charAt(i) <= ' ')) {
+            i++;
+        }
+        
+        //if string is empty after trim return false
+        if(i == l)
+        	return false;
+        
+        char c = s.charAt(i);
+        return c == 't' || c == 'T' || c == '1';
 	}
 	
 	/**

@@ -12,7 +12,7 @@ public enum DataType {
 	LONG("J", "", "", Opcodes.T_LONG, Opcodes.LASTORE, false, 		"([JIJ)V", "([JJIII)V", "([J[JI)V"),
 	FLOAT("F", "", "", Opcodes.T_FLOAT, Opcodes.FASTORE, false, 	"([FIF)V", "([FFIII)V", "([F[FI)V"),
 	DOUBLE("D", "", "", Opcodes.T_DOUBLE, Opcodes.DASTORE, false, 	"([DID)V", "([DDIII)V", "([D[DI)V"),
-	STRING("Ljava/lang/String;", "java/lang/String", "", -1, Opcodes.AASTORE, true, 									"([Ljava/lang/String;ILjava/lang/String;)V", "([Ljava/lang/String;Ljava/lang/String;II)V", "([Ljava/lang/String;[Ljava/lang/String;I)V", "([Ljava/lang/String;ILjava/lang/String;)V", "", ""),
+	STRING("Ljava/lang/String;", "java/lang/String", "", -1, Opcodes.AASTORE, true, 									"([Ljava/lang/String;ILjava/lang/String;)V", "([Ljava/lang/String;Ljava/lang/String;II)V", "([Ljava/lang/String;[Ljava/lang/String;I)V"),
 	WRAPPED_CHAR("Ljava/lang/Character;", "java/lang/Character", "(C)Ljava/lang/Character;", -1, Opcodes.AASTORE, true, "([Ljava/lang/Character;IC)V", "([Ljava/lang/Character;CIII)V", "([Ljava/lang/Character;[CI)V", "([Ljava/lang/Character;ILjava/lang/Character;)V", "", ""),
 	WRAPPED_BOOLEAN("Ljava/lang/Boolean;", "java/lang/Boolean", "(Z)Ljava/lang/Boolean;", -1, Opcodes.AASTORE, true, 	"([Ljava/lang/Boolean;IZ)V", "([Ljava/lang/Boolean;ZII)V", "([Ljava/lang/Boolean;[ZI)V", "([Ljava/lang/Boolean;ILjava/lang/Boolean;)V", "", ""),
 	WRAPPED_BYTE("Ljava/lang/Byte;", "java/lang/Byte", "(B)Ljava/lang/Byte;", -1, Opcodes.AASTORE, true, 				"([Ljava/lang/Byte;IB)V", "([Ljava/lang/Byte;BIII)V", "([Ljava/lang/Byte;[BI)V", "([Ljava/lang/Byte;ILjava/lang/Byte;)V", "", ""),

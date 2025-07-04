@@ -49,15 +49,7 @@ public class Test {
 	
 	static
 	{
-//		o_arr_bool[2] = null;
-		id_c = 0;
-		id_bool = false;
-		id = 0;
-		id_b = 0;
-		id_s = 0;
-		id_l = 0L;
-		id_f = 0F;
-		id_d = 0D;
+		
 	}
 	
 	public Test()

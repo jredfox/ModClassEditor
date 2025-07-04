@@ -326,7 +326,7 @@ public class MCEObj {
 						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
 						genStaticArraySafe(list, farr.values, type, farr.hasNULL);
 						list.add(getIntInsn(farr.index_start));
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.descInsert));
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.getDescInsert(farr.hasNULL)));
 					}
 				}
 				

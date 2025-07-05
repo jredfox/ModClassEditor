@@ -6,7 +6,22 @@ public class TestDemo {
 	
 	public static class A
 	{
+		public A(Object a)
+		{
+			this(new A[]{new A()});
+		}
+		
 		public A()
+		{
+			this(new A[][] {{new A()}, {new A()} }); if(id == 0){System.out.println();}
+		}
+		
+		public A(A[][] a)
+		{
+			
+		}
+		
+		public A(A[] children)
 		{
 			
 		}
@@ -22,8 +37,9 @@ public class TestDemo {
 		public static boolean b = true;
 		public B()
 		{
-			super(b ? new A() : new A());
-			System.out.println();
+			super(b ? new A() :
+				new A());
+			System.out.println(new A());
 		}
 	}
 

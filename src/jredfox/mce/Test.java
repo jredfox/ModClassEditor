@@ -58,14 +58,15 @@ public class Test {
 	
 	public Test()
 	{
-		
+		super();
+		System.out.println();
 	}
 	
-//	private int o_id = new Integer(200);
-//	private short o_id_s = 201;
-//	private byte o_id_b = (byte) 202;
-//	private long o_id_l = 203;
-//	private String o_id_str = "Entity Id";
+	private int o_id = new Integer(200);
+	private short o_id_s = 201;
+	private byte o_id_b = (byte) 202;
+	private long o_id_l = 203;
+	private String o_id_str = "Entity Id";
 	
 	private static void method_st(Object obj)
 	{

@@ -2,12 +2,17 @@ package jredfox.mce;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
+
+import org.objectweb.asm.Opcodes;
 
 public class OpcodeHelper {
 	
 	public static final Map<String, Integer> opps;
 	public static final Map<Integer, String> i2opps;
+	public static final Set<Integer> BAD_CTR_OPCODES = new HashSet<Integer>();
 	
 	static
 	{
@@ -241,6 +246,15 @@ public class OpcodeHelper {
 			i.put(entry.getValue(), entry.getKey());
 		}
 		i2opps = i;
+		
+		BAD_CTR_OPCODES.add(Opcodes.NEW);
+		BAD_CTR_OPCODES.add(Opcodes.DUP);
+		BAD_CTR_OPCODES.add(Opcodes.DUP_X1);
+		BAD_CTR_OPCODES.add(Opcodes.DUP_X2);
+		BAD_CTR_OPCODES.add(Opcodes.DUP2);
+		BAD_CTR_OPCODES.add(Opcodes.DUP2_X1);
+		BAD_CTR_OPCODES.add(Opcodes.DUP2_X2);
+		BAD_CTR_OPCODES.add(Opcodes.SWAP);
 	}
 	
 	public static int getOppcode(String opp)

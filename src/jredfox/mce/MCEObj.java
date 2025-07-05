@@ -343,13 +343,67 @@ public class MCEObj {
 				else if(f.inject.equals("before"))
 				{
 					insertLabelNode(list);
-					m.instructions.insert(list);
+					if(m.name.equals("<init>"))
+						m.instructions.insert(getFirstCtrInsn(classNode, m), list);
+					else
+						m.instructions.insert(list);
 				}
 			}
 			
 			//prevents memory leaks of arrays and allows the GC to clean it later
 			f.gc();
 		}
+	}
+
+	public static AbstractInsnNode getFirstCtrInsn(ClassNode cn, MethodNode m) 
+	{
+		AbstractInsnNode a = m.instructions.getFirst();
+		while(a != null)
+		{
+			if(a.getOpcode() == Opcodes.INVOKESPECIAL && a instanceof MethodInsnNode)
+			{
+				MethodInsnNode am = (MethodInsnNode) a;
+				if(am.name.equals("<init>") && (am.owner.equals(cn.name) || am.owner.equals(cn.superName)))
+				{
+					AbstractInsnNode nxt = nextRealInsn(am);
+					
+					//if the return instruction appears right after init in rare cases assume this is the last injection point
+					if(nxt != null && CoreUtils.isReturnOpcode(nxt.getOpcode()))
+						return am;
+					
+					AbstractInsnNode prev = prevRealInsn(am);
+					int prevOpcode = prev != null ? prev.getOpcode() : 0;
+					if(!OpcodeHelper.BAD_CTR_OPCODES.contains(prevOpcode))
+					{
+						return am;
+					}
+				}
+			}
+			a = a.getNext();//increment the index
+		}
+		return null;
+	}
+
+	public static AbstractInsnNode nextRealInsn(AbstractInsnNode a) 
+	{
+		do
+		{
+			a = a.getNext();
+		}
+		while (a != null && a.getOpcode() == -1);
+		
+		return a;
+	}
+	
+	public static AbstractInsnNode prevRealInsn(AbstractInsnNode a) 
+	{
+		do
+		{
+			a = a.getPrevious();
+		}
+		while (a != null && a.getOpcode() == -1);
+		
+		return a;
 	}
 
 	/**

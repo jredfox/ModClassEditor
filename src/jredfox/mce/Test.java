@@ -1,5 +1,9 @@
 package jredfox.mce;
 
+import java.lang.reflect.Field;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.ralleytn.simple.json.JSONParseException;
 
 public class Test {
@@ -102,11 +106,25 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-//		System.out.println((int)MCEObj.parseChar("B"));
-//		long ms = System.currentTimeMillis();
-//		for(int i=0;i<50000;i++)
-//			parseDouble(null);
-//		System.out.println(System.currentTimeMillis() - ms);
+//		System.out.println(OpcodeHelper.opps.size());
+		long ms = System.nanoTime();
+		OpcodeHelper.init();
+		long end = System.nanoTime();
+		System.out.println(end - ms);
+		System.out.println("size:" + getCapacity(OpcodeHelper.opps));
+//		System.out.println(OpcodeHelper.getOppcode("pop2"));
 	}
+	
+    public static int getCapacity(Map map) {
+        try {
+            Field tableField = HashMap.class.getDeclaredField("table");
+            tableField.setAccessible(true);
+            Object[] table = (Object[]) tableField.get(map);
+            return table == null ? 0 : table.length;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
 
 }

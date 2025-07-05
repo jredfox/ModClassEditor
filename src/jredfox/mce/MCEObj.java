@@ -126,12 +126,12 @@ public class MCEObj {
 		
 		public MCEField(String name, String value, String type, String method, String desc, String inject)
 		{
-			this.name = name;
+			this.name = name.trim();
 			this.value = value;
-			this.type = this.safeString(type);
-			this.method = this.safeString(method, "<clinit>");
-			this.desc = this.safeString(desc);
-			this.inject = this.safeString(inject, "after");
+			this.type = this.safeString(type).trim();
+			this.method = this.safeString(method, "<clinit>").trim();
+			this.desc = this.safeString(desc).trim();
+			this.inject = this.safeString(inject, "after").trim();
 		}
 		
 		protected String safeString(String s)

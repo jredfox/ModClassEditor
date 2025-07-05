@@ -12,10 +12,19 @@ import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
+import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.internal.Util;
 
 public class CoreUtils {
@@ -178,6 +187,56 @@ public class CoreUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static boolean equals(InsnNode a, InsnNode b)
+	{
+		return a.getOpcode() == b.getOpcode();
+	}
+	
+	public static boolean equals(JumpInsnNode a, JumpInsnNode b)
+	{
+		return a.getOpcode() == b.getOpcode();
+	}
+	
+	public static boolean equals(LineNumberNode a, LineNumberNode b)
+	{
+		return a.line == b.line;
+	}
+	
+	public static boolean equals(IntInsnNode a, IntInsnNode b)
+	{
+		return a.getOpcode() == b.getOpcode() && a.operand == b.operand;
+	}
+	
+	public static boolean equals(LdcInsnNode a, LdcInsnNode b)
+	{
+		return a.cst != null ? (a.cst.equals(b.cst)) : (b.cst == null);
+	}
+	
+	public static boolean equals(MethodInsnNode obj1, MethodInsnNode obj2)
+	{
+		return obj1.getOpcode() == obj2.getOpcode() && obj1.name.equals(obj2.name) && obj1.desc.equals(obj2.desc) && obj1.owner.equals(obj2.owner);
+	}
+	
+	public static boolean equals(TypeInsnNode compare, TypeInsnNode ab) 
+	{
+		return compare.getOpcode() == ab.getOpcode() && compare.desc.equals(ab.desc);
+	}
+	
+	public static boolean equals(VarInsnNode obj1, VarInsnNode obj2)
+	{
+		return obj1.getOpcode() == obj2.getOpcode() && obj1.var == obj2.var;
+	}
+	
+	public static boolean equals(FieldInsnNode a, FieldInsnNode b)
+	{
+		return a.getOpcode() == b.getOpcode() && a.name.equals(b.name) && a.owner.equals(b.owner) && a.desc.equals(b.desc);
+	}
+	
+	public static boolean equalsOpcode(AbstractInsnNode a, AbstractInsnNode b)
+	{
+		return a.getOpcode() == b.getOpcode();
 	}
 
 }

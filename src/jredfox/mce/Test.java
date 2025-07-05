@@ -8,7 +8,7 @@ import org.ralleytn.simple.json.JSONParseException;
 
 public class Test {
 	
-	private static char id_c = 'a';
+	private static char id_c = 'a'; 
 	private static boolean id_bool = false;
 	private static byte id_b = (byte) 202;
 	private static short id_s = 201;
@@ -58,7 +58,7 @@ public class Test {
 	
 	public Test()
 	{
-//		ArrUtils.insert(o_arr_short, (Short[]) ArrCache.get(21), 1);
+		
 	}
 	
 //	private int o_id = new Integer(200);

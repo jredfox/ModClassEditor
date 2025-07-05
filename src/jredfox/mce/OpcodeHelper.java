@@ -249,7 +249,7 @@ public class OpcodeHelper {
 		return o != null ? o : 0;
 	}
 	
-	public static String getOppcodeString(int opp)
+	public static String getOppcodeName(int opp)
 	{
 		String s = i2opps.get(opp);
 		return s != null ? s : "NOP";

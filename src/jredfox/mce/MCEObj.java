@@ -710,9 +710,9 @@ public class MCEObj {
 	public static void insertLabelNode(InsnList list)
 	{
 		LabelNode l1 = new LabelNode();
-		list.insert(l1);
 		if(getASMVersion() < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+		list.insert(l1);
 	}
 	
 	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)

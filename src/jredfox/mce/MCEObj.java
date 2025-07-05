@@ -368,7 +368,7 @@ public class MCEObj {
 					AbstractInsnNode nxt = nextRealInsn(am);
 					
 					//if the return instruction appears right after init in rare cases assume this is the last injection point
-					if(nxt != null && CoreUtils.isReturnOpcode(nxt.getOpcode()))
+					if(nxt == null || CoreUtils.isReturnOpcode(nxt.getOpcode()))
 						return am;
 					
 					AbstractInsnNode prev = prevRealInsn(am);
@@ -717,7 +717,7 @@ public class MCEObj {
 					&& (mt || (wcd ? WildCardMatcher.match(method.desc, method_desc, true)
 							: method.desc.equals(method_desc)))) {
 				l.add(method);
-				if (!wc)
+				if (!wc && !wcd)
 					break;
 			}
 		}

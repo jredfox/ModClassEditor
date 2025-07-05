@@ -41,6 +41,11 @@ public class TestDemo {
 				new A());
 			System.out.println(new A());
 		}
+		
+		public static void init()
+		{
+			
+		}
 	}
 
 }

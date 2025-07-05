@@ -58,8 +58,12 @@ public class Test {
 	
 	public Test()
 	{
-		super();
-		System.out.println();
+		this(new Object());
+	}
+	
+	public Test(Object o)
+	{
+		
 	}
 	
 	private int o_id = new Integer(200);
@@ -101,6 +105,7 @@ public class Test {
 
 	public static void load() {
 		method_st(null);
+		TestDemo.B.init();
 	}
 	
 //	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];

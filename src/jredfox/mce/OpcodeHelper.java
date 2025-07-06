@@ -17,7 +17,7 @@ public class OpcodeHelper {
 	
 	static
 	{
-		Map<String, Integer> o = new HashMap(300, 0.99f);
+		Map<String, Integer> o = new HashMap(512);//for some reason cacpity wants to be 512 no matter the load factor so I say 512 to begin with now
 		Map<Integer, String> i = new HashMap(256, 0.99f);
 		//start opcode info
 		o.put("ASM4", 262144);

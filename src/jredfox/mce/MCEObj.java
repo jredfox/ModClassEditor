@@ -149,6 +149,9 @@ public class MCEObj {
 		{
 			p = safeString(p, "after");
 			String[] arr = p.split(",");
+			if(arr.length == 0)
+				return;
+			
 			String v0 = arr[0].trim().toLowerCase();
 			int typeIndex = 0;
 			String type;
@@ -160,7 +163,11 @@ public class MCEObj {
 				return;
 			}
 			else if(v0.isEmpty())
+			{
+				if(arr.length > 1)
+					System.err.println("Maulformed Line! Opperation or Type not Found: '" + p + "'");
 				return;
+			}
 			
 			if(v0.startsWith("before"))
 			{

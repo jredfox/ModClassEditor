@@ -121,7 +121,7 @@ public class Test {
 		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
 		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
 		
-		InsertionPoint b = new InsertionPoint("");
+		InsertionPoint b = new InsertionPoint("before");
 		System.out.println(b.opp + ", " + b.type);
 		
 		InsertionPoint lb = new InsertionPoint("before:line:21");

@@ -296,6 +296,11 @@ public class MCEObj {
 					this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
 					this.type = InsnTypes.LineNumberNode;
 				}
+				else if(nf && type.equals("labelnode") || type.equals("label"))
+				{
+					this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
+					this.type = InsnTypes.LabelNode;
+				}
 				else if(type.startsWith("line:"))
 				{
 					this.point = new LineNumberNode(parseInt(type.substring(5)), new LabelNode());
@@ -304,11 +309,6 @@ public class MCEObj {
 				else if(type.startsWith("label:"))
 				{
 					this.point = new MCEIndexLabel(parseInt(type.substring(6)));
-					this.type = InsnTypes.LabelNode;
-				}
-				else if(nf && type.equals("labelnode") || type.equals("label"))
-				{
-					this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
 					this.type = InsnTypes.LabelNode;
 				}
 				else if(type.equals("opcode"))

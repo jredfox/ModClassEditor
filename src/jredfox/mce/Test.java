@@ -126,15 +126,12 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		System.out.println(MCEObj.parseString(" \"Double\", 128"));
-		
 		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
 		System.out.println(ldc.opp + ", '" + ((LdcInsnNode)ldc.point).cst + "'");
 		
-		InsertionPoint ldc2 = new InsertionPoint("LdcInsnNode, Double, 128");
+		InsertionPoint ldc2 = new InsertionPoint("LdcInsnNode, String, 128");
 		Object oldc2 = ((LdcInsnNode)ldc2.point).cst;
 		System.out.println(ldc2.opp + ", '" + ((LdcInsnNode)ldc2.point).cst + "' " + oldc2.getClass());
-		
 		
 //		InsertionPoint b = new InsertionPoint("before");
 //		System.out.println(b.opp + ", " + b.type);

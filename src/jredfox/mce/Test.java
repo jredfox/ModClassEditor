@@ -134,7 +134,6 @@ public class Test {
 		System.out.println(ldc2.opp + ", '" + ((LdcInsnNode)ldc2.point).cst + "' " + oldc2.getClass());
 		
 		
-		
 //		InsertionPoint b = new InsertionPoint("before");
 //		System.out.println(b.opp + ", " + b.type);
 //		

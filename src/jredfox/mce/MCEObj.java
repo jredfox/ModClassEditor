@@ -1201,9 +1201,19 @@ public class MCEObj {
 			return "";
 		
 		value = value.trim();
-		if(value.isEmpty())
-			return "";
-		return value.charAt(0) == '"' ? (value.substring(1, value.length() - 1)) : (value);
+		if(!value.isEmpty() && value.charAt(0) == '"')
+		{
+			int len = value.length();
+			if (len == 1)
+				return "";
+			
+			int end = len - 1;
+			if (value.charAt(end) != '"')
+				end++;
+			return value.substring(1, end);
+		}
+		
+		return value;
 	}
 	
 	public static String[] splitFirst(String s, char delim)

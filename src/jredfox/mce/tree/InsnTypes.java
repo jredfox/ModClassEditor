@@ -1,5 +1,9 @@
 package jredfox.mce.tree;
 
+/**
+ * A Quick Way to determine what type the Insn is
+ * @author jredfox
+ */
 public enum InsnTypes {
 	
 	/**

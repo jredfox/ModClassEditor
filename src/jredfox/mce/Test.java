@@ -135,6 +135,8 @@ public class Test {
 //		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
 //		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
 //		System.out.println(OpcodeHelper.opps.size());
+		
+		System.out.println(getCapacity(OpcodeHelper.i2opps));
 	}
 	
     public static int getCapacity(Map map) {

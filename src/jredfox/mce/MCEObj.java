@@ -232,15 +232,20 @@ public class MCEObj {
 					this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
 					this.type = InsnTypes.VarInsnNode;
 				}
-				else if(nf && type.equals("fieldinsnnode") || type.equals("fieldinsn"))
-				{
-					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
-					this.type = InsnTypes.FieldInsnNode;
-				}
 				else if(nf && type.equals("jumpinsnnode") || type.equals("jumpinsn"))
 				{
 					this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
 					this.type = InsnTypes.JumpInsnNode;
+				}
+				else if(nf && type.equals("typeinsnnode") || type.equals("typeinsn"))
+				{
+					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]));
+					this.type = InsnTypes.TypeInsnNode;
+				}
+				else if(nf && type.equals("fieldinsnnode") || type.equals("fieldinsn"))
+				{
+					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
+					this.type = InsnTypes.FieldInsnNode;
 				}
 				else if(nf && type.equals("ldcinsnnode") || type.equals("ldcinsn"))
 				{
@@ -290,11 +295,6 @@ public class MCEObj {
 				{
 					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
 					this.type = InsnTypes.MethodInsnNode;
-				}
-				else if(nf && type.equals("typeinsnnode") || type.equals("typeinsn"))
-				{
-					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]));
-					this.type = InsnTypes.TypeInsnNode;
 				}
 				else if(type.startsWith("line:"))
 				{

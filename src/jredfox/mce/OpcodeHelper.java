@@ -269,6 +269,14 @@ public class OpcodeHelper {
 		return s != null ? s : "NOP";
 	}
 	
+	public static boolean hasOpcode(String opp)
+	{
+		if(opps.containsKey(opp.toUpperCase()))
+			return true;
+		int i = MCEObj.parseInt(opp);
+		return i != 0 && i2opps.containsKey(i);
+	}
+	
 	/**
 	 * loads this class if not already loaded
 	 */

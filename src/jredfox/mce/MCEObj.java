@@ -208,7 +208,10 @@ public class MCEObj {
 			}
 			else
 			{
-				System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type + "\"");
+				if(OpcodeHelper.hasOpcode(type))
+					System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");
+				else
+					System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");
 			}
 		}
 	}

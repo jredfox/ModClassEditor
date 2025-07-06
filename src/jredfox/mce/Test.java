@@ -143,11 +143,6 @@ public class Test {
 		InsertionPoint finsn = new InsertionPoint("FIELDINSNNODE, PUTSTATIC, \"jredfox/mce/Test\", \"o_arr_char\", \"[Ljava/lang/Character;]\"");
 		FieldInsnNode fn = (FieldInsnNode) finsn.point;
 		System.out.println(OpcodeHelper.getOppcodeInsnName(fn.getOpcode()) + "," + fn.owner + "," + fn.name + "," + fn.desc);
-		//TODO: remove quotes for MethodInsnNode, FieldInsnNode and TypeInsnNode
-		//TODO: remove need for Node in type name
-		//TODO: support bytecode viewer's format
-		//TODO: validate opcodes per node
-		//TODO: IntInsn cast to correct data type
 		
 		InsertionPoint i_insn = new InsertionPoint("IntInsnNode, SIPUSH, 120");
 		IntInsnNode in = (IntInsnNode) i_insn.point;

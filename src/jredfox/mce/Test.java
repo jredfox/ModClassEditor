@@ -119,8 +119,13 @@ public class Test {
 	{
 //		System.out.println("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
 		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-		System.out.println(((LdcInsnNode)ldc.point).cst);
-		System.out.println(ldc.opp);
+		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
+		
+		InsertionPoint b = new InsertionPoint("");
+		System.out.println(b.opp + ", " + b.type);
+		
+		InsertionPoint lb = new InsertionPoint("before:line:21");
+		System.out.println(lb.type + " " + lb.opp + " " + ((LineNumberNode) lb.point).line);
 		
 	}
 	

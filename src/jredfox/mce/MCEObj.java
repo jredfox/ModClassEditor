@@ -147,19 +147,21 @@ public class MCEObj {
 
 		protected void parse(String p) 
 		{
+			p = safeString(p, "after");
 			String[] arr = p.split(",");
 			String v0 = arr[0].trim().toLowerCase();
-			
-			//If there is no ASM Injection point parse the opp and return from the ctr
-			if(arr.length == 1)
-			{
-				if(v0.equals("before"))
-					this.opp = "before";
-				return;
-			}
-			
 			int typeIndex = 0;
 			String type;
+			
+			//If there is no ASM Injection point parse the opp and return from the ctr
+			if(arr.length == 1 && (v0.equals("before") || v0.equals("after")))
+			{
+				this.opp = v0;
+				return;
+			}
+			else if(v0.isEmpty())
+				return;
+			
 			if(v0.startsWith("before"))
 			{
 				this.opp = "before";
@@ -169,7 +171,7 @@ public class MCEObj {
 				}
 				else
 				{
-					type = arr[1].trim().toLowerCase();
+					type = arr.length > 1 ? (arr[1].trim().toLowerCase()) : (v0);
 					typeIndex++;
 				}
 			}
@@ -181,7 +183,7 @@ public class MCEObj {
 				}
 				else
 				{
-					type = arr[1].trim().toLowerCase();
+					type = arr.length > 1 ? (arr[1].trim().toLowerCase()) : (v0);
 					typeIndex++;
 				}
 			}
@@ -261,7 +263,9 @@ public class MCEObj {
 				}
 				else
 				{
-					if(OpcodeHelper.hasOpcode(type))
+					if(type.equals("line") || type.equals("label"))
+						System.err.println("Missing ':' on Line or Label Injection Point! Line: '" + p + "'");
+					else if(OpcodeHelper.hasOpcode(type))
 						System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");
 					else
 						System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");

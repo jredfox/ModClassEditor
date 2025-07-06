@@ -4,7 +4,12 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LdcInsnNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.ralleytn.simple.json.JSONParseException;
+
+import jredfox.mce.MCEObj.InsertionPoint;
 
 public class Test {
 	
@@ -112,13 +117,11 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-//		System.out.println(OpcodeHelper.opps.size());
-		long ms = System.nanoTime();
-		OpcodeHelper.init();
-		long end = System.nanoTime();
-		System.out.println(end - ms);
-		System.out.println("size:" + getCapacity(OpcodeHelper.opps));
-//		System.out.println(OpcodeHelper.getOppcode("pop2"));
+		System.out.println("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+		InsertionPoint p = new InsertionPoint("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+		System.out.println(((LdcInsnNode)p.point).cst);
+//		InsertionPoint p2 = new InsertionPoint("     AFTER, INVOKEVIRTUAL   ");
+//		System.out.println(p.opp);
 	}
 	
     public static int getCapacity(Map map) {

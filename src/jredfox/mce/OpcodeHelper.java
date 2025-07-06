@@ -260,7 +260,7 @@ public class OpcodeHelper {
 	public static int getOppcode(String opp)
 	{
 		Integer o = opps.get(opp.toUpperCase());
-		return o != null ? o : 0;
+		return o != null ? o : MCEObj.parseInt(opp);
 	}
 	
 	public static String getOppcodeName(int opp)

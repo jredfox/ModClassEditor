@@ -1,6 +1,8 @@
 package jredfox.mce;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,14 +15,18 @@ import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.JumpInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
+
+import jredfox.mce.tree.MCEIndexLabel;
 
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
@@ -85,6 +91,180 @@ public class MCEObj {
 			JSONObject f = (JSONObject) o;
 			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
 		}
+	}
+	
+	public static class InsertionPoint
+	{
+		/**
+		 * Opperation must be "before" or "after"
+		 */
+		public String opp = "after";
+		/**
+		 * The ASM Injection Point when NON-NULL will be a specific injection point instead of before or after. The opp will combine with this
+		 */
+		public AbstractInsnNode point;
+		/**
+		 * the index of the InjectionPoint's Occurance
+		 */
+		public int occurance;
+		/**
+		 * LineNumberNode / LabelNode offset either before or after x times bassed on the opp
+		 */
+		public int offset;
+		/**
+		 * Uses LineNumberNode instead of LabelNode when counting offset when {@link #exact} is false
+		 */
+		public boolean preferLine = true;
+		/**
+		 * When true will use the exact injection point using opperation before or after and offset based on instruction counts instead of LineNumberNode / LabelNode
+		 */
+		public boolean exact;
+		
+		public InsertionPoint(String p)
+		{
+			String[] arr = p.split(",");
+			String v0 = arr[0].trim().toLowerCase();
+			int typeIndex = 0;
+			String type;
+			if(v0.startsWith("before"))
+			{
+				this.opp = "before";
+				if(v0.startsWith("before:"))
+				{
+					type = v0.substring("before:".length()).trim();
+				}
+				else
+				{
+					type = arr[1].trim().toLowerCase();
+					typeIndex++;
+				}
+			}
+			else if(v0.startsWith("after"))
+			{
+				if(v0.startsWith("after:"))
+				{
+					type = v0.substring("after:".length()).trim();
+				}
+				else
+				{
+					type = arr[1].trim().toLowerCase();
+					typeIndex++;
+				}
+			}
+			else
+				type = v0;
+			
+			if(type.equals("InsnNode".toLowerCase()) || type.equals("Opcode".toLowerCase()))
+			{
+				this.point = new InsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
+			}
+			else if(type.equals("FieldInsnNode".toLowerCase()))
+			{
+				this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex +1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
+			}
+			else if(type.equals("IntInsnNode".toLowerCase()))
+			{
+				this.point = new IntInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
+			}
+			else if(type.equals("JumpInsnNode".toLowerCase()))
+			{
+				this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
+			}
+			else if(type.equals("LdcInsnNode".toLowerCase()))
+			{
+				String ldc = p.substring(p.toLowerCase().indexOf("LdcInsnNode".toLowerCase()));
+				ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
+				if(ldc.charAt(0) == '"')
+					ldc = ldc.substring(1, ldc.length() - 1);
+				this.point = new LdcInsnNode(ldc);
+			}
+			else if(type.equals("LineNumberNode".toLowerCase()))
+			{
+				this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
+			}
+			else if(type.equals("MethodInsnNode".toLowerCase()))
+			{
+				this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
+			}
+			else if(type.equals("TypeInsnNode".toLowerCase()))
+			{
+				this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2]);
+			}
+			else if(type.equals("VarInsnNode".toLowerCase()))
+			{
+				this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
+			}
+			else if(type.startsWith("line:"))
+			{
+				this.point = new LineNumberNode(parseInt(type.substring("line:".length())), new LabelNode());
+			}
+			else if(type.startsWith("label:"))
+			{
+				this.point = new MCEIndexLabel(parseInt(type.substring("label:".length())));
+			}
+			else if(type.equals("LabelNode".toLowerCase()))
+			{
+				this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
+			}
+			else
+			{
+				System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type + "\"");
+			}
+		}
+	}
+	
+	public static <T> T[] toArray(Collection<T> col, Class<T> clazz)
+	{
+	    @SuppressWarnings("unchecked")
+		T[] li = (T[]) Array.newInstance(clazz, col.size());
+	    int index = 0;
+	    for(T obj : col)
+	    {
+	        li[index++] = obj;
+	    }
+	    return li;
+	}
+	
+	/**
+	 * split with quote ignoring support
+	 * @param limit is the amount of times it will attempt to split
+	 * TODO: make it work with multiple quotes
+	 */
+	public static String[] split(String str, int limit, char sep, char lquote, char rquote) 
+	{
+		if(str.isEmpty())
+			return new String[]{str};
+		List<String> list = new ArrayList();
+		boolean inside = false;
+		int count = 0;
+		for(int i = 0; i < str.length(); i += 1)
+		{
+			if(limit != -1 && count >= limit)
+				break;
+			String a = str.substring(i, i + 1);
+			char firstChar = a.charAt(0);
+			char prev = i == 0 ? 'a' : str.substring(i-1, i).charAt(0);
+			boolean escape = prev == '\\';
+			if(firstChar == '\\' && prev == '\\')
+			{
+				prev = '/';
+				firstChar = '/';//escape the escape
+			}
+			if(!escape && (a.equals("" + lquote) || a.equals("" + rquote)))
+			{
+				inside = !inside;
+			}
+			if(a.equals("" + sep) && !inside)
+			{
+				String section = str.substring(0, i);
+				list.add(section);
+				str = str.substring(i + ("" + sep).length());
+				i = -1;
+				count++;
+			}
+		}
+		list.add(str);//add the rest of the string
+		return toArray(list, String.class);
 	}
 
 	public static class MCEField

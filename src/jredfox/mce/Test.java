@@ -124,6 +124,11 @@ public class Test {
 		InsertionPoint b = new InsertionPoint("before");
 		System.out.println(b.opp + ", " + b.type);
 		
+		InsertionPoint a = new InsertionPoint("after");
+		System.out.println(a.opp + ", " + a.type);
+		InsertionPoint a2 = new InsertionPoint(" ");
+		System.out.println(a2.opp + ", " + a2.type);
+		
 		InsertionPoint lb = new InsertionPoint("before:line:21");
 		System.out.println(lb.type + " " + lb.opp + " " + ((LineNumberNode) lb.point).line);
 		

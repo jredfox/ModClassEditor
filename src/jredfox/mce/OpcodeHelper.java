@@ -12,7 +12,7 @@ public class OpcodeHelper {
 	
 	public static final Map<String, Integer> opps;
 	public static final Map<Integer, String> i2opps;
-	public static final Set<Integer> BAD_CTR_OPCODES = new HashSet<Integer>();
+	public static final Set<Integer> BAD_CTR_OPCODES = new HashSet<Integer>(10, 0.9F);
 	
 	static
 	{

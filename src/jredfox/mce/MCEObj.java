@@ -156,7 +156,7 @@ public class MCEObj {
 			int typeIndex = 0;
 			String type;
 			
-			//If there is no ASM Injection point parse the opp and return from the ctr
+			//If there is no ASM Injection point parse the opp and return
 			if(arr.length == 1 && (v0.equals("before") || v0.equals("after")))
 			{
 				this.opp = v0;

@@ -259,7 +259,7 @@ public class OpcodeHelper {
 	
 	public static int getOppcode(String opp)
 	{
-		Integer o = opps.get(opp.toUpperCase());
+		Integer o = opps.get(opp.trim().toUpperCase());
 		return o != null ? o : MCEObj.parseInt(opp);
 	}
 	
@@ -271,7 +271,8 @@ public class OpcodeHelper {
 	
 	public static boolean hasOpcode(String opp)
 	{
-		if(opps.containsKey(opp.toUpperCase()))
+		opp = opp.trim().toUpperCase();
+		if(opps.containsKey(opp))
 			return true;
 		int i = MCEObj.parseInt(opp);
 		return i != 0 && i2opps.containsKey(i);

@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
@@ -118,19 +119,22 @@ public class Test {
 	public static void main(String[] args) throws JSONParseException
 	{
 //		System.out.println("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
+//		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+//		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
+//		
+//		InsertionPoint b = new InsertionPoint("before");
+//		System.out.println(b.opp + ", " + b.type);
+//		
+//		InsertionPoint a = new InsertionPoint("after");
+//		System.out.println(a.opp + ", " + a.type);
+//		InsertionPoint a2 = new InsertionPoint(" ");
+//		System.out.println(a2.opp + ", " + a2.type);
 		
-		InsertionPoint b = new InsertionPoint("before");
-		System.out.println(b.opp + ", " + b.type);
+		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
+		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
 		
-		InsertionPoint a = new InsertionPoint("after");
-		System.out.println(a.opp + ", " + a.type);
-		InsertionPoint a2 = new InsertionPoint(" ");
-		System.out.println(a2.opp + ", " + a2.type);
-		
-		InsertionPoint lb = new InsertionPoint("before:line:21");
-		System.out.println(lb.type + " " + lb.opp + " " + ((LineNumberNode) lb.point).line);
+//		InsertionPoint lb = new InsertionPoint("before:line:21");
+//		System.out.println(lb.type + " " + lb.opp + " " + ((LineNumberNode) lb.point).line);
 		
 	}
 	

@@ -17,8 +17,8 @@ public class OpcodeHelper {
 	
 	static
 	{
-		Map<String, Integer> o = new HashMap(256, 0.9f);
-		Map<Integer, String> i = new HashMap(256, 0.9f);
+		Map<String, Integer> o = new HashMap(256, 0.99f);
+		Map<Integer, String> i = new HashMap(256, 0.99f);
 		o.put("ASM4", 262144);
 		o.put("ASM5", 327680);
 		o.put("V1_1", 196653);

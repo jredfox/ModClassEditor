@@ -252,8 +252,7 @@ public class MCEObj {
 						//They didn't specify string but it's expected to be a string
 						if(ldc.charAt(0) == '"')
 						{
-							ldc = ldc.substring(1, ldc.length() - 1);
-							this.point = new LdcInsnNode(ldc);
+							this.point = new LdcInsnNode(parseString(ldc));
 						}
 						else
 						{

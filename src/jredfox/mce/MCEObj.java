@@ -104,7 +104,7 @@ public class MCEObj {
 		/**
 		 * the index of the InjectionPoint's Occurance
 		 */
-		public int occurance;
+		public int occurrence;
 		/**
 		 * LineNumberNode / LabelNode offset either before or after x times bassed on the opp
 		 */
@@ -125,7 +125,7 @@ public class MCEObj {
 			{
 				JSONObject oj = (JSONObject) o;
 				this.parse(oj.getString("point"));
-				this.occurance = parseInt(safeString(oj.getAsString("occurance"), "0").replace("start", "0").replace("end", "-1"));
+				this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
 				this.offset =  parseInt(safeString(oj.getAsString("offset"), "0").replace("start", "0").replace("end", "-1"));
 				this.preferLine = parseBoolean(safeString(oj.getAsString("preferLineNumber"), "t"));
 			}

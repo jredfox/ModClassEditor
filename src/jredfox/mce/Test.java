@@ -6,10 +6,13 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.ralleytn.simple.json.JSONParseException;
 
 import jredfox.mce.MCEObj.InsertionPoint;
@@ -120,23 +123,44 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-//		System.out.println("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-//		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-//		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
-//		
-//		InsertionPoint b = new InsertionPoint("before");
-//		System.out.println(b.opp + ", " + b.type);
-//		
-//		InsertionPoint a = new InsertionPoint("after");
-//		System.out.println(a.opp + ", " + a.type);
-//		InsertionPoint a2 = new InsertionPoint(" ");
-//		System.out.println(a2.opp + ", " + a2.type);
+		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
 		
-//		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
-//		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
-//		System.out.println(OpcodeHelper.opps.size());
+		InsertionPoint b = new InsertionPoint("before");
+		System.out.println(b.opp + ", " + b.type);
 		
-		System.out.println(getCapacity(OpcodeHelper.i2opps));
+		InsertionPoint a = new InsertionPoint("after");
+		System.out.println(a.opp + ", " + a.type);
+		InsertionPoint a2 = new InsertionPoint(" ");
+		System.out.println(a2.opp + ", " + a2.type);
+		
+		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_3");
+		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeInsnName(((InsnNode)insn.point).getOpcode()) );
+		
+		InsertionPoint finsn = new InsertionPoint("FIELDINSNNODE, PUTSTATIC, \"jredfox/mce/Test\", \"o_arr_char\", \"[Ljava/lang/Character;]\"");
+		FieldInsnNode fn = (FieldInsnNode) finsn.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(fn.getOpcode()) + "," + fn.owner + "," + fn.name + "," + fn.desc);
+		//TODO: remove quotes for MethodInsnNode, FieldInsnNode and TypeInsnNode
+		//TODO: remove need for Node in type name
+		//TODO: support bytecode viewer's format
+		//TODO: validate opcodes per node
+		//TODO: IntInsn cast to correct data type
+		
+		InsertionPoint i_insn = new InsertionPoint("IntInsnNode, SIPUSH, 120");
+		IntInsnNode in = (IntInsnNode) i_insn.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(in.getOpcode()) + "," + in.operand);
+		
+		InsertionPoint jump = new InsertionPoint("JumpInsnNode, GOTO, l40");
+		System.out.println(jump.opp + "," + OpcodeHelper.getOppcodeInsnName(jump.point.getOpcode()));
+		
+		InsertionPoint lnode = new InsertionPoint("LineNUMBERNode, 141");
+		LineNumberNode ln0 = (LineNumberNode) lnode.point;
+		System.out.println(lnode.opp + "," + ln0.line);
+		
+		InsertionPoint minsn = new InsertionPoint("MethodInsnNode, INVOKESPECIAL, \"jredfox/mce/MCEObj$InsertionPoint\", \"<init>\", \"(Ljava/lang/String;)V\"");
+		MethodInsnNode mn = (MethodInsnNode) minsn.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(mn.getOpcode()) + "," + mn.owner + "," + mn.name + "," + mn.desc);
+		
 	}
 	
     public static int getCapacity(Map map) {

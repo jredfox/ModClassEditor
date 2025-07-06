@@ -517,6 +517,10 @@ public class OpcodeHelper {
 		return i != 0 && i2opps.containsKey(i);
 	}
 	
+	public static String getOppcodeInsnName(int opcode) {
+		return i2opps.get(opcode);
+	}
+	
 	/**
 	 * loads this class if not already loaded
 	 */
@@ -524,5 +528,6 @@ public class OpcodeHelper {
 	{
 		
 	}
+
 
 }

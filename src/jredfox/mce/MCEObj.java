@@ -158,7 +158,7 @@ public class MCEObj {
 				this.opp = "before";
 				if(v0.startsWith("before:"))
 				{
-					type = v0.substring("before:".length()).trim();
+					type = v0.substring(7).trim();
 				}
 				else
 				{
@@ -170,7 +170,7 @@ public class MCEObj {
 			{
 				if(v0.startsWith("after:"))
 				{
-					type = v0.substring("after:".length()).trim();
+					type = v0.substring(6).trim();
 				}
 				else
 				{
@@ -201,7 +201,7 @@ public class MCEObj {
 			{
 				String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
 				ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
-				if(ldc.charAt(0) == '"')
+				if(!ldc.isEmpty() && ldc.charAt(0) == '"')
 					ldc = ldc.substring(1, ldc.length() - 1);
 				this.point = new LdcInsnNode(ldc);
 			}
@@ -223,11 +223,11 @@ public class MCEObj {
 			}
 			else if(type.startsWith("line:"))
 			{
-				this.point = new LineNumberNode(parseInt(type.substring("line:".length())), new LabelNode());
+				this.point = new LineNumberNode(parseInt(type.substring(5)), new LabelNode());
 			}
 			else if(type.startsWith("label:"))
 			{
-				this.point = new MCEIndexLabel(parseInt(type.substring("label:".length())));
+				this.point = new MCEIndexLabel(parseInt(type.substring(6)));
 			}
 			else if(type.equals("labelnode"))
 			{

@@ -207,7 +207,7 @@ public class MCEObj {
 				}
 				else if(nf && type.equals("fieldinsnnode") || type.equals("fieldinsn"))
 				{
-					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2].trim(), arr[typeIndex + 3].trim(), arr[typeIndex + 4].trim());
+					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
 					this.type = InsnTypes.FieldInsnNode;
 				}
 				else if(nf && type.equals("intinsnnode") || type.equals("intinsn"))
@@ -220,6 +220,7 @@ public class MCEObj {
 					this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
 					this.type = InsnTypes.JumpInsnNode;
 				}
+				//TODO: FIX only supporting strings
 				else if(nf && type.equals("ldcinsnnode") || type.equals("ldcinsn"))
 				{
 					String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
@@ -236,12 +237,12 @@ public class MCEObj {
 				}
 				else if(nf && type.equals("methodinsnnode") || type.equals("methodinsn"))
 				{
-					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2].trim(), arr[typeIndex + 3].trim(), arr[typeIndex + 4].trim());
+					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
 					this.type = InsnTypes.MethodInsnNode;
 				}
 				else if(nf && type.equals("typeinsnnode") || type.equals("typeinsn"))
 				{
-					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2].trim());
+					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]));
 					this.type = InsnTypes.TypeInsnNode;
 				}
 				else if(nf && type.equals("varinsnnode") || type.equals("varinsn"))
@@ -1145,6 +1146,17 @@ public class MCEObj {
 		{
 			return 0;
 		}
+	}
+	
+	public static String parseString(String value)
+	{
+		if(value == null)
+			return "";
+		
+		value = value.trim();
+		if(value.isEmpty())
+			return "";
+		return value.charAt(0) == '"' ? (value.substring(1, value.length() - 1)) : (value);
 	}
 	
 	public static String[] splitFirst(String s, char delim)

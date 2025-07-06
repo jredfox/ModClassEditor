@@ -67,7 +67,7 @@ public class Test {
 	
 	static
 	{
-		
+		id_d = 40000;
 	}
 	
 	public Test()
@@ -126,6 +126,8 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
+		System.out.println(MCEObj.parseString("        \"'     A Parsed String       '\"   "));
+		
 		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
 		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
 		

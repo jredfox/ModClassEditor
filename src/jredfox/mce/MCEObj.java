@@ -1,8 +1,6 @@
 package jredfox.mce;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -120,10 +118,39 @@ public class MCEObj {
 		 */
 		public boolean exact;
 		
+		public InsertionPoint(JSONObject j)
+		{
+			Object o = j.containsKey("inject") ? j.get("inject") : j.get("insert");
+			if(o instanceof JSONObject)
+			{
+				JSONObject oj = (JSONObject) o;
+				this.parse(oj.getString("point"));
+				this.occurance = parseInt(safeString(oj.getAsString("occurance"), "0").replace("start", "0").replace("end", "-1"));
+				this.offset =  parseInt(safeString(oj.getAsString("offset"), "0").replace("start", "0").replace("end", "-1"));
+				this.preferLine = parseBoolean(safeString(oj.getAsString("preferLineNumber"), "t"));
+			}
+			else
+				this.parse(safeString((String) o));
+		}
+		
 		public InsertionPoint(String p)
+		{
+			this.parse(p);
+		}
+
+		protected void parse(String p) 
 		{
 			String[] arr = p.split(",");
 			String v0 = arr[0].trim().toLowerCase();
+			
+			//If there is no ASM Injection point parse the opp and return from the ctr
+			if(arr.length == 1)
+			{
+				if(v0.equals("before"))
+					this.opp = "before";
+				return;
+			}
+			
 			int typeIndex = 0;
 			String type;
 			if(v0.startsWith("before"))
@@ -154,43 +181,43 @@ public class MCEObj {
 			else
 				type = v0;
 			
-			if(type.equals("InsnNode".toLowerCase()) || type.equals("Opcode".toLowerCase()))
+			if(type.equals("insnnode") || type.equals("opcode"))
 			{
 				this.point = new InsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
 			}
-			else if(type.equals("FieldInsnNode".toLowerCase()))
+			else if(type.equals("fieldinsnnode"))
 			{
 				this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex +1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
 			}
-			else if(type.equals("IntInsnNode".toLowerCase()))
+			else if(type.equals("intinsnnode"))
 			{
 				this.point = new IntInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
 			}
-			else if(type.equals("JumpInsnNode".toLowerCase()))
+			else if(type.equals("jumpinsnnode"))
 			{
 				this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
 			}
-			else if(type.equals("LdcInsnNode".toLowerCase()))
+			else if(type.equals("ldcinsnnode"))
 			{
-				String ldc = p.substring(p.toLowerCase().indexOf("LdcInsnNode".toLowerCase()));
+				String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
 				ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
 				if(ldc.charAt(0) == '"')
 					ldc = ldc.substring(1, ldc.length() - 1);
 				this.point = new LdcInsnNode(ldc);
 			}
-			else if(type.equals("LineNumberNode".toLowerCase()))
+			else if(type.equals("linenumbernode"))
 			{
 				this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
 			}
-			else if(type.equals("MethodInsnNode".toLowerCase()))
+			else if(type.equals("methodinsnnode"))
 			{
 				this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
 			}
-			else if(type.equals("TypeInsnNode".toLowerCase()))
+			else if(type.equals("typeinsnnode"))
 			{
 				this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2]);
 			}
-			else if(type.equals("VarInsnNode".toLowerCase()))
+			else if(type.equals("varinsnnode"))
 			{
 				this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
 			}
@@ -202,7 +229,7 @@ public class MCEObj {
 			{
 				this.point = new MCEIndexLabel(parseInt(type.substring("label:".length())));
 			}
-			else if(type.equals("LabelNode".toLowerCase()))
+			else if(type.equals("labelnode"))
 			{
 				this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
 			}
@@ -214,60 +241,6 @@ public class MCEObj {
 					System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");
 			}
 		}
-	}
-	
-	public static <T> T[] toArray(Collection<T> col, Class<T> clazz)
-	{
-	    @SuppressWarnings("unchecked")
-		T[] li = (T[]) Array.newInstance(clazz, col.size());
-	    int index = 0;
-	    for(T obj : col)
-	    {
-	        li[index++] = obj;
-	    }
-	    return li;
-	}
-	
-	/**
-	 * split with quote ignoring support
-	 * @param limit is the amount of times it will attempt to split
-	 * TODO: make it work with multiple quotes
-	 */
-	public static String[] split(String str, int limit, char sep, char lquote, char rquote) 
-	{
-		if(str.isEmpty())
-			return new String[]{str};
-		List<String> list = new ArrayList();
-		boolean inside = false;
-		int count = 0;
-		for(int i = 0; i < str.length(); i += 1)
-		{
-			if(limit != -1 && count >= limit)
-				break;
-			String a = str.substring(i, i + 1);
-			char firstChar = a.charAt(0);
-			char prev = i == 0 ? 'a' : str.substring(i-1, i).charAt(0);
-			boolean escape = prev == '\\';
-			if(firstChar == '\\' && prev == '\\')
-			{
-				prev = '/';
-				firstChar = '/';//escape the escape
-			}
-			if(!escape && (a.equals("" + lquote) || a.equals("" + rquote)))
-			{
-				inside = !inside;
-			}
-			if(a.equals("" + sep) && !inside)
-			{
-				String section = str.substring(0, i);
-				list.add(section);
-				str = str.substring(i + ("" + sep).length());
-				i = -1;
-				count++;
-			}
-		}
-		list.add(str);//add the rest of the string
-		return toArray(list, String.class);
 	}
 
 	public static class MCEField
@@ -295,7 +268,7 @@ public class MCEObj {
 		/**
 		 * the injection point
 		 */
-		public String inject;
+		public InsertionPoint inject;
 		
 		public MCEField()
 		{
@@ -304,30 +277,30 @@ public class MCEObj {
 		
 		public MCEField(JSONObject json)
 		{
-			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"));
+			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
 		}
 		
-		public MCEField(String name, String value, String type, String method, String desc, String inject)
+		public MCEField(String name, String value, String type, String method, String desc, InsertionPoint inject)
 		{
 			this.name = name.trim();
 			this.value = value;
-			this.type = this.safeString(type).trim();
-			this.method = this.safeString(method, "<clinit>").trim();
-			this.desc = this.safeString(desc).trim();
-			this.inject = this.safeString(inject, "after").trim();
-		}
-		
-		protected String safeString(String s)
-		{
-			return this.safeString(s, "");
-		}
-		
-		protected String safeString(String s, String def)
-		{
-			return (s == null || s.isEmpty()) ? def : s;
+			this.type = safeString(type).trim();
+			this.method = safeString(method, "<clinit>").trim();
+			this.desc = safeString(desc).trim();
+			this.inject = inject;
 		}
 
 		public void gc() {}
+	}
+	
+	private static String safeString(String s)
+	{
+		return safeString(s, "");
+	}
+	
+	private static String safeString(String s, String def)
+	{
+		return (s == null || s.isEmpty()) ? def : s;
 	}
 	
 	public static class MCEArrField extends MCEField
@@ -369,10 +342,10 @@ public class MCEObj {
 		
 		public MCEArrField(JSONObject json)
 		{
-			this(json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), json.getString("inject"), json.getAsString("index"), json.getAsString("increment"));
+			this(json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json), json.getAsString("index"), json.getAsString("increment"));
 		}
 		
-		public MCEArrField(String name, List values, String type, String method, String desc, String inject, String index, String increment)
+		public MCEArrField(String name, List values, String type, String method, String desc, InsertionPoint inject, String index, String increment)
 		{
 			super(name, null, type, method, desc, inject);
 			
@@ -393,14 +366,14 @@ public class MCEObj {
 				this.values = new String[] {""};
 			
 			//process index
-			String[] arr = splitFirst(this.safeString(index, "0").replace("start", "0"), '-');
+			String[] arr = splitFirst(safeString(index, "0").replace("start", "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
 			this.index_start = str_start.equals("end") ? -1 : parseInt(str_start);
 			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : parseInt(str_end));
 			
 			//process increment
-			this.increment = parseInt(this.safeString(increment, "0"));
+			this.increment = parseInt(safeString(increment, "0"));
 		}
 		
 		@Override

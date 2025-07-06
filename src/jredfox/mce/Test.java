@@ -134,17 +134,6 @@ public class Test {
 		
 //		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
 //		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
-		
-		Set<Integer> set = new HashSet(256, 0.99F);
-		for(Map.Entry<String, Integer> entry : OpcodeHelper.opps.entrySet())
-		{
-			String k = entry.getKey();
-			if(k.startsWith("V1_"))
-				continue;
-			
-			if(!set.add(entry.getValue()))
-				System.err.println(entry.getKey());
-		}
 	}
 	
     public static int getCapacity(Map map) {

@@ -23,14 +23,6 @@ public enum InsnTypes {
 	 */
 	VarInsnNode,
 	/**
-	 * Pushes a line number
-	 */
-	LineNumberNode,
-	/**
-	 * Pushes a Label
-	 */
-	LabelNode,
-	/**
 	 * Jumps to a Label If Condition
 	 */
 	JumpInsnNode,
@@ -50,6 +42,14 @@ public enum InsnTypes {
 	 * INVOKEVIRTUAL, INVOKESPECIAL, INVOKESTATIC or INVOKEINTERFACE
 	 */
 	MethodInsnNode,
+	/**
+	 * Pushes a line number
+	 */
+	LineNumberNode,
+	/**
+	 * Pushes a Label
+	 */
+	LabelNode,
 	/**
 	 * NULL or Unsupported Insn
 	 */

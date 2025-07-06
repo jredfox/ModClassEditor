@@ -24,7 +24,9 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
+import jredfox.mce.tree.MCEOpcode;
 
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
@@ -102,6 +104,10 @@ public class MCEObj {
 		 */
 		public AbstractInsnNode point;
 		/**
+		 * The ASM Injection Point Cached Insn Type for easy switches later
+		 */
+		public InsnTypes type = InsnTypes.NULL;
+		/**
 		 * the index of the InjectionPoint's Occurance
 		 */
 		public int occurrence;
@@ -128,6 +134,7 @@ public class MCEObj {
 				this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
 				this.offset =  parseInt(safeString(oj.getAsString("offset"), "0").replace("start", "0").replace("end", "-1"));
 				this.preferLine = parseBoolean(safeString(oj.getAsString("preferLineNumber"), "t"));
+				this.exact = parseBoolean(oj.getAsString("exact"));
 			}
 			else
 				this.parse(safeString((String) o));
@@ -181,64 +188,89 @@ public class MCEObj {
 			else
 				type = v0;
 			
-			if(type.equals("insnnode") || type.equals("opcode"))
+			try
 			{
-				this.point = new InsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
-			}
-			else if(type.equals("fieldinsnnode"))
-			{
-				this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex +1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
-			}
-			else if(type.equals("intinsnnode"))
-			{
-				this.point = new IntInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
-			}
-			else if(type.equals("jumpinsnnode"))
-			{
-				this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
-			}
-			else if(type.equals("ldcinsnnode"))
-			{
-				String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
-				ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
-				if(!ldc.isEmpty() && ldc.charAt(0) == '"')
-					ldc = ldc.substring(1, ldc.length() - 1);
-				this.point = new LdcInsnNode(ldc);
-			}
-			else if(type.equals("linenumbernode"))
-			{
-				this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
-			}
-			else if(type.equals("methodinsnnode"))
-			{
-				this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
-			}
-			else if(type.equals("typeinsnnode"))
-			{
-				this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2]);
-			}
-			else if(type.equals("varinsnnode"))
-			{
-				this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
-			}
-			else if(type.startsWith("line:"))
-			{
-				this.point = new LineNumberNode(parseInt(type.substring(5)), new LabelNode());
-			}
-			else if(type.startsWith("label:"))
-			{
-				this.point = new MCEIndexLabel(parseInt(type.substring(6)));
-			}
-			else if(type.equals("labelnode"))
-			{
-				this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
-			}
-			else
-			{
-				if(OpcodeHelper.hasOpcode(type))
-					System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");
+				if(type.equals("insnnode"))
+				{
+					this.point = new InsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
+					this.type = InsnTypes.InsnNode;
+				}
+				else if(type.equals("fieldinsnnode"))
+				{
+					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
+					this.type = InsnTypes.FieldInsnNode;
+				}
+				else if(type.equals("intinsnnode"))
+				{
+					this.point = new IntInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
+					this.type = InsnTypes.IntInsnNode;
+				}
+				else if(type.equals("jumpinsnnode"))
+				{
+					this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
+					this.type = InsnTypes.JumpInsnNode;
+				}
+				else if(type.equals("ldcinsnnode"))
+				{
+					String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
+					ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
+					if(!ldc.isEmpty() && ldc.charAt(0) == '"')
+						ldc = ldc.substring(1, ldc.length() - 1);
+					this.point = new LdcInsnNode(ldc);
+					this.type = InsnTypes.LdcInsnNode;
+				}
+				else if(type.equals("linenumbernode"))
+				{
+					this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
+					this.type = InsnTypes.LineNumberNode;
+				}
+				else if(type.equals("methodinsnnode"))
+				{
+					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2], arr[typeIndex + 3], arr[typeIndex + 4]);
+					this.type = InsnTypes.MethodInsnNode;
+				}
+				else if(type.equals("typeinsnnode"))
+				{
+					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), arr[typeIndex + 2]);
+					this.type = InsnTypes.TypeInsnNode;
+				}
+				else if(type.equals("varinsnnode"))
+				{
+					this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
+					this.type = InsnTypes.VarInsnNode;
+				}
+				else if(type.startsWith("line:"))
+				{
+					this.point = new LineNumberNode(parseInt(type.substring(5)), new LabelNode());
+					this.type = InsnTypes.LineNumberNode;
+				}
+				else if(type.startsWith("label:"))
+				{
+					this.point = new MCEIndexLabel(parseInt(type.substring(6)));
+					this.type = InsnTypes.LabelNode;
+				}
+				else if(type.equals("labelnode"))
+				{
+					this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
+					this.type = InsnTypes.LabelNode;
+				}
+				else if(type.equals("opcode"))
+				{
+					this.point = new MCEOpcode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
+					this.type = InsnTypes.Opcode;
+				}
 				else
-					System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");
+				{
+					if(OpcodeHelper.hasOpcode(type))
+						System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");
+					else
+						System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");
+				}
+			}
+			catch(ArrayIndexOutOfBoundsException e)
+			{
+				System.err.println("Error while parsing Injection Point(Insertion Point):" + p);
+				e.printStackTrace();
 			}
 		}
 	}

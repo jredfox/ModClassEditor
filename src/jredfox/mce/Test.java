@@ -117,13 +117,11 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		System.out.println("label:".length());
 //		System.out.println("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-//		InsertionPoint p = new InsertionPoint("AFTER:LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-//		System.out.println(((LdcInsnNode)p.point).cst);
-//		new InsertionPoint("INVOKEVIRTUAL, \"java/io/PrintStream\", \"println\", \"(I)V\", false");
-//		InsertionPoint p2 = new InsertionPoint("     AFTER, INVOKEVIRTUAL   ");
-//		System.out.println(p.opp);
+		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+		System.out.println(((LdcInsnNode)ldc.point).cst);
+		System.out.println(ldc.opp);
+		
 	}
 	
     public static int getCapacity(Map map) {

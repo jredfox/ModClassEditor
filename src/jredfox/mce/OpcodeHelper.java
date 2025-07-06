@@ -366,6 +366,7 @@ public class OpcodeHelper {
 		i.put(124, "IUSHR");
 		i.put(125, "LUSHR");
 		i.put(126, "IAND");
+		i.put(127, "LAND");
 		i.put(128, "IOR");
 		i.put(129, "LOR");
 		i.put(130, "IXOR");

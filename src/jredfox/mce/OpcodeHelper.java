@@ -263,12 +263,6 @@ public class OpcodeHelper {
 		return o != null ? o : MCEObj.parseInt(opp);
 	}
 	
-	public static String getOppcodeName(int opp)
-	{
-		String s = i2opps.get(opp);
-		return s != null ? s : "NOP";
-	}
-	
 	public static boolean hasOpcode(String opp)
 	{
 		opp = opp.trim().toUpperCase();

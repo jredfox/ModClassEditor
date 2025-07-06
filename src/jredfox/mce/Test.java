@@ -2,7 +2,9 @@ package jredfox.mce;
 
 import java.lang.reflect.Field;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Map;
+import java.util.Set;
 
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LabelNode;
@@ -130,12 +132,19 @@ public class Test {
 //		InsertionPoint a2 = new InsertionPoint(" ");
 //		System.out.println(a2.opp + ", " + a2.type);
 		
-		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
-		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
+//		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_5");
+//		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeName(((InsnNode)insn.point).getOpcode()) );
 		
-//		InsertionPoint lb = new InsertionPoint("before:line:21");
-//		System.out.println(lb.type + " " + lb.opp + " " + ((LineNumberNode) lb.point).line);
-		
+		Set<Integer> set = new HashSet(256, 0.99F);
+		for(Map.Entry<String, Integer> entry : OpcodeHelper.opps.entrySet())
+		{
+			String k = entry.getKey();
+			if(k.startsWith("V1_"))
+				continue;
+			
+			if(!set.add(entry.getValue()))
+				System.err.println(entry.getKey());
+		}
 	}
 	
     public static int getCapacity(Map map) {

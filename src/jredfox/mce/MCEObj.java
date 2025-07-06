@@ -237,15 +237,45 @@ public class MCEObj {
 					this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
 					this.type = InsnTypes.JumpInsnNode;
 				}
-				//TODO: FIX only supporting strings
 				else if(nf && type.equals("ldcinsnnode") || type.equals("ldcinsn"))
 				{
 					String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
 					ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
-					if(!ldc.isEmpty() && ldc.charAt(0) == '"')
-						ldc = ldc.substring(1, ldc.length() - 1);
-					this.point = new LdcInsnNode(ldc);
-					this.type = InsnTypes.LdcInsnNode;
+					
+					//Handle EMPTY String
+					if(ldc.isEmpty())
+					{
+						this.point = new LdcInsnNode("");
+					}
+					else
+					{
+						//They didn't specify string but it's expected to be a string
+						if(ldc.charAt(0) == '"')
+						{
+							ldc = ldc.substring(1, ldc.length() - 1);
+							this.point = new LdcInsnNode(ldc);
+						}
+						else
+						{
+							String[] ldc_arr = splitFirst(ldc, ',');
+							String ldc_type = ldc_arr[0].trim().toUpperCase();
+							String ldc_val = parseString(ldc_arr[1]);
+							if(ldc_type.equals("INT") || ldc_type.equals("INTEGER"))
+								this.point = new LdcInsnNode(new Integer(parseInt(ldc_val)));
+							else if(ldc_type.equals("LONG"))
+								this.point = new LdcInsnNode(new Long(parseLong(ldc_val)));
+							else if(ldc_type.equals("FLOAT"))
+								this.point = new LdcInsnNode(new Float(parseFloat(ldc_val)));
+							else if(ldc_type.equals("DOUBLE"))
+								this.point = new LdcInsnNode(new Double(parseDouble(ldc_val)));
+							else if(ldc_type.equals("STR") || ldc_type.equals("STRING"))
+								this.point = new LdcInsnNode(ldc_val);
+							else
+								System.err.println("INVALID LdcInsnNode Type: '" + ldc_type + "'. Valid: [STRING, INTEGER, LONG, FLOAT, DOUBLE]");
+						}
+					}
+					if(this.point != null)
+						this.type = InsnTypes.LdcInsnNode;
 				}
 				else if(nf && type.equals("linenumbernode") || type.equals("linenumber"))
 				{

@@ -270,7 +270,7 @@ public class MCEObj {
 				}
 				else
 				{
-					if(type.equals("line") || type.equals("label"))
+					if(type.startsWith("line") || type.startsWith("label"))
 						System.err.println("Missing ':' on Line or Label Injection Point! Line: '" + p + "'");
 					else if(OpcodeHelper.hasOpcode(type))
 						System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");

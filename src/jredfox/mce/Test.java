@@ -13,9 +13,12 @@ import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.TypeInsnNode;
+import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONParseException;
 
 import jredfox.mce.MCEObj.InsertionPoint;
+import jredfox.mce.tree.MCEIndexLabel;
 
 public class Test {
 	
@@ -161,6 +164,28 @@ public class Test {
 		MethodInsnNode mn = (MethodInsnNode) minsn.point;
 		System.out.println(OpcodeHelper.getOppcodeInsnName(mn.getOpcode()) + "," + mn.owner + "," + mn.name + "," + mn.desc);
 		
+		InsertionPoint type = new InsertionPoint("TypeInsnNode, ANEWARRAY, \"java/lang/String\"");
+		TypeInsnNode t = (TypeInsnNode) type.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(t.getOpcode()) + "," + t.desc);
+		
+		InsertionPoint var = new InsertionPoint("VARINSNNODE, ALOAD, 2");
+		VarInsnNode v = (VarInsnNode) var.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(v.getOpcode()) + "," + v.var);
+		
+		InsertionPoint l1 = new InsertionPoint("line:2");
+		LineNumberNode l1n = (LineNumberNode) l1.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(l1n.getOpcode()) + "," + l1n.line);
+		
+		InsertionPoint label2 = new InsertionPoint("label:12");
+		MCEIndexLabel label2n = (MCEIndexLabel) label2.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(label2n.getOpcode()) + "," + label2n.index);
+		
+		InsertionPoint label3 = new InsertionPoint("LabelNODE, 1");
+		MCEIndexLabel label3n = (MCEIndexLabel) label3.point;
+		System.out.println(OpcodeHelper.getOppcodeInsnName(label3n.getOpcode()) + "," + label3n.index);
+		
+		InsertionPoint iop = new InsertionPoint("OPCODE, ACC_BRIDGE");
+		System.out.println(OpcodeHelper.getOppcodeInsnName(iop.point.getOpcode()) + "," + iop.point.getOpcode());
 	}
 	
     public static int getCapacity(Map map) {

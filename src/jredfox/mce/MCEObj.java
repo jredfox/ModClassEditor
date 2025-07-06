@@ -212,7 +212,24 @@ public class MCEObj {
 				}
 				else if(nf && type.equals("intinsnnode") || type.equals("intinsn"))
 				{
-					this.point = new IntInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
+					int oc = OpcodeHelper.getOppcode(arr[typeIndex + 1]);
+					int val = 0;
+					//parse the val based on it's type. Insn supports Byte, Short except for when the Opcode NEWARRAY is called then it supports int
+					switch(oc)
+					{
+						case Opcodes.BIPUSH:
+							val = parseByte(arr[typeIndex + 2]);
+						break;
+						
+						case Opcodes.SIPUSH:
+							val = parseShort(arr[typeIndex + 2]);
+						break;
+						
+						default:
+							val = parseInt(arr[typeIndex + 2]);
+						break;
+					}
+					this.point = new IntInsnNode(oc, val);
 					this.type = InsnTypes.IntInsnNode;
 				}
 				else if(nf && type.equals("jumpinsnnode") || type.equals("jumpinsn"))

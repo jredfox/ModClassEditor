@@ -126,8 +126,6 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		System.out.println(MCEObj.parseString("        \"'     A Parsed String       '\"   "));
-		
 		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
 		System.out.println(ldc.opp + " " + ((LdcInsnNode)ldc.point).cst);
 		
@@ -146,7 +144,7 @@ public class Test {
 		FieldInsnNode fn = (FieldInsnNode) finsn.point;
 		System.out.println(OpcodeHelper.getOppcodeInsnName(fn.getOpcode()) + "," + fn.owner + "," + fn.name + "," + fn.desc);
 		
-		InsertionPoint i_insn = new InsertionPoint("IntInsnNode, SIPUSH, 120");
+		InsertionPoint i_insn = new InsertionPoint("IntInsnNode, BIPUSH, 30000");
 		IntInsnNode in = (IntInsnNode) i_insn.point;
 		System.out.println(OpcodeHelper.getOppcodeInsnName(in.getOpcode()) + "," + in.operand);
 		

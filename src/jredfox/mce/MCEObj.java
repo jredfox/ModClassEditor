@@ -138,6 +138,9 @@ public class MCEObj {
 			}
 			else
 				this.parse(safeString((String) o));
+			
+			if(this.point != null)
+				System.out.println(this);
 		}
 		
 		public InsertionPoint(String p)
@@ -331,6 +334,12 @@ public class MCEObj {
 				System.err.println("Error while parsing Injection Point(Insertion Point):" + p);
 				e.printStackTrace();
 			}
+		}
+		
+		@Override
+		public String toString()
+		{
+			return this.opp + "," + this.point + ", Index:" + this.occurrence + ", offset:" + this.offset + ", preferLine:" + this.preferLine + ", exact:" + this.exact;
 		}
 	}
 
@@ -582,18 +591,25 @@ public class MCEObj {
 				}
 				
 				//Injection Point
-				if(f.inject.opp.equals("after"))
+				if(f.inject.type == InsnTypes.NULL)
 				{
-					addLabelNode(list);
-					m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+					if(f.inject.opp.equals("after"))
+					{
+						addLabelNode(list);
+						m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+					}
+					else if(f.inject.opp.equals("before"))
+					{
+						insertLabelNode(list);
+						if(m.name.equals("<init>"))
+							m.instructions.insert(getFirstCtrInsn(classNode, m), list);
+						else
+							m.instructions.insert(list);
+					}
 				}
-				else if(f.inject.opp.equals("before"))
+				else
 				{
-					insertLabelNode(list);
-					if(m.name.equals("<init>"))
-						m.instructions.insert(getFirstCtrInsn(classNode, m), list);
-					else
-						m.instructions.insert(list);
+					System.err.println("NO IMPL YET! " + f.inject);
 				}
 			}
 			

@@ -67,7 +67,7 @@ public class Test {
 	
 	static
 	{
-		id_d = 40000;
+		
 	}
 	
 	public Test()

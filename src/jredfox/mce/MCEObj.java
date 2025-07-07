@@ -582,12 +582,12 @@ public class MCEObj {
 				}
 				
 				//Injection Point
-				if(f.inject.equals("after"))
+				if(f.inject.opp.equals("after"))
 				{
 					addLabelNode(list);
 					m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
 				}
-				else if(f.inject.equals("before"))
+				else if(f.inject.opp.equals("before"))
 				{
 					insertLabelNode(list);
 					if(m.name.equals("<init>"))

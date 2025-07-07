@@ -739,7 +739,7 @@ public class MCEObj {
 		while(insnIndex != null && !hasFoundShift);
 		
 		//We never shifted so we want to insertBefore if the opperation was before
-		if(inject == spot && in.opp == Opperation.BEFORE)
+		if(in.opp == Opperation.BEFORE && (inject == spot || shiftTo == ShiftTo.EXACT))
 		{
 //			insertLabelNode(list);
 			m.instructions.insertBefore(spot, list);

@@ -24,6 +24,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.MCEObj.InsertionPoint.Opperation;
 import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
@@ -114,10 +115,19 @@ public class MCEObj {
 			}
 		}
 		
+		public static enum Opperation {
+			BEFORE,
+			AFTER;
+			
+			public static Opperation get(String v){
+				return v.equals("before") ? BEFORE : AFTER;
+			}
+		}
+		
 		/**
 		 * Opperation must be "before" or "after"
 		 */
-		public String opp = "after";
+		public Opperation opp = Opperation.AFTER;
 		/**
 		 * The ASM Injection Point when NON-NULL will be a specific injection point instead of before or after. The opp will combine with this
 		 */
@@ -177,7 +187,7 @@ public class MCEObj {
 			//If there is no ASM Injection point parse the opp and return
 			if(arr.length == 1 && (v0.equals("before") || v0.equals("after")))
 			{
-				this.opp = v0;
+				this.opp = Opperation.get(v0);
 				return;
 			}
 			else if(v0.isEmpty())
@@ -189,7 +199,7 @@ public class MCEObj {
 			
 			if(v0.startsWith("before"))
 			{
-				this.opp = "before";
+				this.opp = Opperation.BEFORE;
 				if(v0.startsWith("before:"))
 				{
 					type = v0.substring(7).trim();
@@ -606,25 +616,28 @@ public class MCEObj {
 				}
 				
 				//Injection Point
-				if(f.inject.type == InsnTypes.NULL)
+				switch(f.inject.type)
 				{
-					if(f.inject.opp.equals("after"))
+					case NULL:
 					{
-						addLabelNode(list);
-						m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+						if(f.inject.opp == Opperation.AFTER)
+						{
+							addLabelNode(list);
+							m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+						}
+						else if(f.inject.opp == Opperation.BEFORE)
+						{
+							insertLabelNode(list);
+							if(m.name.equals("<init>"))
+								m.instructions.insert(getFirstCtrInsn(classNode, m), list);
+							else
+								m.instructions.insert(list);
+						}
 					}
-					else if(f.inject.opp.equals("before"))
-					{
-						insertLabelNode(list);
-						if(m.name.equals("<init>"))
-							m.instructions.insert(getFirstCtrInsn(classNode, m), list);
-						else
-							m.instructions.insert(list);
-					}
-				}
-				else
-				{
-					System.err.println("NO IMPL YET! " + f.inject);
+					break;
+					
+					default: 
+						break;
 				}
 			}
 			

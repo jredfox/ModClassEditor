@@ -658,6 +658,8 @@ public class MCEObj {
 		
 		int found = 0;
 		int foundShift = 0;
+		
+		//Find the Injection Point
 		AbstractInsnNode ab = m.instructions.getFirst();
 		AbstractInsnNode inject = null;
 		while(ab != null)
@@ -672,12 +674,14 @@ public class MCEObj {
 			ab = ab.getNext();
 		}
 		
+		//Injection Point not Found!
 		if(inject == null)
 		{
-			System.err.println("Error Failed to Inject Insertion Point Not Found! InsertionPoint:" + in);
+			System.err.println("Error Failed to Inject Point Not Found in Bytecode! InsertionPoint:" + in);
 			return;
 		}
 		
+		//ShiftTo either [LINE, LABEL, EXACT]
 		AbstractInsnNode spot = inject;
 		AbstractInsnNode insnIndex = spot;
 		boolean hasFoundShift = false;

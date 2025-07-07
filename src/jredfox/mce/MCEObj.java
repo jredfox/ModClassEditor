@@ -667,7 +667,7 @@ public class MCEObj {
 			if(equals(type, ab, point))
 			{
 				inject = ab;
-				if(found >= occurance)
+				if(found == occurance)
 					break;
 				found++;
 			}
@@ -695,7 +695,7 @@ public class MCEObj {
 					if(insnIndex instanceof LineNumberNode)
 					{
 						spot = insnIndex;
-						if(foundShift >= shift)
+						if(foundShift == shift)
 						{
 							hasFoundShift = true;
 							break;
@@ -709,7 +709,7 @@ public class MCEObj {
 					if(insnIndex instanceof LabelNode)
 					{
 						spot = insnIndex;
-						if(foundShift >= shift)
+						if(foundShift == shift)
 						{
 							hasFoundShift = true;
 							break;
@@ -722,7 +722,7 @@ public class MCEObj {
 				case EXACT:
 				{
 					spot = insnIndex;
-					if(foundShift >= shift)
+					if(foundShift == shift)
 					{
 						hasFoundShift = true;
 						break;

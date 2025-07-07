@@ -25,6 +25,7 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.MCEObj.InsertionPoint.Opperation;
+import jredfox.mce.MCEObj.InsertionPoint.ShiftTo;
 import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
@@ -652,26 +653,95 @@ public class MCEObj {
 		AbstractInsnNode point = in.point;
 		InsnTypes type = in.type;
 		int occurance = in.occurrence;
+		int shift = in.shift;
+		ShiftTo shiftTo = in.shiftTo;
 		
 		int found = 0;
+		int foundShift = 0;
 		AbstractInsnNode ab = m.instructions.getFirst();
+		AbstractInsnNode inject = null;
 		while(ab != null)
 		{
 			if(equals(type, ab, point))
 			{
+				inject = ab;
 				if(found >= occurance)
-				{
-					AbstractInsnNode spot = ab;
-					//Get prev / next LineNumberNode / LabelNode / Exact Instruction
-					if(in.opp == Opperation.AFTER)
-						m.instructions.insert(ab, list);
-					else
-						m.instructions.insertBefore(ab, list);
-					return;
-				}
+					break;
 				found++;
 			}
 			ab = ab.getNext();
+		}
+		
+		if(inject == null)
+		{
+			System.err.println("Error Failed to Inject Insertion Point Not Found! InsertionPoint:" + in);
+			return;
+		}
+		
+		AbstractInsnNode spot = inject;
+		AbstractInsnNode insnIndex = spot;
+		boolean hasFoundShift = false;
+		
+		do
+		{
+			switch(shiftTo)
+			{
+				case LINE:
+				{
+					if(insnIndex instanceof LineNumberNode)
+					{
+						spot = insnIndex;
+						if(foundShift >= shift)
+						{
+							hasFoundShift = true;
+							break;
+						}
+						foundShift++;
+					}
+				}
+				break;
+				case LABEL:
+				{
+					if(insnIndex instanceof LabelNode)
+					{
+						spot = insnIndex;
+						if(foundShift >= shift)
+						{
+							hasFoundShift = true;
+							break;
+						}
+						foundShift++;
+					}
+				}
+				break;
+				
+				case EXACT:
+				{
+					spot = insnIndex;
+					if(foundShift >= shift)
+					{
+						hasFoundShift = true;
+						break;
+					}
+					foundShift++;
+				}
+				break;
+					
+				default:
+					break;
+			}
+			insnIndex = (in.opp == Opperation.AFTER) ? (insnIndex.getNext()) : (insnIndex.getPrevious());
+		}
+		while(insnIndex != null && !hasFoundShift);
+		
+		//We never shifted so we want to insertBefore if the opperation was before
+		if(inject == spot && in.opp == Opperation.BEFORE)
+		{
+			m.instructions.insertBefore(spot, list);
+		}
+		else
+		{
+			m.instructions.insert(spot, list);
 		}
 	}
 

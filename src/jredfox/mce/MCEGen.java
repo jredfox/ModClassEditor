@@ -97,9 +97,6 @@ public class MCEGen {
 			//Save Changes in Mod's <clinit> after all fields have their values generated
 			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 			
-			//Add LabelNode
-			MCEObj.insertLabelNode(clinit.instructions, spot.getPrevious());
-			
 			//Save Progres
 			this.save();
 		}

@@ -315,7 +315,7 @@ public class MCEGen {
 					}
 				}
 				
-				return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName);
+				return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName, null);
 			}
 			catch(Throwable t)
 			{

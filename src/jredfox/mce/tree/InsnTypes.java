@@ -44,6 +44,9 @@ public enum InsnTypes {
 	MethodInsnNode,
 	/**
 	 * Pushes a line number
+	 * WARNING: NOT USED Line numbers are stripped or inconsistent based on ASM / Java Version especially on ASM 4 and below
+	 * Even If you used index based lines the bytecode viewer makes it pretty difficult to figure out which lines are at what index
+	 * Use {@link #LabelNode} indexed based instead. It's bytecode viewer friendly and will get consistent results as long as the use the original class for the indexes
 	 */
 	LineNumberNode,
 	/**

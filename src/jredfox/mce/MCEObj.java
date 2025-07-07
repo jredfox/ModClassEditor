@@ -321,22 +321,12 @@ public class MCEObj {
 					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
 					this.type = InsnTypes.MethodInsnNode;
 				}
-				else if(nf && type.equals("linenumbernode") || type.equals("linenumber"))
-				{
-					this.point = new LineNumberNode(parseInt(arr[typeIndex + 1]), new LabelNode());
-					this.type = InsnTypes.LineNumberNode;
-				}
 				else if(nf && type.equals("labelnode") || type.equals("label"))
 				{
 					int lindex = parseInt(arr[typeIndex + 1]);
 					this.point = new MCEIndexLabel(lindex);
 					this.occurrence = lindex;
 					this.type = InsnTypes.LabelNode;
-				}
-				else if(type.startsWith("line:"))
-				{
-					this.point = new LineNumberNode(parseInt(type.substring(5)), new LabelNode());
-					this.type = InsnTypes.LineNumberNode;
 				}
 				else if(type.startsWith("label:"))
 				{
@@ -756,8 +746,6 @@ public class MCEObj {
 	{
 		switch(type)
 		{
-			case LineNumberNode:
-				return ab instanceof LineNumberNode && CoreUtils.equals((LineNumberNode) ab, (LineNumberNode) point);
 			case LabelNode:
 				return ab instanceof LabelNode;
 			case FieldInsnNode:

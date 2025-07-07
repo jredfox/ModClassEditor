@@ -44,11 +44,15 @@ public class CoreUtils {
         return classWriter;
 	}
 	
-	public static byte[] toByteArray(ClassWriter classWriter, String transformedName) throws IOException 
+	public static byte[] toByteArray(ClassWriter classWriter, String transformedName, byte[] org) throws IOException 
 	{
         byte[] bytes = classWriter.toByteArray();
         if(Boolean.parseBoolean(System.getProperty("asm.dump", "false")))
+        {
         	dumpFile(transformedName, bytes);
+        	if(org != null)
+        		dumpFile(transformedName + "_org", org);
+        }
         
         return bytes;
 	}
@@ -147,7 +151,7 @@ public class CoreUtils {
 	 * dumps a file from memory
 	 * @throws IOException 
 	 */
-	public static void dumpFile(String name, byte[] bytes) throws IOException
+	public static void dumpFile(String name, byte[] bytes)
 	{
     	name = name.replace('.', '/');
     	File f = new File(System.getProperty("user.dir"), "asm/dumps/mce/" + name + ".class").getAbsoluteFile();

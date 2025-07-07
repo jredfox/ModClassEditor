@@ -738,7 +738,8 @@ public class MCEObj {
 		}
 		while(insnIndex != null && !hasFoundShift);
 		
-		//We never shifted so we want to insertBefore if the opperation was before
+		//If inject == spot then We never shifted so we want to insertBefore if the opperation was before
+		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
 		if(in.opp == Opperation.BEFORE && (inject == spot || shiftTo == ShiftTo.EXACT))
 		{
 //			insertLabelNode(list);

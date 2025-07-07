@@ -741,10 +741,12 @@ public class MCEObj {
 		//We never shifted so we want to insertBefore if the opperation was before
 		if(inject == spot && in.opp == Opperation.BEFORE)
 		{
+//			insertLabelNode(list);
 			m.instructions.insertBefore(spot, list);
 		}
 		else
 		{
+//			addLabelNode(list);
 			m.instructions.insert(spot, list);
 		}
 	}

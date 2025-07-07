@@ -140,7 +140,7 @@ public class MCEObj {
 				this.parse(safeString((String) o));
 			
 			if(this.point != null)
-				System.out.println(this);
+				System.out.println("DEBUG InsertionPoint " + this);
 		}
 		
 		public InsertionPoint(String p)

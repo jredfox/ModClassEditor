@@ -95,6 +95,25 @@ public class MCEObj {
 	
 	public static class InsertionPoint
 	{
+		public static enum ShiftTo
+		{
+			LINE,
+			LABEL,
+			EXACT;
+			
+			public static ShiftTo get(String v)
+			{
+				v = v.trim().toUpperCase();
+				
+				if(v.startsWith("LABEL"))
+					return LABEL;
+				else if(v.startsWith("EXACT") || v.startsWith("INSN"))
+					return EXACT;
+				
+				return LINE;
+			}
+		}
+		
 		/**
 		 * Opperation must be "before" or "after"
 		 */
@@ -112,17 +131,13 @@ public class MCEObj {
 		 */
 		public int occurrence;
 		/**
-		 * LineNumberNode / LabelNode offset either before or after x times bassed on the opp
+		 * Shift X Number of {@link #shiftTo} Instructions
 		 */
-		public int offset;
+		public int shift;
 		/**
-		 * Uses LineNumberNode instead of LabelNode when counting offset when {@link #exact} is false
+		 * The Insn Type we are shifting
 		 */
-		public boolean preferLine = true;
-		/**
-		 * When true will use the exact injection point using opperation before or after and offset based on instruction counts instead of LineNumberNode / LabelNode
-		 */
-		public boolean exact;
+		public ShiftTo shiftTo = ShiftTo.LINE;
 		
 		public InsertionPoint(JSONObject j)
 		{
@@ -132,9 +147,9 @@ public class MCEObj {
 				JSONObject oj = (JSONObject) o;
 				this.parse(oj.getString("point"));
 				this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
-				this.offset =  parseInt(safeString(oj.getAsString("offset"), "0").replace("start", "0").replace("end", "-1"));
-				this.preferLine = parseBoolean(safeString(oj.getAsString("preferLineNumber"), "t"));
-				this.exact = parseBoolean(oj.getAsString("exact"));
+				this.shift =  parseInt(safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
+				if(oj.containsKey("shiftTo"))
+					this.shiftTo = ShiftTo.get(oj.getAsString("shiftTo"));
 			}
 			else
 				this.parse(safeString((String) o));
@@ -339,7 +354,7 @@ public class MCEObj {
 		@Override
 		public String toString()
 		{
-			return this.opp + "," + this.point + ", Index:" + this.occurrence + ", offset:" + this.offset + ", preferLine:" + this.preferLine + ", exact:" + this.exact;
+			return this.opp + "," + this.point + ", Index:" + this.occurrence + ", shift:" + this.shift + ", shiftTo:" + this.shiftTo;
 		}
 	}
 

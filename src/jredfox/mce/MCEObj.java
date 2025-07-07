@@ -327,6 +327,7 @@ public class MCEObj {
 					this.point = new MCEIndexLabel(lindex);
 					this.occurrence = lindex;
 					this.type = InsnTypes.LabelNode;
+					this.shiftTo = ShiftTo.LABEL;
 				}
 				else if(type.startsWith("label:"))
 				{
@@ -334,6 +335,7 @@ public class MCEObj {
 					this.point = new MCEIndexLabel(lindex);
 					this.occurrence = lindex;
 					this.type = InsnTypes.LabelNode;
+					this.shiftTo = ShiftTo.LABEL;
 				}
 				else if(type.equals("opcode"))
 				{

@@ -156,7 +156,8 @@ public class MCEObj {
 			{
 				JSONObject oj = (JSONObject) o;
 				this.parse(oj.getString("point"));
-				this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
+				if(this.type != InsnTypes.LabelNode)
+					this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
 				this.shift =  parseInt(safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
 				if(oj.containsKey("shiftTo"))
 					this.shiftTo = ShiftTo.get(oj.getAsString("shiftTo"));
@@ -326,7 +327,9 @@ public class MCEObj {
 				}
 				else if(nf && type.equals("labelnode") || type.equals("label"))
 				{
-					this.point = new MCEIndexLabel(parseInt(arr[typeIndex + 1]));
+					int lindex = parseInt(arr[typeIndex + 1]);
+					this.point = new MCEIndexLabel(lindex);
+					this.occurrence = lindex;
 					this.type = InsnTypes.LabelNode;
 				}
 				else if(type.startsWith("line:"))
@@ -336,7 +339,9 @@ public class MCEObj {
 				}
 				else if(type.startsWith("label:"))
 				{
-					this.point = new MCEIndexLabel(parseInt(type.substring(6)));
+					int lindex = parseInt(type.substring(6));
+					this.point = new MCEIndexLabel(lindex);
+					this.occurrence = lindex;
 					this.type = InsnTypes.LabelNode;
 				}
 				else if(type.equals("opcode"))
@@ -616,34 +621,91 @@ public class MCEObj {
 				}
 				
 				//Injection Point
-				switch(f.inject.type)
-				{
-					case NULL:
-					{
-						if(f.inject.opp == Opperation.AFTER)
-						{
-							addLabelNode(list);
-							m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
-						}
-						else if(f.inject.opp == Opperation.BEFORE)
-						{
-							insertLabelNode(list);
-							if(m.name.equals("<init>"))
-								m.instructions.insert(getFirstCtrInsn(classNode, m), list);
-							else
-								m.instructions.insert(list);
-						}
-					}
-					break;
-					
-					default: 
-						break;
-				}
+				inject(classNode, m, list, f.inject);
 			}
 			
 			//prevents memory leaks of arrays and allows the GC to clean it later
 			f.gc();
 		}
+	}
+
+	private static void inject(ClassNode classNode, MethodNode m, InsnList list, InsertionPoint in) 
+	{
+		if(in.type == InsnTypes.NULL)
+		{
+			if(in.opp == Opperation.AFTER)
+			{
+				addLabelNode(list);
+				m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+			}
+			else if(in.opp == Opperation.BEFORE)
+			{
+				insertLabelNode(list);
+				if(m.name.equals("<init>"))
+					m.instructions.insert(getFirstCtrInsn(classNode, m), list);
+				else
+					m.instructions.insert(list);
+			}
+			return;
+		}
+		
+		AbstractInsnNode point = in.point;
+		InsnTypes type = in.type;
+		int occurance = in.occurrence;
+		
+		int found = 0;
+		AbstractInsnNode ab = m.instructions.getFirst();
+		while(ab != null)
+		{
+			if(equals(type, ab, point))
+			{
+				if(found >= occurance)
+				{
+					AbstractInsnNode spot = ab;
+					//Get prev / next LineNumberNode / LabelNode / Exact Instruction
+					if(in.opp == Opperation.AFTER)
+						m.instructions.insert(ab, list);
+					else
+						m.instructions.insertBefore(ab, list);
+					return;
+				}
+				found++;
+			}
+			ab = ab.getNext();
+		}
+	}
+
+	private static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
+	{
+		switch(type)
+		{
+			case LineNumberNode:
+				return ab instanceof LineNumberNode && CoreUtils.equals((LineNumberNode) ab, (LineNumberNode) point);
+			case LabelNode:
+				return ab instanceof LabelNode;
+			case FieldInsnNode:
+				return ab instanceof FieldInsnNode && CoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
+			case MethodInsnNode:
+				return ab instanceof MethodInsnNode && CoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
+			case InsnNode:
+				return ab instanceof InsnNode && CoreUtils.equals((InsnNode) ab, (InsnNode) point);
+			case IntInsnNode:
+				return ab instanceof IntInsnNode && CoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
+			case VarInsnNode:
+				return ab instanceof VarInsnNode && CoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
+			case JumpInsnNode:
+				return ab instanceof JumpInsnNode && CoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
+			case TypeInsnNode:
+				return ab instanceof TypeInsnNode && CoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
+			case LdcInsnNode:
+				return ab instanceof LdcInsnNode && CoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
+			case Opcode:
+				return CoreUtils.equalsOpcode(ab, point);
+
+			default:
+				break;
+		}
+		return false;
 	}
 
 	public static AbstractInsnNode getFirstCtrInsn(ClassNode cn, MethodNode m) 

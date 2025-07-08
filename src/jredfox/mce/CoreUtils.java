@@ -50,8 +50,9 @@ public class CoreUtils {
         if(Boolean.parseBoolean(System.getProperty("asm.dump", "false")))
         {
         	dumpFile(transformedName, bytes);
-        	if(org != null)
-        		dumpFile(transformedName + "_org", org);
+//        	if(org != null)
+//        		dumpFile(transformedName + "_org", org);
+//TODO: UNCOMMENT
         }
         
         return bytes;

@@ -28,7 +28,6 @@ import jredfox.mce.MCEObj.InsertionPoint.Opperation;
 import jredfox.mce.MCEObj.InsertionPoint.ShiftTo;
 import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
-import jredfox.mce.tree.MCELabelNode;
 import jredfox.mce.tree.MCEOpcode;
 
 /**
@@ -1184,7 +1183,7 @@ public class MCEObj {
 	
 	public static void insertLabelNode(InsnList list)
 	{
-		LabelNode l1 = new MCELabelNode();
+		LabelNode l1 = new LabelNode();
 		if(getASMVersion() < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 		list.insert(l1);
@@ -1193,7 +1192,7 @@ public class MCEObj {
 	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
 	{
 		InsnList l = new InsnList();
-		LabelNode label = new MCELabelNode();
+		LabelNode label = new LabelNode();
 		l.add(label);
 		if(getASMVersion() < 5)
 			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code

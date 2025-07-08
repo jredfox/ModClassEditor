@@ -1,6 +1,5 @@
-package jredfox.mce;
+package jredfox.mce.util;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map;
@@ -505,7 +504,7 @@ public class OpcodeHelper {
 	public static int getOppcode(String opp)
 	{
 		Integer o = opps.get(opp.trim().toUpperCase());
-		return o != null ? o : MCEObj.parseInt(opp);
+		return o != null ? o : MCEUtil.parseInt(opp);
 	}
 	
 	public static boolean hasOpcode(String opp)
@@ -513,7 +512,7 @@ public class OpcodeHelper {
 		opp = opp.trim().toUpperCase();
 		if(opps.containsKey(opp))
 			return true;
-		int i = MCEObj.parseInt(opp);
+		int i = MCEUtil.parseInt(opp);
 		return i != 0 && i2opps.containsKey(i);
 	}
 	

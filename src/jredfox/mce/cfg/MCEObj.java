@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.cfg;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,11 +24,15 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
-import jredfox.mce.MCEObj.InsertionPoint.Opperation;
-import jredfox.mce.MCEObj.InsertionPoint.ShiftTo;
-import jredfox.mce.tree.InsnTypes;
-import jredfox.mce.tree.MCEIndexLabel;
-import jredfox.mce.tree.MCEOpcode;
+import jredfox.mce.ArrCache;
+import jredfox.mce.ArrUtils;
+import jredfox.mce.cfg.InsertionPoint.ShiftTo;
+import jredfox.mce.types.DataType;
+import jredfox.mce.types.InsnTypes;
+import jredfox.mce.util.MCECoreUtils;
+import jredfox.mce.util.MCEUtil;
+import jredfox.mce.util.OpcodeHelper;
+import jredfox.mce.util.WildCardMatcher;
 
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
@@ -94,417 +98,6 @@ public class MCEObj {
 			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
 		}
 	}
-	
-	public static class InsertionPoint
-	{
-		public static enum ShiftTo
-		{
-			LINE,
-			LABEL,
-			EXACT;
-			
-			public static ShiftTo get(String v)
-			{
-				v = v.trim().toUpperCase();
-				
-				if(v.startsWith("LABEL"))
-					return LABEL;
-				else if(v.startsWith("EXACT") || v.startsWith("INSN"))
-					return EXACT;
-				
-				return LINE;
-			}
-		}
-		
-		public static enum Opperation {
-			BEFORE,
-			AFTER;
-			
-			public static Opperation get(String v){
-				return v.equals("before") ? BEFORE : AFTER;
-			}
-		}
-		
-		/**
-		 * Opperation must be "before" or "after"
-		 */
-		public Opperation opp = Opperation.AFTER;
-		/**
-		 * The ASM Injection Point when NON-NULL will be a specific injection point instead of before or after. The opp will combine with this
-		 */
-		public AbstractInsnNode point;
-		/**
-		 * The ASM Injection Point Cached Insn Type for easy switches later
-		 */
-		public InsnTypes type = InsnTypes.NULL;
-		/**
-		 * the index of the InjectionPoint's Occurance
-		 */
-		public int occurrence;
-		/**
-		 * Shift X Number of {@link #shiftTo} Instructions
-		 */
-		public int shift;
-		/**
-		 * The Insn Type we are shifting
-		 */
-		public ShiftTo shiftTo = ShiftTo.LINE;
-		
-		public InsertionPoint(JSONObject j)
-		{
-			Object o = j.containsKey("inject") ? j.get("inject") : j.get("insert");
-			if(o instanceof JSONObject)
-			{
-				JSONObject oj = (JSONObject) o;
-				this.parse(oj.getString("point"));
-				if(this.type != InsnTypes.LabelNode)
-					this.occurrence = parseInt(safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
-				this.shift =  parseInt(safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
-				if(oj.containsKey("shiftTo"))
-					this.shiftTo = ShiftTo.get(oj.getAsString("shiftTo"));
-			}
-			else
-				this.parse(safeString((String) o));
-			
-			if(this.point != null)
-				System.out.println("DEBUG InsertionPoint " + this);
-		}
-		
-		public InsertionPoint(String p)
-		{
-			this.parse(p);
-		}
-
-		protected void parse(String p) 
-		{
-			p = safeString(p, "after");
-			String[] arr = p.split(",");
-			if(arr.length == 0)
-				return;
-			
-			String v0 = arr[0].trim().toLowerCase();
-			int typeIndex = 0;
-			String type;
-			
-			//If there is no ASM Injection point parse the opp and return
-			if(arr.length == 1 && (v0.equals("before") || v0.equals("after")))
-			{
-				this.opp = Opperation.get(v0);
-				return;
-			}
-			else if(v0.isEmpty())
-			{
-				if(arr.length > 1)
-					System.err.println("Maulformed Line! Opperation or Type not Found: '" + p + "'");
-				return;
-			}
-			
-			if(v0.startsWith("before"))
-			{
-				this.opp = Opperation.BEFORE;
-				if(v0.startsWith("before:"))
-				{
-					type = v0.substring(7).trim();
-				}
-				else
-				{
-					type = arr.length > 1 ? (arr[1].trim().toLowerCase()) : (v0);
-					typeIndex++;
-				}
-			}
-			else if(v0.startsWith("after"))
-			{
-				if(v0.startsWith("after:"))
-				{
-					type = v0.substring(6).trim();
-				}
-				else
-				{
-					type = arr.length > 1 ? (arr[1].trim().toLowerCase()) : (v0);
-					typeIndex++;
-				}
-			}
-			else
-				type = v0;
-			
-			try
-			{
-				boolean nf = type.endsWith("node");
-				if(nf && type.equals("insnnode") || type.equals("insn"))
-				{
-					this.point = new InsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
-					this.type = InsnTypes.InsnNode;
-				}
-				else if(nf && type.equals("intinsnnode") || type.equals("intinsn"))
-				{
-					int oc = OpcodeHelper.getOppcode(arr[typeIndex + 1]);
-					int val = 0;
-					//parse the val based on it's type. Insn supports Byte, Short except for when the Opcode NEWARRAY is called then it supports int
-					switch(oc)
-					{
-						case Opcodes.BIPUSH:
-							val = parseByte(arr[typeIndex + 2]);
-						break;
-						
-						case Opcodes.SIPUSH:
-							val = parseShort(arr[typeIndex + 2]);
-						break;
-						
-						default:
-							val = parseInt(arr[typeIndex + 2]);
-						break;
-					}
-					this.point = new IntInsnNode(oc, val);
-					this.type = InsnTypes.IntInsnNode;
-				}
-				else if(nf && type.equals("varinsnnode") || type.equals("varinsn"))
-				{
-					this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseInt(arr[typeIndex + 2]));
-					this.type = InsnTypes.VarInsnNode;
-				}
-				else if(nf && type.equals("jumpinsnnode") || type.equals("jumpinsn"))
-				{
-					this.point = new JumpInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), new LabelNode());
-					this.type = InsnTypes.JumpInsnNode;
-				}
-				else if(nf && type.equals("typeinsnnode") || type.equals("typeinsn"))
-				{
-					this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]));
-					this.type = InsnTypes.TypeInsnNode;
-				}
-				else if(nf && type.equals("ldcinsnnode") || type.equals("ldcinsn"))
-				{
-					String ldc = p.substring(p.toLowerCase().indexOf("ldcinsnnode"));
-					ldc = ldc.substring(ldc.indexOf(',') + 1).trim();
-					
-					//Handle EMPTY String
-					if(ldc.isEmpty())
-					{
-						this.point = new LdcInsnNode("");
-					}
-					else
-					{
-						//They didn't specify string but it's expected to be a string
-						if(ldc.charAt(0) == '"')
-						{
-							this.point = new LdcInsnNode(parseString(ldc));
-						}
-						else
-						{
-							String[] ldc_arr = splitFirst(ldc, ',');
-							String ldc_type = ldc_arr[0].trim().toUpperCase();
-							String ldc_val = parseString(ldc_arr[1]);
-							if(ldc_type.equals("INT") || ldc_type.equals("INTEGER"))
-								this.point = new LdcInsnNode(new Integer(parseInt(ldc_val)));
-							else if(ldc_type.equals("LONG"))
-								this.point = new LdcInsnNode(new Long(parseLong(ldc_val)));
-							else if(ldc_type.equals("FLOAT"))
-								this.point = new LdcInsnNode(new Float(parseFloat(ldc_val)));
-							else if(ldc_type.equals("DOUBLE"))
-								this.point = new LdcInsnNode(new Double(parseDouble(ldc_val)));
-							else if(ldc_type.equals("STR") || ldc_type.equals("STRING"))
-								this.point = new LdcInsnNode(ldc_val);
-							else
-								System.err.println("INVALID LdcInsnNode Type: '" + ldc_type + "'. Valid: [STRING, INTEGER, LONG, FLOAT, DOUBLE]");
-						}
-					}
-					if(this.point != null)
-						this.type = InsnTypes.LdcInsnNode;
-				}
-				else if(nf && type.equals("fieldinsnnode") || type.equals("fieldinsn"))
-				{
-					this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
-					this.type = InsnTypes.FieldInsnNode;
-				}
-				else if(nf && type.equals("methodinsnnode") || type.equals("methodinsn"))
-				{
-					this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), parseString(arr[typeIndex + 2]), parseString(arr[typeIndex + 3]), parseString(arr[typeIndex + 4]));
-					this.type = InsnTypes.MethodInsnNode;
-				}
-				else if(nf && type.equals("labelnode") || type.equals("label"))
-				{
-					int lindex = parseInt(arr[typeIndex + 1]);
-					this.point = new MCEIndexLabel(lindex);
-					this.occurrence = lindex;
-					this.type = InsnTypes.LabelNode;
-					this.shiftTo = ShiftTo.LABEL;
-				}
-				else if(type.startsWith("label:"))
-				{
-					int lindex = parseInt(type.substring(6));
-					this.point = new MCEIndexLabel(lindex);
-					this.occurrence = lindex;
-					this.type = InsnTypes.LabelNode;
-					this.shiftTo = ShiftTo.LABEL;
-				}
-				else if(type.equals("opcode"))
-				{
-					this.point = new MCEOpcode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
-					this.type = InsnTypes.Opcode;
-				}
-				else
-				{
-					if(type.startsWith("line") || type.startsWith("label"))
-						System.err.println("Missing ':' on Line or Label Injection Point! Line: '" + p + "'");
-					else if(OpcodeHelper.hasOpcode(type))
-						System.err.println("Invalid Injection Point String: '" + p + "'\nType is Missing! It Must be one of these Types:[MethodInsnNode, FieldInsnNode, InsnNode, Opcode, IntInsnNode, LdcInsnNode, VarInsnNode, TypeInsnNode, JumpInsnNode, LabelNode, LineNumberNode, LINE:<int>, LABEL:<int> ]");
-					else
-						System.err.println("Unsupported AbstractInsnNode for ASM Injection Point! \"" + type.toUpperCase() + "\"");
-				}
-			}
-			catch(ArrayIndexOutOfBoundsException e)
-			{
-				System.err.println("Error while parsing Injection Point(Insertion Point):" + p);
-				e.printStackTrace();
-			}
-		}
-		
-		@Override
-		public String toString()
-		{
-			return this.opp + "," + this.point + ", Index:" + this.occurrence + ", shift:" + this.shift + ", shiftTo:" + this.shiftTo;
-		}
-	}
-
-	public static class MCEField
-	{
-		/**
-		 * The name of the Field
-		 */
-		public String name;
-		/**
-		 * the value to replace
-		 */
-		public String value;
-		/**
-		 * the type [string, boolean, byte, short, int, long, float, double, Boolean, Byte, Short, Integer, Long, Float, Double]
-		 */
-		public String type;
-		/**
-		 * The method to inject into
-		 */
-		public String method;
-		/**
-		 * The method desc to inject into
-		 */
-		public String desc;
-		/**
-		 * the injection point
-		 */
-		public InsertionPoint inject;
-		
-		public MCEField()
-		{
-			
-		}
-		
-		public MCEField(JSONObject json)
-		{
-			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
-		}
-		
-		public MCEField(String name, String value, String type, String method, String desc, InsertionPoint inject)
-		{
-			this.name = name.trim();
-			this.value = value;
-			this.type = safeString(type).trim();
-			this.method = safeString(method, "<clinit>").trim();
-			this.desc = safeString(desc).trim();
-			this.inject = inject;
-		}
-
-		public void gc() {}
-	}
-	
-	private static String safeString(String s)
-	{
-		return safeString(s, "");
-	}
-	
-	private static String safeString(String s, String def)
-	{
-		return (s == null || s.isEmpty()) ? def : s;
-	}
-	
-	public static class MCEArrField extends MCEField
-	{
-		/**
-		 * The list of values going to be applied to the static array
-		 */
-		public String[] values;
-		/**
-		 * whether or not the values has a null value used to support wrapper objects and strings
-		 */
-		public boolean hasNULL;
-		/**
-		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
-		 */
-		public int index_start;
-		/**
-		 * used for static arrays as the end index where -1 repsresents the last index
-		 */
-		public int index_end;
-		/**
-		 * used for static arrays as it increments the value by this number each time
-		 */
-		public int increment;
-		/**
-		 * when true allows the array to grow WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean grow;
-		/**
-		 * when true inserts values into the index without replacement and grows the array WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean append;
-		/**
-		 * when true replaces the entire array with your values WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean replace;
-		
-		public MCEArrField(){}
-		
-		public MCEArrField(JSONObject json)
-		{
-			this(json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json), json.getAsString("index"), json.getAsString("increment"));
-		}
-		
-		public MCEArrField(String name, List values, String type, String method, String desc, InsertionPoint inject, String index, String increment)
-		{
-			super(name, null, type, method, desc, inject);
-			
-			//process values into the String[] array
-			if(values != null && !values.isEmpty())
-			{
-				this.values = new String[values.size()];
-				for(int i=0;i<values.size();i++)
-				{
-					Object o = values.get(i);
-					if(o != null)
-						this.values[i] = String.valueOf(o);
-					else
-						this.hasNULL = true;
-				}
-			}
-			else
-				this.values = new String[] {""};
-			
-			//process index
-			String[] arr = splitFirst(safeString(index, "0").replace("start", "0"), '-');
-			String str_start = arr[0];
-			String str_end = arr[1];
-			this.index_start = str_start.equals("end") ? -1 : parseInt(str_start);
-			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : parseInt(str_end));
-			
-			//process increment
-			this.increment = parseInt(safeString(increment, "0"));
-		}
-		
-		@Override
-		public void gc() 
-		{
-			this.values = null;
-		}
-	}
 
 	public static void configure(String actualName, ClassNode classNode)
 	{
@@ -522,7 +115,7 @@ public class MCEObj {
 		for(MCEField f : mce.fields)
 		{
 			String str_type = f.type;
-			FieldNode fn = CoreUtils.getFieldNode(f.name, classNode);
+			FieldNode fn = MCECoreUtils.getFieldNode(f.name, classNode);
 			
 			//Sanity Checks
 			if(fn == null)
@@ -629,7 +222,7 @@ public class MCEObj {
 			if(in.opp == Opperation.AFTER)
 			{
 				addLabelNode(list);
-				m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+				m.instructions.insert(MCECoreUtils.getLastReturn(m).getPrevious(), list);
 			}
 			else if(in.opp == Opperation.BEFORE)
 			{
@@ -751,23 +344,23 @@ public class MCEObj {
 			case LabelNode:
 				return ab instanceof LabelNode;
 			case FieldInsnNode:
-				return ab instanceof FieldInsnNode && CoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
+				return ab instanceof FieldInsnNode && MCECoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
 			case MethodInsnNode:
-				return ab instanceof MethodInsnNode && CoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
+				return ab instanceof MethodInsnNode && MCECoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
 			case InsnNode:
-				return ab instanceof InsnNode && CoreUtils.equals((InsnNode) ab, (InsnNode) point);
+				return ab instanceof InsnNode && MCECoreUtils.equals((InsnNode) ab, (InsnNode) point);
 			case IntInsnNode:
-				return ab instanceof IntInsnNode && CoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
+				return ab instanceof IntInsnNode && MCECoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
 			case VarInsnNode:
-				return ab instanceof VarInsnNode && CoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
+				return ab instanceof VarInsnNode && MCECoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
 			case JumpInsnNode:
-				return ab instanceof JumpInsnNode && CoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
+				return ab instanceof JumpInsnNode && MCECoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
 			case TypeInsnNode:
-				return ab instanceof TypeInsnNode && CoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
+				return ab instanceof TypeInsnNode && MCECoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
 			case LdcInsnNode:
-				return ab instanceof LdcInsnNode && CoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
+				return ab instanceof LdcInsnNode && MCECoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
 			case Opcode:
-				return CoreUtils.equalsOpcode(ab, point);
+				return MCECoreUtils.equalsOpcode(ab, point);
 
 			default:
 				break;
@@ -788,7 +381,7 @@ public class MCEObj {
 					AbstractInsnNode nxt = nextRealInsn(am);
 					
 					//if the return instruction appears right after init in rare cases assume this is the last injection point
-					if(nxt == null || CoreUtils.isReturnOpcode(nxt.getOpcode()))
+					if(nxt == null || MCECoreUtils.isReturnOpcode(nxt.getOpcode()))
 						return am;
 					
 					AbstractInsnNode prev = prevRealInsn(am);
@@ -878,7 +471,7 @@ public class MCEObj {
 				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
 				{
-					boolean v = parseBoolean(str_v);
+					boolean v = MCEUtil.parseBoolean(str_v);
 					if(!v && !isWrapper)
 						continue;
 					valInsn = getBoolInsn(v);
@@ -887,7 +480,7 @@ public class MCEObj {
 				case WRAPPED_BYTE:
 				case BYTE:
 				{
-					byte v = parseByte(str_v);
+					byte v = MCEUtil.parseByte(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -896,7 +489,7 @@ public class MCEObj {
 				case WRAPPED_SHORT:
 				case SHORT:
 				{
-					short v = parseShort(str_v);
+					short v = MCEUtil.parseShort(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -905,7 +498,7 @@ public class MCEObj {
 				case WRAPPED_INT:
 				case INT:
 				{
-					int v = parseInt(str_v);
+					int v = MCEUtil.parseInt(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -914,7 +507,7 @@ public class MCEObj {
 				case WRAPPED_LONG:
 				case LONG:
 				{
-					long v = parseLong(str_v);
+					long v = MCEUtil.parseLong(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getLongInsn(v);
@@ -923,7 +516,7 @@ public class MCEObj {
 				case WRAPPED_FLOAT:
 				case FLOAT:
 				{
-					float v = parseFloat(str_v);
+					float v = MCEUtil.parseFloat(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getFloatInsn(v);
@@ -932,7 +525,7 @@ public class MCEObj {
 				case WRAPPED_DOUBLE:
 				case DOUBLE:
 				{
-					double v = parseDouble(str_v);
+					double v = MCEUtil.parseDouble(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getDoubleInsn(v);
@@ -945,7 +538,7 @@ public class MCEObj {
 				case WRAPPED_CHAR:
 				case CHAR:
 				{
-					char v = parseChar(str_v);
+					char v = MCEUtil.parseChar(str_v);
 					if(v == (char)0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -974,30 +567,30 @@ public class MCEObj {
 		{
 			case WRAPPED_BOOLEAN:
 			case BOOLEAN:
-				return getBoolInsn(parseBoolean(str_v));
+				return getBoolInsn(MCEUtil.parseBoolean(str_v));
 			case WRAPPED_BYTE:
 			case BYTE:
-				return getIntInsn(parseByte(str_v));
+				return getIntInsn(MCEUtil.parseByte(str_v));
 			case WRAPPED_SHORT:
 			case SHORT:
-				return getIntInsn(parseShort(str_v));
+				return getIntInsn(MCEUtil.parseShort(str_v));
 			case WRAPPED_INT:
 			case INT:
-				return getIntInsn(parseInt(str_v));
+				return getIntInsn(MCEUtil.parseInt(str_v));
 			case WRAPPED_LONG:
 			case LONG:
-				return getLongInsn(parseLong(str_v));
+				return getLongInsn(MCEUtil.parseLong(str_v));
 			case WRAPPED_FLOAT:
 			case FLOAT:
-				return getFloatInsn(parseFloat(str_v));
+				return getFloatInsn(MCEUtil.parseFloat(str_v));
 			case WRAPPED_DOUBLE:
 			case DOUBLE:
-				return getDoubleInsn(parseDouble(str_v));
+				return getDoubleInsn(MCEUtil.parseDouble(str_v));
 			case STRING:
 				return new LdcInsnNode(str_v);
 			case WRAPPED_CHAR:
 			case CHAR:
-				return getIntInsn(parseChar(str_v));
+				return getIntInsn(MCEUtil.parseChar(str_v));
 			default:
 				break;
 		}
@@ -1175,44 +768,31 @@ public class MCEObj {
 	
 	public static void addLabelNode(InsnList list)
 	{
-		if(getASMVersion() != 0)
-			return;
 		LabelNode l1 = new LabelNode();
 		list.add(l1);
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 	}
 	
 	public static void insertLabelNode(InsnList list)
 	{
-		if(getASMVersion() != 0)
-			return;
 		LabelNode l1 = new LabelNode();
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 		list.insert(l1);
 	}
 	
 	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
 	{
-		if(getASMVersion() != 0)
-			return;
 		InsnList l = new InsnList();
 		LabelNode label = new LabelNode();
 		l.add(label);
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
 		list.insert(spot, l);
 	}
 	
-	private static int ASM_VERSION = 0;
-	public static int getASMVersion() 
-	{
-		if(ASM_VERSION > 0)
-			return ASM_VERSION;
-		ASM_VERSION = detectASMVersion();
-		return ASM_VERSION;
-	}
+	private static int ASM_VERSION = detectASMVersion();
 
 	private static int detectASMVersion() 
 	{
@@ -1226,183 +806,5 @@ public class MCEObj {
 		}
 		return 4;
 	}
-	
-	//Start UTIL METHODS__________________________________________
-	//____________________________________________________________
-	/**
-	 * Parse a char Safely
-	 */
-	public static char parseChar(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (char) Long.parseLong(value, 10);
-		}
-		catch(NumberFormatException num)
-		{
-			return value.isEmpty() ? ((char) 0) : value.charAt(0);
-		}
-	}
-	
-	/**
-	 * parses a boolean allowing for 0 to be false and 1 to be true
-	 * if string is null or empty it's returning false which is equal to 0 which is also what null converted to a primative is
-	 */
-	public static boolean parseBoolean(String s)
-	{
-		if(s == null)
-			return false;
-        int l = s.length();
-        
-        //if string is empty return false
-        if(l == 0)
-        	return false;
-        
-        //start left side trim if required
-        int i = 0;
-        while ((i < l) && (s.charAt(i) <= ' ')) {
-            i++;
-        }
-        
-        //if string is empty after trim return false
-        if(i == l)
-        	return false;
-        
-        char c = s.charAt(i);
-        return c == 't' || c == 'T' || c == '1';
-	}
-	
-	/**
-	 * Parse a Byte Safely
-	 */
-	public static byte parseByte(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (byte) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Short Safely
-	 */
-	public static short parseShort(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (short) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static int parseInt(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (int) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static long parseLong(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static float parseFloat(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Float.parseFloat(value.trim());
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	public static double parseDouble(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Double.parseDouble(value.trim());
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	public static String parseString(String value)
-	{
-		if(value == null)
-			return "";
-		
-		value = value.trim();
-		if(!value.isEmpty() && value.charAt(0) == '"')
-		{
-			int len = value.length();
-			if (len == 1)
-				return "";
-			
-			int end = len - 1;
-			if (value.charAt(end) != '"')
-				end++;
-			return value.substring(1, end);
-		}
-		
-		return value;
-	}
-	
-	public static String[] splitFirst(String s, char delim)
-	{
-		int index = s.indexOf(delim);
-		if(index == 0)
-			index = s.indexOf(delim, 1);
-		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
-	}
-	
-	//END UTIL METHODS___________________________________________________
-	//___________________________________________________________________
 
 }

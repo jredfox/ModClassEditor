@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;
@@ -27,7 +27,7 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.internal.Util;
 
-public class CoreUtils {
+public class MCECoreUtils {
 	
 	public static ClassNode getClassNode(byte[] basicClass)
 	{

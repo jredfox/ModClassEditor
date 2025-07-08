@@ -21,6 +21,9 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.JSONUtils;
+
 public class MCEGen {
 	
 	public File file_gen;

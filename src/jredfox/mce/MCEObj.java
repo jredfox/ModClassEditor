@@ -28,6 +28,9 @@ import jredfox.mce.cfg.InsertionPoint;
 import jredfox.mce.cfg.InsertionPoint.ShiftTo;
 import jredfox.mce.cfg.Opperation;
 import jredfox.mce.tree.InsnTypes;
+import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.MCEUtil;
+import jredfox.mce.util.WildCardMatcher;
 
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
@@ -217,14 +220,14 @@ public class MCEObj {
 				this.values = new String[] {""};
 			
 			//process index
-			String[] arr = splitFirst(safeString(index, "0").replace("start", "0"), '-');
+			String[] arr = MCEUtil.splitFirst(safeString(index, "0").replace("start", "0"), '-');
 			String str_start = arr[0];
 			String str_end = arr[1];
-			this.index_start = str_start.equals("end") ? -1 : parseInt(str_start);
-			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : parseInt(str_end));
+			this.index_start = str_start.equals("end") ? -1 : MCEUtil.parseInt(str_start);
+			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : MCEUtil.parseInt(str_end));
 			
 			//process increment
-			this.increment = parseInt(safeString(increment, "0"));
+			this.increment = MCEUtil.parseInt(safeString(increment, "0"));
 		}
 		
 		@Override
@@ -606,7 +609,7 @@ public class MCEObj {
 				case WRAPPED_BOOLEAN:
 				case BOOLEAN:
 				{
-					boolean v = parseBoolean(str_v);
+					boolean v = MCEUtil.parseBoolean(str_v);
 					if(!v && !isWrapper)
 						continue;
 					valInsn = getBoolInsn(v);
@@ -615,7 +618,7 @@ public class MCEObj {
 				case WRAPPED_BYTE:
 				case BYTE:
 				{
-					byte v = parseByte(str_v);
+					byte v = MCEUtil.parseByte(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -624,7 +627,7 @@ public class MCEObj {
 				case WRAPPED_SHORT:
 				case SHORT:
 				{
-					short v = parseShort(str_v);
+					short v = MCEUtil.parseShort(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -633,7 +636,7 @@ public class MCEObj {
 				case WRAPPED_INT:
 				case INT:
 				{
-					int v = parseInt(str_v);
+					int v = MCEUtil.parseInt(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -642,7 +645,7 @@ public class MCEObj {
 				case WRAPPED_LONG:
 				case LONG:
 				{
-					long v = parseLong(str_v);
+					long v = MCEUtil.parseLong(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getLongInsn(v);
@@ -651,7 +654,7 @@ public class MCEObj {
 				case WRAPPED_FLOAT:
 				case FLOAT:
 				{
-					float v = parseFloat(str_v);
+					float v = MCEUtil.parseFloat(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getFloatInsn(v);
@@ -660,7 +663,7 @@ public class MCEObj {
 				case WRAPPED_DOUBLE:
 				case DOUBLE:
 				{
-					double v = parseDouble(str_v);
+					double v = MCEUtil.parseDouble(str_v);
 					if(v == 0 && !isWrapper)
 						continue;
 					valInsn = getDoubleInsn(v);
@@ -673,7 +676,7 @@ public class MCEObj {
 				case WRAPPED_CHAR:
 				case CHAR:
 				{
-					char v = parseChar(str_v);
+					char v = MCEUtil.parseChar(str_v);
 					if(v == (char)0 && !isWrapper)
 						continue;
 					valInsn = getIntInsn(v);
@@ -702,30 +705,30 @@ public class MCEObj {
 		{
 			case WRAPPED_BOOLEAN:
 			case BOOLEAN:
-				return getBoolInsn(parseBoolean(str_v));
+				return getBoolInsn(MCEUtil.parseBoolean(str_v));
 			case WRAPPED_BYTE:
 			case BYTE:
-				return getIntInsn(parseByte(str_v));
+				return getIntInsn(MCEUtil.parseByte(str_v));
 			case WRAPPED_SHORT:
 			case SHORT:
-				return getIntInsn(parseShort(str_v));
+				return getIntInsn(MCEUtil.parseShort(str_v));
 			case WRAPPED_INT:
 			case INT:
-				return getIntInsn(parseInt(str_v));
+				return getIntInsn(MCEUtil.parseInt(str_v));
 			case WRAPPED_LONG:
 			case LONG:
-				return getLongInsn(parseLong(str_v));
+				return getLongInsn(MCEUtil.parseLong(str_v));
 			case WRAPPED_FLOAT:
 			case FLOAT:
-				return getFloatInsn(parseFloat(str_v));
+				return getFloatInsn(MCEUtil.parseFloat(str_v));
 			case WRAPPED_DOUBLE:
 			case DOUBLE:
-				return getDoubleInsn(parseDouble(str_v));
+				return getDoubleInsn(MCEUtil.parseDouble(str_v));
 			case STRING:
 				return new LdcInsnNode(str_v);
 			case WRAPPED_CHAR:
 			case CHAR:
-				return getIntInsn(parseChar(str_v));
+				return getIntInsn(MCEUtil.parseChar(str_v));
 			default:
 				break;
 		}
@@ -954,183 +957,5 @@ public class MCEObj {
 		}
 		return 4;
 	}
-	
-	//Start UTIL METHODS__________________________________________
-	//____________________________________________________________
-	/**
-	 * Parse a char Safely
-	 */
-	public static char parseChar(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (char) Long.parseLong(value, 10);
-		}
-		catch(NumberFormatException num)
-		{
-			return value.isEmpty() ? ((char) 0) : value.charAt(0);
-		}
-	}
-	
-	/**
-	 * parses a boolean allowing for 0 to be false and 1 to be true
-	 * if string is null or empty it's returning false which is equal to 0 which is also what null converted to a primative is
-	 */
-	public static boolean parseBoolean(String s)
-	{
-		if(s == null)
-			return false;
-        int l = s.length();
-        
-        //if string is empty return false
-        if(l == 0)
-        	return false;
-        
-        //start left side trim if required
-        int i = 0;
-        while ((i < l) && (s.charAt(i) <= ' ')) {
-            i++;
-        }
-        
-        //if string is empty after trim return false
-        if(i == l)
-        	return false;
-        
-        char c = s.charAt(i);
-        return c == 't' || c == 'T' || c == '1';
-	}
-	
-	/**
-	 * Parse a Byte Safely
-	 */
-	public static byte parseByte(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (byte) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Short Safely
-	 */
-	public static short parseShort(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (short) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static int parseInt(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return (int) Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static long parseLong(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Long.parseLong(value.trim(), 10);
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	/**
-	 * Parse a Int Safely
-	 */
-	public static float parseFloat(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Float.parseFloat(value.trim());
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	public static double parseDouble(String value) 
-	{
-		if(value == null) return 0;
-		
-		try
-		{
-			return Double.parseDouble(value.trim());
-		}
-		catch(NumberFormatException e)
-		{
-			return 0;
-		}
-	}
-	
-	public static String parseString(String value)
-	{
-		if(value == null)
-			return "";
-		
-		value = value.trim();
-		if(!value.isEmpty() && value.charAt(0) == '"')
-		{
-			int len = value.length();
-			if (len == 1)
-				return "";
-			
-			int end = len - 1;
-			if (value.charAt(end) != '"')
-				end++;
-			return value.substring(1, end);
-		}
-		
-		return value;
-	}
-	
-	public static String[] splitFirst(String s, char delim)
-	{
-		int index = s.indexOf(delim);
-		if(index == 0)
-			index = s.indexOf(delim, 1);
-		return index == -1 ? new String[]{s, ""} : new String[] {s.substring(0, index), s.substring(index + 1)};
-	}
-	
-	//END UTIL METHODS___________________________________________________
-	//___________________________________________________________________
 
 }

@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.util;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

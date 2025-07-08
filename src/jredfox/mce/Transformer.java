@@ -20,6 +20,8 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
+import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.JSONUtils;
 
 public class Transformer implements IClassTransformer {
 	

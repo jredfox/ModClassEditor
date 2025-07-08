@@ -18,6 +18,7 @@ import jredfox.mce.OpcodeHelper;
 import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
+import jredfox.mce.util.MCEUtil;
 
 public class InsertionPoint
 {
@@ -73,8 +74,8 @@ public class InsertionPoint
 			JSONObject oj = (JSONObject) o;
 			this.parse(oj.getString("point"));
 			if(this.type != InsnTypes.LabelNode)
-				this.occurrence = MCEObj.parseInt(MCEObj.safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
-			this.shift =  MCEObj.parseInt(MCEObj.safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
+				this.occurrence = MCEUtil.parseInt(MCEObj.safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
+			this.shift =  MCEUtil.parseInt(MCEObj.safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
 			if(oj.containsKey("shiftTo"))
 				this.shiftTo = ShiftTo.get(oj.getAsString("shiftTo"));
 		}
@@ -157,15 +158,15 @@ public class InsertionPoint
 				switch(oc)
 				{
 					case Opcodes.BIPUSH:
-						val = MCEObj.parseByte(arr[typeIndex + 2]);
+						val = MCEUtil.parseByte(arr[typeIndex + 2]);
 					break;
 					
 					case Opcodes.SIPUSH:
-						val = MCEObj.parseShort(arr[typeIndex + 2]);
+						val = MCEUtil.parseShort(arr[typeIndex + 2]);
 					break;
 					
 					default:
-						val = MCEObj.parseInt(arr[typeIndex + 2]);
+						val = MCEUtil.parseInt(arr[typeIndex + 2]);
 					break;
 				}
 				this.point = new IntInsnNode(oc, val);
@@ -173,7 +174,7 @@ public class InsertionPoint
 			}
 			else if(nf && type.equals("varinsnnode") || type.equals("varinsn"))
 			{
-				this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEObj.parseInt(arr[typeIndex + 2]));
+				this.point = new VarInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEUtil.parseInt(arr[typeIndex + 2]));
 				this.type = InsnTypes.VarInsnNode;
 			}
 			else if(nf && type.equals("jumpinsnnode") || type.equals("jumpinsn"))
@@ -183,7 +184,7 @@ public class InsertionPoint
 			}
 			else if(nf && type.equals("typeinsnnode") || type.equals("typeinsn"))
 			{
-				this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEObj.parseString(arr[typeIndex + 2]));
+				this.point = new TypeInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEUtil.parseString(arr[typeIndex + 2]));
 				this.type = InsnTypes.TypeInsnNode;
 			}
 			else if(nf && type.equals("ldcinsnnode") || type.equals("ldcinsn"))
@@ -201,21 +202,21 @@ public class InsertionPoint
 					//They didn't specify string but it's expected to be a string
 					if(ldc.charAt(0) == '"')
 					{
-						this.point = new LdcInsnNode(MCEObj.parseString(ldc));
+						this.point = new LdcInsnNode(MCEUtil.parseString(ldc));
 					}
 					else
 					{
-						String[] ldc_arr = MCEObj.splitFirst(ldc, ',');
+						String[] ldc_arr = MCEUtil.splitFirst(ldc, ',');
 						String ldc_type = ldc_arr[0].trim().toUpperCase();
-						String ldc_val = MCEObj.parseString(ldc_arr[1]);
+						String ldc_val = MCEUtil.parseString(ldc_arr[1]);
 						if(ldc_type.equals("INT") || ldc_type.equals("INTEGER"))
-							this.point = new LdcInsnNode(new Integer(MCEObj.parseInt(ldc_val)));
+							this.point = new LdcInsnNode(new Integer(MCEUtil.parseInt(ldc_val)));
 						else if(ldc_type.equals("LONG"))
-							this.point = new LdcInsnNode(new Long(MCEObj.parseLong(ldc_val)));
+							this.point = new LdcInsnNode(new Long(MCEUtil.parseLong(ldc_val)));
 						else if(ldc_type.equals("FLOAT"))
-							this.point = new LdcInsnNode(new Float(MCEObj.parseFloat(ldc_val)));
+							this.point = new LdcInsnNode(new Float(MCEUtil.parseFloat(ldc_val)));
 						else if(ldc_type.equals("DOUBLE"))
-							this.point = new LdcInsnNode(new Double(MCEObj.parseDouble(ldc_val)));
+							this.point = new LdcInsnNode(new Double(MCEUtil.parseDouble(ldc_val)));
 						else if(ldc_type.equals("STR") || ldc_type.equals("STRING"))
 							this.point = new LdcInsnNode(ldc_val);
 						else
@@ -227,17 +228,17 @@ public class InsertionPoint
 			}
 			else if(nf && type.equals("fieldinsnnode") || type.equals("fieldinsn"))
 			{
-				this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEObj.parseString(arr[typeIndex + 2]), MCEObj.parseString(arr[typeIndex + 3]), MCEObj.parseString(arr[typeIndex + 4]));
+				this.point = new FieldInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEUtil.parseString(arr[typeIndex + 2]), MCEUtil.parseString(arr[typeIndex + 3]), MCEUtil.parseString(arr[typeIndex + 4]));
 				this.type = InsnTypes.FieldInsnNode;
 			}
 			else if(nf && type.equals("methodinsnnode") || type.equals("methodinsn"))
 			{
-				this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEObj.parseString(arr[typeIndex + 2]), MCEObj.parseString(arr[typeIndex + 3]), MCEObj.parseString(arr[typeIndex + 4]));
+				this.point = new MethodInsnNode(OpcodeHelper.getOppcode(arr[typeIndex + 1]), MCEUtil.parseString(arr[typeIndex + 2]), MCEUtil.parseString(arr[typeIndex + 3]), MCEUtil.parseString(arr[typeIndex + 4]));
 				this.type = InsnTypes.MethodInsnNode;
 			}
 			else if(nf && type.equals("labelnode") || type.equals("label"))
 			{
-				int lindex = MCEObj.parseInt(arr[typeIndex + 1]);
+				int lindex = MCEUtil.parseInt(arr[typeIndex + 1]);
 				this.point = new MCEIndexLabel(lindex);
 				this.occurrence = lindex;
 				this.type = InsnTypes.LabelNode;
@@ -245,7 +246,7 @@ public class InsertionPoint
 			}
 			else if(type.startsWith("label:"))
 			{
-				int lindex = MCEObj.parseInt(type.substring(6));
+				int lindex = MCEUtil.parseInt(type.substring(6));
 				this.point = new MCEIndexLabel(lindex);
 				this.occurrence = lindex;
 				this.type = InsnTypes.LabelNode;

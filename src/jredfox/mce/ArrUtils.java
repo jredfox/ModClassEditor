@@ -1,5 +1,7 @@
 package jredfox.mce;
 
+import jredfox.mce.util.MCEUtil;
+
 public class ArrUtils {
 	
 	public static void set(char[] arr, int index, char val)
@@ -758,7 +760,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseBoolean(s);
+						arr[i] = MCEUtil.parseBoolean(s);
 				}
 				return arr;
 			}
@@ -769,7 +771,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseByte(s);
+						arr[i] = MCEUtil.parseByte(s);
 				}
 				return arr;
 			}
@@ -780,7 +782,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseShort(s);
+						arr[i] = MCEUtil.parseShort(s);
 				}
 				return arr;
 			}
@@ -791,7 +793,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseInt(s);
+						arr[i] = MCEUtil.parseInt(s);
 				}
 				return arr;
 			}
@@ -802,7 +804,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseLong(s);
+						arr[i] = MCEUtil.parseLong(s);
 				}
 				return arr;
 			}
@@ -813,7 +815,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseFloat(s);
+						arr[i] = MCEUtil.parseFloat(s);
 				}
 				return arr;
 			}
@@ -824,7 +826,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseDouble(s);
+						arr[i] = MCEUtil.parseDouble(s);
 				}
 				return arr;
 			}
@@ -842,7 +844,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseChar(s);
+						arr[i] = MCEUtil.parseChar(s);
 				}
 				return arr;
 			}
@@ -853,7 +855,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseBoolean(s);
+						arr[i] = MCEUtil.parseBoolean(s);
 				}
 				return arr;
 			}
@@ -864,7 +866,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseByte(s);
+						arr[i] = MCEUtil.parseByte(s);
 				}
 				return arr;
 			}
@@ -875,7 +877,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseShort(s);
+						arr[i] = MCEUtil.parseShort(s);
 				}
 				return arr;
 			}
@@ -886,7 +888,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseInt(s);
+						arr[i] = MCEUtil.parseInt(s);
 				}
 				return arr;
 			}
@@ -897,7 +899,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseLong(s);
+						arr[i] = MCEUtil.parseLong(s);
 				}
 				return arr;
 			}
@@ -908,7 +910,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseFloat(s);
+						arr[i] = MCEUtil.parseFloat(s);
 				}
 				return arr;
 			}
@@ -919,7 +921,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseDouble(s);
+						arr[i] = MCEUtil.parseDouble(s);
 				}
 				return arr;
 			}
@@ -930,7 +932,7 @@ public class ArrUtils {
 				{
 					String s = values[i];
 					if(s != null)
-						arr[i] = MCEObj.parseChar(s);
+						arr[i] = MCEUtil.parseChar(s);
 				}
 				return arr;
 			}

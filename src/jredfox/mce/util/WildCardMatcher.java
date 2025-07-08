@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.util;
 
 import java.util.ArrayList;
 import java.util.Stack;

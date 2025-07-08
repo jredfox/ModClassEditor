@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.util;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -6,8 +6,6 @@ import java.util.Map;
 import java.util.Set;
 
 import org.objectweb.asm.Opcodes;
-
-import jredfox.mce.util.MCEUtil;
 
 public class OpcodeHelper {
 	

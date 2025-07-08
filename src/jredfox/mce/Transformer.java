@@ -20,7 +20,7 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
-import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.JSONUtils;
 
 public class Transformer implements IClassTransformer {
@@ -49,12 +49,12 @@ public class Transformer implements IClassTransformer {
 	{
 		try
 		{
-			ClassNode classNode = CoreUtils.getClassNode(clazz);
-			CoreUtils.pubMinusFinal(classNode, true);
+			ClassNode classNode = MCECoreUtils.getClassNode(clazz);
+			MCECoreUtils.pubMinusFinal(classNode, true);
 			int flags = this.recomputeFrames ? (ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) : ClassWriter.COMPUTE_MAXS;
 			gen.gen(actualName, classNode);
 			MCEObj.configure(actualName, classNode);
-			return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, flags), actualName, clazz);
+			return MCECoreUtils.toByteArray(MCECoreUtils.getClassWriter(classNode, flags), actualName, clazz);
 		}
 		catch(Throwable t)
 		{

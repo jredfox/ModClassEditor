@@ -26,10 +26,13 @@ import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.cfg.InsertionPoint;
 import jredfox.mce.cfg.InsertionPoint.ShiftTo;
+import jredfox.mce.cfg.MCEArrField;
+import jredfox.mce.cfg.MCEField;
 import jredfox.mce.cfg.Opperation;
 import jredfox.mce.tree.InsnTypes;
-import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
+import jredfox.mce.util.OpcodeHelper;
 import jredfox.mce.util.WildCardMatcher;
 
 /**
@@ -97,146 +100,6 @@ public class MCEObj {
 		}
 	}
 
-	public static class MCEField
-	{
-		/**
-		 * The name of the Field
-		 */
-		public String name;
-		/**
-		 * the value to replace
-		 */
-		public String value;
-		/**
-		 * the type [string, boolean, byte, short, int, long, float, double, Boolean, Byte, Short, Integer, Long, Float, Double]
-		 */
-		public String type;
-		/**
-		 * The method to inject into
-		 */
-		public String method;
-		/**
-		 * The method desc to inject into
-		 */
-		public String desc;
-		/**
-		 * the injection point
-		 */
-		public InsertionPoint inject;
-		
-		public MCEField()
-		{
-			
-		}
-		
-		public MCEField(JSONObject json)
-		{
-			this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
-		}
-		
-		public MCEField(String name, String value, String type, String method, String desc, InsertionPoint inject)
-		{
-			this.name = name.trim();
-			this.value = value;
-			this.type = safeString(type).trim();
-			this.method = safeString(method, "<clinit>").trim();
-			this.desc = safeString(desc).trim();
-			this.inject = inject;
-		}
-
-		public void gc() {}
-	}
-	
-	public static String safeString(String s)
-	{
-		return safeString(s, "");
-	}
-	
-	public static String safeString(String s, String def)
-	{
-		return (s == null || s.isEmpty()) ? def : s;
-	}
-	
-	public static class MCEArrField extends MCEField
-	{
-		/**
-		 * The list of values going to be applied to the static array
-		 */
-		public String[] values;
-		/**
-		 * whether or not the values has a null value used to support wrapper objects and strings
-		 */
-		public boolean hasNULL;
-		/**
-		 * used for static arrays as the start index where -1 represents the last index no matter how large or small
-		 */
-		public int index_start;
-		/**
-		 * used for static arrays as the end index where -1 repsresents the last index
-		 */
-		public int index_end;
-		/**
-		 * used for static arrays as it increments the value by this number each time
-		 */
-		public int increment;
-		/**
-		 * when true allows the array to grow WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean grow;
-		/**
-		 * when true inserts values into the index without replacement and grows the array WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean append;
-		/**
-		 * when true replaces the entire array with your values WARNING: this creates a new memory location and possible code breaking changes
-		 */
-		public boolean replace;
-		
-		public MCEArrField(){}
-		
-		public MCEArrField(JSONObject json)
-		{
-			this(json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json), json.getAsString("index"), json.getAsString("increment"));
-		}
-		
-		public MCEArrField(String name, List values, String type, String method, String desc, InsertionPoint inject, String index, String increment)
-		{
-			super(name, null, type, method, desc, inject);
-			
-			//process values into the String[] array
-			if(values != null && !values.isEmpty())
-			{
-				this.values = new String[values.size()];
-				for(int i=0;i<values.size();i++)
-				{
-					Object o = values.get(i);
-					if(o != null)
-						this.values[i] = String.valueOf(o);
-					else
-						this.hasNULL = true;
-				}
-			}
-			else
-				this.values = new String[] {""};
-			
-			//process index
-			String[] arr = MCEUtil.splitFirst(safeString(index, "0").replace("start", "0"), '-');
-			String str_start = arr[0];
-			String str_end = arr[1];
-			this.index_start = str_start.equals("end") ? -1 : MCEUtil.parseInt(str_start);
-			this.index_end = str_end.isEmpty() ? this.index_start : (str_end.equals("end") ? -1 : MCEUtil.parseInt(str_end));
-			
-			//process increment
-			this.increment = MCEUtil.parseInt(safeString(increment, "0"));
-		}
-		
-		@Override
-		public void gc() 
-		{
-			this.values = null;
-		}
-	}
-
 	public static void configure(String actualName, ClassNode classNode)
 	{
 		System.out.println("Mod Class Editor:" + actualName);
@@ -253,7 +116,7 @@ public class MCEObj {
 		for(MCEField f : mce.fields)
 		{
 			String str_type = f.type;
-			FieldNode fn = CoreUtils.getFieldNode(f.name, classNode);
+			FieldNode fn = MCECoreUtils.getFieldNode(f.name, classNode);
 			
 			//Sanity Checks
 			if(fn == null)
@@ -360,7 +223,7 @@ public class MCEObj {
 			if(in.opp == Opperation.AFTER)
 			{
 				addLabelNode(list);
-				m.instructions.insert(CoreUtils.getLastReturn(m).getPrevious(), list);
+				m.instructions.insert(MCECoreUtils.getLastReturn(m).getPrevious(), list);
 			}
 			else if(in.opp == Opperation.BEFORE)
 			{
@@ -482,23 +345,23 @@ public class MCEObj {
 			case LabelNode:
 				return ab instanceof LabelNode;
 			case FieldInsnNode:
-				return ab instanceof FieldInsnNode && CoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
+				return ab instanceof FieldInsnNode && MCECoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
 			case MethodInsnNode:
-				return ab instanceof MethodInsnNode && CoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
+				return ab instanceof MethodInsnNode && MCECoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
 			case InsnNode:
-				return ab instanceof InsnNode && CoreUtils.equals((InsnNode) ab, (InsnNode) point);
+				return ab instanceof InsnNode && MCECoreUtils.equals((InsnNode) ab, (InsnNode) point);
 			case IntInsnNode:
-				return ab instanceof IntInsnNode && CoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
+				return ab instanceof IntInsnNode && MCECoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
 			case VarInsnNode:
-				return ab instanceof VarInsnNode && CoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
+				return ab instanceof VarInsnNode && MCECoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
 			case JumpInsnNode:
-				return ab instanceof JumpInsnNode && CoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
+				return ab instanceof JumpInsnNode && MCECoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
 			case TypeInsnNode:
-				return ab instanceof TypeInsnNode && CoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
+				return ab instanceof TypeInsnNode && MCECoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
 			case LdcInsnNode:
-				return ab instanceof LdcInsnNode && CoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
+				return ab instanceof LdcInsnNode && MCECoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
 			case Opcode:
-				return CoreUtils.equalsOpcode(ab, point);
+				return MCECoreUtils.equalsOpcode(ab, point);
 
 			default:
 				break;
@@ -519,7 +382,7 @@ public class MCEObj {
 					AbstractInsnNode nxt = nextRealInsn(am);
 					
 					//if the return instruction appears right after init in rare cases assume this is the last injection point
-					if(nxt == null || CoreUtils.isReturnOpcode(nxt.getOpcode()))
+					if(nxt == null || MCECoreUtils.isReturnOpcode(nxt.getOpcode()))
 						return am;
 					
 					AbstractInsnNode prev = prevRealInsn(am);
@@ -906,44 +769,31 @@ public class MCEObj {
 	
 	public static void addLabelNode(InsnList list)
 	{
-		if(getASMVersion() != 0)
-			return;
 		LabelNode l1 = new LabelNode();
 		list.add(l1);
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 	}
 	
 	public static void insertLabelNode(InsnList list)
 	{
-		if(getASMVersion() != 0)
-			return;
 		LabelNode l1 = new LabelNode();
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
 		list.insert(l1);
 	}
 	
 	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
 	{
-		if(getASMVersion() != 0)
-			return;
 		InsnList l = new InsnList();
 		LabelNode label = new LabelNode();
 		l.add(label);
-		if(getASMVersion() < 5)
+		if(ASM_VERSION < 5)
 			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
 		list.insert(spot, l);
 	}
 	
-	private static int ASM_VERSION = 0;
-	public static int getASMVersion() 
-	{
-		if(ASM_VERSION > 0)
-			return ASM_VERSION;
-		ASM_VERSION = detectASMVersion();
-		return ASM_VERSION;
-	}
+	private static int ASM_VERSION = detectASMVersion();
 
 	private static int detectASMVersion() 
 	{

@@ -14,11 +14,11 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.MCEObj;
-import jredfox.mce.OpcodeHelper;
 import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
 import jredfox.mce.util.MCEUtil;
+import jredfox.mce.util.OpcodeHelper;
 
 public class InsertionPoint
 {
@@ -74,13 +74,13 @@ public class InsertionPoint
 			JSONObject oj = (JSONObject) o;
 			this.parse(oj.getString("point"));
 			if(this.type != InsnTypes.LabelNode)
-				this.occurrence = MCEUtil.parseInt(MCEObj.safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
-			this.shift =  MCEUtil.parseInt(MCEObj.safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
+				this.occurrence = MCEUtil.parseInt(MCEUtil.safeString(oj.getAsString("occurrence"), "0").replace("start", "0").replace("end", "-1"));
+			this.shift =  MCEUtil.parseInt(MCEUtil.safeString(oj.getAsString("shift"), "0").replace("start", "0").replace("end", "-1"));
 			if(oj.containsKey("shiftTo"))
 				this.shiftTo = ShiftTo.get(oj.getAsString("shiftTo"));
 		}
 		else
-			this.parse(MCEObj.safeString((String) o));
+			this.parse(MCEUtil.safeString((String) o));
 		
 		if(this.point != null)
 			System.out.println("DEBUG InsertionPoint " + this);
@@ -92,7 +92,7 @@ public class InsertionPoint
 	}
 	protected void parse(String p) 
 	{
-		p = MCEObj.safeString(p, "after");
+		p = MCEUtil.safeString(p, "after");
 		String[] arr = p.split(",");
 		if(arr.length == 0)
 			return;
@@ -274,9 +274,9 @@ public class InsertionPoint
 		}
 	}
 		
-		@Override
-		public String toString()
-		{
-			return this.opp + "," + this.point + ", Index:" + this.occurrence + ", shift:" + this.shift + ", shiftTo:" + this.shiftTo;
-		}
+	@Override
+	public String toString()
+	{
+		return this.opp + "," + this.point + ", Index:" + this.occurrence + ", shift:" + this.shift + ", shiftTo:" + this.shiftTo;
 	}
+}

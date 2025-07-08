@@ -21,7 +21,7 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
-import jredfox.mce.util.CoreUtils;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.JSONUtils;
 
 public class MCEGen {
@@ -62,11 +62,11 @@ public class MCEGen {
 		
 		synchronized (this)
 		{
-			MethodNode clinit = CoreUtils.getMethodNode(classNode, "<clinit>", "()V");
+			MethodNode clinit = MCECoreUtils.getMethodNode(classNode, "<clinit>", "()V");
 			JSONArray fields = new JSONArray();
 			root.put(actualName, fields);
 			
-			AbstractInsnNode spot = CoreUtils.getLastReturn(clinit);
+			AbstractInsnNode spot = MCECoreUtils.getLastReturn(clinit);
 			
 			for (int i = 0; i <= 1; i++) 
 			{
@@ -318,7 +318,7 @@ public class MCEGen {
 					}
 				}
 				
-				return CoreUtils.toByteArray(CoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName, null);
+				return MCECoreUtils.toByteArray(MCECoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName, null);
 			}
 			catch(Throwable t)
 			{

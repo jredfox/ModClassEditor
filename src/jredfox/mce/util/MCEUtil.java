@@ -2,6 +2,16 @@ package jredfox.mce.util;
 
 public class MCEUtil {
 	
+	public static String safeString(String s)
+	{
+		return safeString(s, "");
+	}
+	
+	public static String safeString(String s, String def)
+	{
+		return (s == null || s.isEmpty()) ? def : s;
+	}
+	
 	/**
 	 * Parse a char Safely
 	 */

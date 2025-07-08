@@ -1,4 +1,4 @@
-package jredfox.mce;
+package jredfox.mce.types;
 
 import org.objectweb.asm.Opcodes;
 

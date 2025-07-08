@@ -14,9 +14,9 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.MCEObj;
-import jredfox.mce.tree.InsnTypes;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
+import jredfox.mce.types.InsnTypes;
 import jredfox.mce.util.MCEUtil;
 import jredfox.mce.util.OpcodeHelper;
 

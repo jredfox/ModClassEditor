@@ -1,4 +1,4 @@
-package jredfox.mce.tree;
+package jredfox.mce.types;
 
 /**
  * A Quick Way to determine what type the Insn is

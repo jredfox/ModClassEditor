@@ -1,5 +1,6 @@
 package jredfox.mce;
 
+import jredfox.mce.types.DataType;
 import jredfox.mce.util.MCEUtil;
 
 public class ArrUtils {

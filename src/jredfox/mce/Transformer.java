@@ -5,23 +5,14 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.ClassWriter;
-import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.ClassNode;
-import org.objectweb.asm.tree.FieldInsnNode;
-import org.objectweb.asm.tree.InsnList;
-import org.objectweb.asm.tree.InsnNode;
-import org.objectweb.asm.tree.LabelNode;
-import org.objectweb.asm.tree.LdcInsnNode;
-import org.objectweb.asm.tree.LocalVariableNode;
-import org.objectweb.asm.tree.MethodInsnNode;
-import org.objectweb.asm.tree.MethodNode;
-import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
-import jredfox.mce.util.MCECoreUtils;
+import jredfox.mce.cfg.MCEObj;
 import jredfox.mce.util.JSONUtils;
+import jredfox.mce.util.MCECoreUtils;
 
 public class Transformer implements IClassTransformer {
 	

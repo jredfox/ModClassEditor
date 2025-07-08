@@ -13,7 +13,6 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.JSONObject;
 
-import jredfox.mce.MCEObj;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
 import jredfox.mce.types.InsnTypes;

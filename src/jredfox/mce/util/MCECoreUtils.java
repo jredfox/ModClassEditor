@@ -6,6 +6,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
@@ -15,6 +17,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InnerClassNode;
+import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -28,6 +31,21 @@ import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.internal.Util;
 
 public class MCECoreUtils {
+	
+	private static int ASM_VERSION = detectASMVersion();
+
+	private static int detectASMVersion() 
+	{
+		for(int i=5;i<=9;i++)
+		{
+			try 
+			{
+				if (Opcodes.class.getField("ASM" + i) != null)
+					return i;
+			} catch (Throwable ignored) {}
+		}
+		return 4;
+	}
 	
 	public static ClassNode getClassNode(byte[] basicClass)
 	{
@@ -242,6 +260,55 @@ public class MCECoreUtils {
 	public static boolean equalsOpcode(AbstractInsnNode a, AbstractInsnNode b)
 	{
 		return a.getOpcode() == b.getOpcode();
+	}
+	
+	public static void addLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		list.add(l1);
+		if(ASM_VERSION < 5)
+			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+	}
+	
+	public static void insertLabelNode(InsnList list)
+	{
+		LabelNode l1 = new LabelNode();
+		if(ASM_VERSION < 5)
+			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
+		list.insert(l1);
+	}
+	
+	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
+	{
+		InsnList l = new InsnList();
+		LabelNode label = new LabelNode();
+		l.add(label);
+		if(ASM_VERSION < 5)
+			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
+		list.insert(spot, l);
+	}
+	
+	/**
+	 * Unused Now But allows you to search for a list of MethodNode with wildcard support and EMPTY DESC Will match ANY first DESC
+	 */
+	public static List<MethodNode> getMethodNodes(ClassNode classNode, String method_name, String method_desc) {
+		boolean wc = method_name.contains("*") || method_name.contains("?");
+		boolean wcd = method_desc.contains("*") || method_desc.contains("?");
+		boolean mt = method_desc.trim().isEmpty();
+
+		List<MethodNode> l = new ArrayList<MethodNode>(wc ? 10 : 3);
+		for (Object method_ : classNode.methods) {
+			MethodNode method = (MethodNode) method_;
+
+			if ((wc ? WildCardMatcher.match(method.name, method_name, true) : method.name.equals(method_name))
+					&& (mt || (wcd ? WildCardMatcher.match(method.desc, method_desc, true)
+							: method.desc.equals(method_desc)))) {
+				l.add(method);
+				if (!wc && !wcd)
+					break;
+			}
+		}
+		return l;
 	}
 
 }

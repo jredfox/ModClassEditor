@@ -143,122 +143,6 @@ public class MCEObj {
 		}
 	}
 
-	public static void configure_old(String actualName, ClassNode classNode)
-	{
-		System.out.println("Mod Class Editor:" + actualName);
-		MCEObj mce = get(actualName);
-		
-		//Sanity Check
-		if(mce == null) 
-		{
-			System.err.println("Error Missing " + actualName + " MCEObj from ModClassEditor.JSON this is a BUG!");
-			return;
-		}
-		
-		//Configure Fields
-		for(MCEField f : mce.fields)
-		{
-			String str_type = f.type;
-			FieldNode fn = MCECoreUtils.getFieldNode(f.name, classNode);
-			
-			//Sanity Checks
-			if(fn == null)
-			{
-				System.err.println("Field not Found:" + f.name + " in: " + mce.className);
-				continue;
-			}
-			else if((fn.access & Opcodes.ACC_STATIC) == 0)
-			{
-				System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + f.name + " in:" + mce.className);
-				continue;
-			}
-			
-			//Populate the Type
-			if(str_type.isEmpty())
-				str_type = getType(fn.desc);
-			
-			//Convert the type into a useable thing
-			boolean  isArr = str_type.startsWith("[");
-			DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
-			
-			//disallow unsupported field opperations to prevent runtime crashing
-			if(type == DataType.NULL)
-			{
-				System.err.println("Unsupported Type for Field:" + f.name + " desc:" + fn.desc + " in:" + mce.className);
-				continue;
-			}
-			
-			//Actual code
-			List<MethodNode> methodList = getMethodNodes(classNode, f.method, f.desc);
-			if(methodList.isEmpty())
-			{
-				System.err.println("Method Not Found:" + f.method + " desc:\"" + f.desc + "\"");
-				continue;
-			}
-			
-			for(MethodNode m : methodList)
-			{
-				InsnList list = new InsnList();
-				if(!isArr)
-				{
-					list.add(getNumInsn(f.value, type));
-					if(type.isWrapper && f.value != null)
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-					list.add(new FieldInsnNode(Opcodes.PUTSTATIC, mce.classNameASM, f.name, fn.desc));
-				}
-				//static array support
-				else
-				{
-					MCEArrField farr = (MCEArrField) f;
-					list.add(new FieldInsnNode(Opcodes.GETSTATIC, mce.classNameASM, f.name, fn.desc));//arr_short
-					if(farr.values.length < 2)
-					{
-						String val = farr.values[0];
-						if(farr.index_start != farr.index_end)
-						{
-							//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
-							list.add(getNumInsn(val, type));//value
-							list.add(getIntInsn(farr.index_start));//index_start
-							list.add(getIntInsn(farr.index_end));//index_end
-							if(type.hasIncrement)
-								list.add(getIntInsn(farr.increment));//inecrement
-							list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.getDescFill(val)));
-						}
-						else
-						{
-							//arr_short[index_start] = v;
-							//or ArrUtils#set(arr, index, v);
-							list.add(getIntInsn(farr.index_start));//set the index
-							list.add(getNumInsn(val, type));//set the value
-							if(farr.index_start > -1)
-							{
-								//convert the primitive datatype into it's object form before using AASTORE
-								if(type.isWrapper && val != null)
-									list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-								list.add(new InsnNode(type.arrayStore));//stores the value
-							}
-							else
-								list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.getDescSet(val)));
-						}
-					}
-					else
-					{
-						//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
-						genStaticArraySafe(list, farr.values, type, farr.hasNULL);
-						list.add(getIntInsn(farr.index_start));
-						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.getDescInsert(farr.hasNULL)));
-					}
-				}
-				
-				//Injection Point
-//				inject(classNode, m, list, f.inject);
-			}
-			
-			//prevents memory leaks of arrays and allows the GC to clean it later
-			f.gc();
-		}
-	}
-
 	public static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
 	{
 		switch(type)
@@ -638,26 +522,6 @@ public class MCEObj {
 		
 		return null;
 	}
-
-	public static List<MethodNode> getMethodNodes(ClassNode classNode, String method_name, String method_desc) {
-		boolean wc = method_name.contains("*") || method_name.contains("?");
-		boolean wcd = method_desc.contains("*") || method_desc.contains("?");
-		boolean mt = method_desc.trim().isEmpty();
-
-		List<MethodNode> l = new ArrayList<MethodNode>(wc ? 10 : 3);
-		for (Object method_ : classNode.methods) {
-			MethodNode method = (MethodNode) method_;
-
-			if ((wc ? WildCardMatcher.match(method.name, method_name, true) : method.name.equals(method_name))
-					&& (mt || (wcd ? WildCardMatcher.match(method.desc, method_desc, true)
-							: method.desc.equals(method_desc)))) {
-				l.add(method);
-				if (!wc && !wcd)
-					break;
-			}
-		}
-		return l;
-	}
 	
 	public static final String UNSUPPORTED = "Unsupported";
 
@@ -686,47 +550,6 @@ public class MCEObj {
 								: desc.equals("Ljava/lang/Double;") ? "Double"
 							: desc.equals("Ljava/lang/Character;") ? "Character"
 						: UNSUPPORTED;
-	}
-	
-	public static void addLabelNode(InsnList list)
-	{
-		LabelNode l1 = new LabelNode();
-		list.add(l1);
-		if(ASM_VERSION < 5)
-			list.add(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
-	}
-	
-	public static void insertLabelNode(InsnList list)
-	{
-		LabelNode l1 = new LabelNode();
-		if(ASM_VERSION < 5)
-			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
-		list.insert(l1);
-	}
-	
-	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
-	{
-		InsnList l = new InsnList();
-		LabelNode label = new LabelNode();
-		l.add(label);
-		if(ASM_VERSION < 5)
-			l.add(new LineNumberNode(0, label));//Force Labels to be created so JIT can do it's Job and optimize code
-		list.insert(spot, l);
-	}
-	
-	private static int ASM_VERSION = detectASMVersion();
-
-	private static int detectASMVersion() 
-	{
-		for(int i=5;i<=9;i++)
-		{
-			try 
-			{
-				if (Opcodes.class.getField("ASM" + i) != null)
-					return i;
-			} catch (Throwable ignored) {}
-		}
-		return 4;
 	}
 
 }

@@ -102,7 +102,7 @@ public class MCEGen {
 			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 			
 			//Add LabelNode
-			MCEObj.insertLabelNode(clinit.instructions, spot.getPrevious());
+			MCECoreUtils.insertLabelNode(clinit.instructions, spot.getPrevious());
 			
 			//Save Progres
 			this.save();

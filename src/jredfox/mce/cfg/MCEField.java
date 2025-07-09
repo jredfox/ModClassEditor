@@ -17,6 +17,7 @@ import jredfox.mce.types.DataType;
 import jredfox.mce.types.InsnTypes;
 import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
+import jredfox.mce.util.WildCardMatcher;
 
 public class MCEField
 {
@@ -45,6 +46,39 @@ public class MCEField
 	 */
 	public InsertionPoint inject;
 	
+	/**
+	 * weather or not we accepted a MethodNode already
+	 */
+	public boolean accepted;
+	/**
+	 * cached method name has a wildcard
+	 */
+	public boolean wc;
+	/**
+	 * cached method desc has a wildcard
+	 */
+	public boolean wcd;
+	/**
+	 * cached method desc is empty
+	 */
+	public boolean mt;
+	/**
+	 * cached boolean for if we accept more then one method
+	 */
+	public boolean onlyOne;
+	/**
+	 * The real Cached Insertion Point not a Configuration Object like InsertionPoint!
+	 */
+	public CachedInsertionPoint cip;
+	/**
+	 * The cached ClassNode that comes from {@link #accept(MethodNode)} or {@link #accept(AnnotationNode)}
+	 */
+	public ClassNode ccn;
+	/**
+	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
+	 */
+	public MethodNode cmn;
+	
 	public MCEField()
 	{
 		
@@ -63,11 +97,60 @@ public class MCEField
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
+		
+		//cache frequently used booleans
+		this.wc =  MCEUtil.isWildCard(this.name);
+		this.wcd = MCEUtil.isWildCard(this.desc);
+		this.mt = this.desc.isEmpty();
+		this.onlyOne = !this.wc && !this.wcd;
+	}
+	
+	public boolean accept(ClassNode cn, MethodNode m)
+	{
+		if(this.accepted && this.onlyOne)
+			return false;
+		
+		if ((this.wc ? WildCardMatcher.match(m.name, this.method, true) : m.name.equals(this.method))
+				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.desc, true)
+						: m.desc.equals(this.desc)))) 
+		{
+			if(!this.canEdit(cn))
+				return false;
+			
+			this.cip = this.capture(cn, m);
+			if(this.cip == null)
+				return false;
+			
+			this.ccn = cn;
+			this.cmn = m;
+			this.accepted = true;
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public void apply()
+	{
+		if(!this.accepted)
+			return;
+		
+		this.apply(this.ccn, this.cmn, this.cip);
+		this.clear();
+	}
+	
+	/**
+	 * Clears the Cached Injection Point ONLY doesn't set {@link #accepted} 
+	 * to false this is done when on the last MethodNode / AnnotationNode iteration
+	 */
+	public void clear() 
+	{
+		this.cip = null;
+		this.ccn = null;
+		this.cmn = null;
 	}
 
-	public void gc() {}
-
-	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint cip)
+	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
 		String str_type = this.type;
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, cn);
@@ -90,7 +173,10 @@ public class MCEField
 		}
 		
 		//Inject the code
-		this.inject(m, list, cip);
+		this.inject(m, list, p);
+		
+		//Clear CachedInsertionPoint
+		this.clear();
 		
 		//Prevent Memory Leaks
 		this.gc();
@@ -271,4 +357,6 @@ public class MCEField
 	{
 		
 	}
+	
+	public void gc() {}
 }

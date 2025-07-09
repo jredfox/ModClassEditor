@@ -84,8 +84,6 @@ public class MCEObj {
 		
 		//clear previous fields
 		this.fields.clear();
-//		this.frs.clear();
-//		this.params.clear();
 		
 		JSONArray arr = json.getJSONArray("Fields");
 		for(Object o : arr)
@@ -116,30 +114,26 @@ public class MCEObj {
 	public synchronized void configure(ClassNode cn)
 	{
 		//Avoid GETFIELD OPCODES
-		List<MCEField> o = this.fields;
-		ArrayList<MCECached> cf = new ArrayList(o.size());
-		int len = o.size() - 1;
-		for(int i=len; i >= 0; i--) {
-			MCEField f = o.get(i);
-			cf.add(new MCECached(f));
-		}
+		List<MCEField> cf = this.fields;
 		List<MethodNode> ml = cn.methods;
 		int size = ml.size();
 		int index = 0;
+		int len = cf.size();
 		
 		for(MethodNode m : ml)
 		{
 			boolean last = (index++ + 1) == size;
-			List<MCECached> cache = new ArrayList(5);
-			for(MCECached c : cf)
+			List<MCEField> cache = new ArrayList(5);
+			for(int i=len; i >= 0; i--) 
 			{
+				MCEField c = cf.get(index);
 				if(c.accept(cn, m))
 					cache.add(c);
 				else if(last)
 					c.accepted = false;
 			}
 			
-			for(MCECached c : cache)
+			for(MCEField c : cache)
 			{
 				c.apply();
 				if(last)

@@ -175,7 +175,7 @@ public class MCEField
 		DataType type = this.cdt;
 		
 		InsnList list = new InsnList();
-		list.add(MCEObj.getNumInsn(this.value, type));
+		list.add(MCECoreUtils.getNumInsn(this.value, type));
 		if(type.isWrapper && this.value != null)
 			list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
 		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, cn.name, this.name, fn.desc));
@@ -223,7 +223,7 @@ public class MCEField
 			else if(in.opp == Opperation.BEFORE)
 			{
 				if(m.name.equals("<init>"))
-					return new CachedInsertionPoint(MCEObj.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
+					return new CachedInsertionPoint(MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
 				else
 					return new CachedInsertionPoint(null, Opperation.BEFORE, true);
 			}
@@ -351,7 +351,7 @@ public class MCEField
 		}
 		this.cfn = fn;
 		
-		String str_type = MCEObj.getType(fn.desc);
+		String str_type = MCECoreUtils.getType(fn.desc);
 		boolean  isArr = str_type.startsWith("[");
 		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
 		

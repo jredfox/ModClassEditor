@@ -30,6 +30,10 @@ import org.objectweb.asm.tree.TypeInsnNode;
 import org.objectweb.asm.tree.VarInsnNode;
 import org.ralleytn.simple.json.internal.Util;
 
+import jredfox.mce.ArrCache;
+import jredfox.mce.ArrUtils;
+import jredfox.mce.types.DataType;
+
 public class MCECoreUtils {
 	
 	private static int ASM_VERSION = detectASMVersion();
@@ -309,6 +313,384 @@ public class MCECoreUtils {
 			}
 		}
 		return l;
+	}
+	
+	public static AbstractInsnNode getFirstCtrInsn(ClassNode cn, MethodNode m) 
+	{
+		AbstractInsnNode a = m.instructions.getFirst();
+		while(a != null)
+		{
+			if(a.getOpcode() == Opcodes.INVOKESPECIAL && a instanceof MethodInsnNode)
+			{
+				MethodInsnNode am = (MethodInsnNode) a;
+				if(am.name.equals("<init>") && (am.owner.equals(cn.name) || am.owner.equals(cn.superName)))
+				{
+					AbstractInsnNode nxt = nextRealInsn(am);
+					
+					//if the return instruction appears right after init in rare cases assume this is the last injection point
+					if(nxt == null || MCECoreUtils.isReturnOpcode(nxt.getOpcode()))
+						return am;
+					
+					AbstractInsnNode prev = prevRealInsn(am);
+					int prevOpcode = prev != null ? prev.getOpcode() : 0;
+					if(!OpcodeHelper.BAD_CTR_OPCODES.contains(prevOpcode))
+					{
+						return am;
+					}
+				}
+			}
+			a = a.getNext();//increment the index
+		}
+		return null;
+	}
+
+	public static AbstractInsnNode nextRealInsn(AbstractInsnNode a) 
+	{
+		do
+		{
+			a = a.getNext();
+		}
+		while (a != null && a.getOpcode() == -1);
+		
+		return a;
+	}
+	
+	public static AbstractInsnNode prevRealInsn(AbstractInsnNode a) 
+	{
+		do
+		{
+			a = a.getPrevious();
+		}
+		while (a != null && a.getOpcode() == -1);
+		
+		return a;
+	}
+
+	/**
+	 * Generates a Static Array Safely and if bigger then size of 10 will generate it now and cache it to prevent exceeding the bytecode limit
+	 */
+	public static void genStaticArraySafe(InsnList list, String[] values, DataType type, boolean wrappers)
+	{
+		if(values.length < 11)
+		{
+			genStaticArray(list, values, type, wrappers);
+			return;
+		}
+		if(!wrappers)
+			type = DataType.getPrimitive(type);
+		int id = ArrCache.register(ArrUtils.newArr(values, type));
+		list.add(getIntInsn(id));
+		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrCache", "get", "(I)Ljava/lang/Object;"));
+		list.add(new TypeInsnNode(Opcodes.CHECKCAST, "[" + type.desc));
+	}
+
+	/**
+	 * Generates a static array initialized with specified values
+	 * @param list the list to generate the bytecode into list#add will be called so keep that in mind no injections points will be present
+	 * @param values a string list of values representing any data type and will get parsed based on the type param
+	 * @param type defines what data type of static array to create
+	 * @WARNING: DO NOT USE past 10 indexes as Java's max bytecode limit per method is 65535 bytes. This method works but is depreciated please use the ArrUtils#gen instead
+	 */
+	public static void genStaticArray(InsnList list, String[] values, DataType type, boolean wrappers) 
+	{
+		if(!wrappers)
+			type = DataType.getPrimitive(type);
+		
+		//array size
+		list.add(getIntInsn(values.length));
+		
+		//array type
+		if(!type.isObject)
+			list.add(new IntInsnNode(Opcodes.NEWARRAY, type.newArrayType));
+		else
+			list.add(new TypeInsnNode(Opcodes.ANEWARRAY, type.clazz));
+		
+		//initialize NON-ZERO VALUES
+		boolean isWrapper = type.isWrapper;
+		for(int index=0; index < values.length; index++)
+		{
+			String str_v = values[index];
+			if(str_v == null)
+				continue;//SKIP NULL or 0 Values as it's already null / zero from creating the new array
+			AbstractInsnNode valInsn = null;
+			switch(type)
+			{
+				case WRAPPED_BOOLEAN:
+				case BOOLEAN:
+				{
+					boolean v = MCEUtil.parseBoolean(str_v);
+					if(!v && !isWrapper)
+						continue;
+					valInsn = getBoolInsn(v);
+				}
+				break;
+				case WRAPPED_BYTE:
+				case BYTE:
+				{
+					byte v = MCEUtil.parseByte(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getIntInsn(v);
+				}
+				break;
+				case WRAPPED_SHORT:
+				case SHORT:
+				{
+					short v = MCEUtil.parseShort(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getIntInsn(v);
+				}
+				break;
+				case WRAPPED_INT:
+				case INT:
+				{
+					int v = MCEUtil.parseInt(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getIntInsn(v);
+				}
+				break;
+				case WRAPPED_LONG:
+				case LONG:
+				{
+					long v = MCEUtil.parseLong(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getLongInsn(v);
+				}
+				break;
+				case WRAPPED_FLOAT:
+				case FLOAT:
+				{
+					float v = MCEUtil.parseFloat(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getFloatInsn(v);
+				}
+				break;
+				case WRAPPED_DOUBLE:
+				case DOUBLE:
+				{
+					double v = MCEUtil.parseDouble(str_v);
+					if(v == 0 && !isWrapper)
+						continue;
+					valInsn = getDoubleInsn(v);
+				}
+				break;
+				case STRING:
+					valInsn = new LdcInsnNode(str_v);
+				break;
+				
+				case WRAPPED_CHAR:
+				case CHAR:
+				{
+					char v = MCEUtil.parseChar(str_v);
+					if(v == (char)0 && !isWrapper)
+						continue;
+					valInsn = getIntInsn(v);
+				}
+				
+				default:
+					break;
+			}
+			
+			list.add(new InsnNode(Opcodes.DUP));
+			list.add(getIntInsn(index));//indexes are always integer and follow the same rules as any boolean - int values on pushing
+			list.add(valInsn);//changes based on the data type
+			if(isWrapper)
+				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));//converts the datatype into it's Object form
+			list.add(new InsnNode(type.arrayStore));
+		}
+	}
+	
+	public static AbstractInsnNode getNumInsn(String str_v, DataType type)
+	{
+		//NULL support
+		if(str_v == null)
+			return getNullInsn(type);
+		
+		switch(type)
+		{
+			case WRAPPED_BOOLEAN:
+			case BOOLEAN:
+				return getBoolInsn(MCEUtil.parseBoolean(str_v));
+			case WRAPPED_BYTE:
+			case BYTE:
+				return getIntInsn(MCEUtil.parseByte(str_v));
+			case WRAPPED_SHORT:
+			case SHORT:
+				return getIntInsn(MCEUtil.parseShort(str_v));
+			case WRAPPED_INT:
+			case INT:
+				return getIntInsn(MCEUtil.parseInt(str_v));
+			case WRAPPED_LONG:
+			case LONG:
+				return getLongInsn(MCEUtil.parseLong(str_v));
+			case WRAPPED_FLOAT:
+			case FLOAT:
+				return getFloatInsn(MCEUtil.parseFloat(str_v));
+			case WRAPPED_DOUBLE:
+			case DOUBLE:
+				return getDoubleInsn(MCEUtil.parseDouble(str_v));
+			case STRING:
+				return new LdcInsnNode(str_v);
+			case WRAPPED_CHAR:
+			case CHAR:
+				return getIntInsn(MCEUtil.parseChar(str_v));
+			default:
+				break;
+		}
+		return null;
+	}
+
+	public static AbstractInsnNode getNullInsn(DataType type) 
+	{
+		if(type.isObject)
+			return new InsnNode(Opcodes.ACONST_NULL);
+		
+		//Handle NULL Primitives
+		switch(type)
+		{
+			case CHAR:
+			case BOOLEAN:
+			case BYTE:
+			case SHORT:
+			case INT:
+				return getIntInsn(0);
+			case LONG:
+				return getLongInsn(0);
+			case FLOAT:
+				return getFloatInsn(0);
+			case DOUBLE:
+				return getDoubleInsn(0);
+
+			default:
+				return null;
+		}
+	}
+
+	public static InsnNode getBoolInsn(boolean v) 
+	{
+		return new InsnNode(v ? Opcodes.ICONST_1 : Opcodes.ICONST_0);
+	}
+
+	public static AbstractInsnNode getIntInsn(int v) 
+	{
+		InsnNode insn = getConstantInsn(v);
+		if(insn != null)
+			return insn;
+		else if (v >= Byte.MIN_VALUE && v <= Byte.MAX_VALUE)
+			return new IntInsnNode(Opcodes.BIPUSH, v);
+		else if (v >= Short.MIN_VALUE && v <= Short.MAX_VALUE)
+			return new IntInsnNode(Opcodes.SIPUSH, v);
+		return new LdcInsnNode(new Integer(v));
+	}
+	
+	public static AbstractInsnNode getLongInsn(long v) 
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Long(v)) : cst;
+	}
+	
+	public static AbstractInsnNode getFloatInsn(float v)
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Float(v)) : cst;
+	}
+	
+	public static AbstractInsnNode getDoubleInsn(double v)
+	{
+		AbstractInsnNode cst = getConstantInsn(v);
+		return cst == null ? new LdcInsnNode(new Double(v)) : cst;
+	}
+
+	/**
+	 * longs, double and float behave completely different in the bytecode compared to boolean, byte, short and int
+	 */
+	private static InsnNode getConstantInsn(long v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.LCONST_0) : (v == 1 ? new InsnNode(Opcodes.LCONST_1) : null);
+	}
+	
+	private static InsnNode getConstantInsn(float v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.FCONST_0) : (v == 1 ? new InsnNode(Opcodes.FCONST_1) : (v == 2 ? new InsnNode(Opcodes.FCONST_2) : null) );
+	}
+	
+	private static InsnNode getConstantInsn(double v) 
+	{
+		return v == 0 ? new InsnNode(Opcodes.DCONST_0) : (v == 1 ? new InsnNode(Opcodes.DCONST_1) : null);
+	}
+
+	private static InsnNode getConstantInsn(int b) 
+	{
+		if (b > -2 && b < 6)
+		{
+			int opcode = 0;
+			switch(b)
+			{
+				case -1:
+					opcode = Opcodes.ICONST_M1;
+				break;
+				
+				case 0:
+					opcode = Opcodes.ICONST_0;
+				break;
+				
+				case 1:
+					opcode = Opcodes.ICONST_1;
+				break;
+				
+				case 2:
+					opcode = Opcodes.ICONST_2;
+				break;
+				
+				case 3:
+					opcode = Opcodes.ICONST_3;
+				break;
+				
+				case 4:
+					opcode = Opcodes.ICONST_4;
+				break;
+				
+				case 5:
+					opcode = Opcodes.ICONST_5;
+				break;
+			}
+			return new InsnNode(opcode);
+		}
+		
+		return null;
+	}
+	
+	public static final String UNSUPPORTED = "Unsupported";
+
+	public static String getType(String desc) {
+		//Static array support
+		if(desc.startsWith("[")){
+			String type = getType(desc.replace("[", ""));
+			return UNSUPPORTED.equals(type) ? UNSUPPORTED : (desc.substring(0, desc.lastIndexOf('[') + 1) + type);
+		}
+		
+		return desc.equals("B") ? "byte"
+				: desc.equals("S") ? "short"
+						: desc.equals("I") ? "int"
+								: desc.equals("J") ? "long"
+										: desc.equals("Ljava/lang/String;") ? "string"
+												: desc.equals("Z") ? "boolean"
+														: desc.equals("F") ? "float"
+																: desc.equals("D") ? "double"
+																			: desc.equals("C") ? "char"
+																		: desc.equals("Ljava/lang/Boolean;") ? "Boolean"
+																: desc.equals("Ljava/lang/Byte;") ? "Byte"
+															: desc.equals("Ljava/lang/Short;") ? "Short"
+														: desc.equals("Ljava/lang/Integer;") ? "Integer"
+												: desc.equals("Ljava/lang/Long;") ? "Long"
+										: desc.equals("Ljava/lang/Float;") ? "Float"
+								: desc.equals("Ljava/lang/Double;") ? "Double"
+							: desc.equals("Ljava/lang/Character;") ? "Character"
+						: UNSUPPORTED;
 	}
 
 }

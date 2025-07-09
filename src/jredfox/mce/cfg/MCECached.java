@@ -71,14 +71,11 @@ public class MCECached {
 		if(this.accepted && this.onlyOne)
 			return false;
 		
-		System.out.println("HERE:" + m.name);
-		
-		if ((this.wc ? WildCardMatcher.match(m.name, this.mceField.name, true) : m.name.equals(this.mceField.name))
+		if ((this.wc ? WildCardMatcher.match(m.name, this.mceField.method, true) : m.name.equals(this.mceField.method))
 				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
 						: m.desc.equals(this.mceField.desc)))) 
 		{
 			this.point = this.mceField.capture(c, m);
-			System.out.println("Found InsertionPoint:" + this.point);
 			if(this.point == null)
 				return false;
 			
@@ -87,7 +84,6 @@ public class MCECached {
 			this.method = m;
 			return true;
 		}
-		
 		
 		return false;
 	}

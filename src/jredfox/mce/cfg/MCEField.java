@@ -244,7 +244,7 @@ public class MCEField
 		AbstractInsnNode inject = null;
 		while(ab != null)
 		{
-			if(MCEObj.equals(type, ab, point))
+			if(MCECoreUtils.equals(type, ab, point))
 			{
 				inject = ab;
 				if(found == occurance)

@@ -33,6 +33,7 @@ import org.ralleytn.simple.json.internal.Util;
 import jredfox.mce.ArrCache;
 import jredfox.mce.ArrUtils;
 import jredfox.mce.types.DataType;
+import jredfox.mce.types.InsnTypes;
 
 public class MCECoreUtils {
 	
@@ -214,6 +215,37 @@ public class MCECoreUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
+	{
+		switch(type)
+		{
+			case LabelNode:
+				return ab instanceof LabelNode;
+			case FieldInsnNode:
+				return ab instanceof FieldInsnNode && MCECoreUtils.equals((FieldInsnNode) ab, (FieldInsnNode) point);
+			case MethodInsnNode:
+				return ab instanceof MethodInsnNode && MCECoreUtils.equals((MethodInsnNode) ab, (MethodInsnNode) point);
+			case InsnNode:
+				return ab instanceof InsnNode && MCECoreUtils.equals((InsnNode) ab, (InsnNode) point);
+			case IntInsnNode:
+				return ab instanceof IntInsnNode && MCECoreUtils.equals((IntInsnNode) ab, (IntInsnNode) point);
+			case VarInsnNode:
+				return ab instanceof VarInsnNode && MCECoreUtils.equals((VarInsnNode) ab, (VarInsnNode) point);
+			case JumpInsnNode:
+				return ab instanceof JumpInsnNode && MCECoreUtils.equals((JumpInsnNode) ab, (JumpInsnNode) point);
+			case TypeInsnNode:
+				return ab instanceof TypeInsnNode && MCECoreUtils.equals((TypeInsnNode) ab, (TypeInsnNode) point);
+			case LdcInsnNode:
+				return ab instanceof LdcInsnNode && MCECoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
+			case Opcode:
+				return MCECoreUtils.equalsOpcode(ab, point);
+
+			default:
+				break;
+		}
+		return false;
 	}
 	
 	public static boolean equals(InsnNode a, InsnNode b)

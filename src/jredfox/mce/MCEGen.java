@@ -77,7 +77,7 @@ public class MCEGen {
 					if (i == 0 ? (!isStatic) : isStatic)
 						continue;
 					JSONObject jfield = new JSONObject();
-					String type = MCEObj.getType(fn.desc);
+					String type = MCECoreUtils.getType(fn.desc);
 					jfield.put("name", fn.name);
 					jfield.put("desc", fn.desc);
 					jfield.put("static", isStatic);
@@ -85,7 +85,7 @@ public class MCEGen {
 					fields.add(jfield);
 	
 					//We need to generate the values here for non static arrays
-					if (isStatic && !MCEObj.UNSUPPORTED.equals(type) && !fn.desc.startsWith("[")) 
+					if (isStatic && !MCECoreUtils.UNSUPPORTED.equals(type) && !fn.desc.startsWith("[")) 
 					{
 						InsnList li = new InsnList();
 						String clname = actualName.replace('.', '/');

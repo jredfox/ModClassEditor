@@ -1,5 +1,8 @@
 package jredfox.mce.cfg;
 
+import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.util.MCEUtil;
@@ -30,11 +33,6 @@ public class MCEField
 	 * the injection point
 	 */
 	public InsertionPoint inject;
-	
-	/**
-	 * cached boolean for if we accept more then one method
-	 */
-	public boolean onlyOne;
 	/**
 	 * cached method name has a wildcard
 	 */
@@ -47,6 +45,10 @@ public class MCEField
 	 * cached method desc is empty
 	 */
 	public boolean mt;
+	/**
+	 * cached boolean for if we accept more then one method
+	 */
+	public boolean onlyOne;
 	
 	public MCEField()
 	{
@@ -75,4 +77,14 @@ public class MCEField
 	}
 
 	public void gc() {}
+
+	public void apply(MethodNode m, AbstractInsnNode point, Opperation opp)
+	{
+		
+	}
+
+	public void apply(AnnotationNode ann, AbstractInsnNode point, Opperation opp)
+	{
+		
+	}
 }

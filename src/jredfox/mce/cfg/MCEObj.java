@@ -84,6 +84,7 @@ public class MCEObj {
 		
 		//clear previous fields
 		this.fields.clear();
+//		this.cached = null;//TODO fix
 //		this.frs.clear();
 //		this.params.clear();
 		
@@ -97,7 +98,7 @@ public class MCEObj {
 			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
 		}
 	}
-	
+
 	public static void configure2(String actualName, ClassNode classNode)
 	{
 		System.out.println("Mod Class Editor:" + actualName);
@@ -116,39 +117,46 @@ public class MCEObj {
 	public void configure(ClassNode classNode)
 	{	
 		//Avoid GETFIELD OPCODES
+		List<MCECached> cf = cached.get();
 		List<MethodNode> ml = classNode.methods;
 		int size = ml.size();
 		int index = 0;
 		
 		for(MethodNode m : ml)
 		{
-			List<MCECached> cache = new ArrayList<MCECached>(5);
-			for(MCEField f : this.fields)
+			boolean last = (index++ + 1) == size;
+			List<MCECached> cache = new ArrayList(5);
+			for(MCECached c : cf)
 			{
-				MCECached c = new MCECached(f);
 				if(c.accept(m))
 					cache.add(c);
+				else if(last)
+					c.accepted = false;
 			}
-
+			
 			for(MCECached c : cache)
 			{
 				c.apply();
+				if(last)
+					c.accepted = false;
 			}
 		}
 	}
 
-//	public ThreadLocal<List<MCECached>> cached = new ThreadLocal()
-//	{
-//		@Override
-//		protected List<MCECached> initialValue() 
-//		{
-//			List<MCECached> l = new ArrayList(MCEObj.this.fields.size());
-//			List<MCEField> o = MCEObj.this.fields;
-//			for(MCEField f : o)
-//				l.add(new MCECached(f));
-//		       return l;
-//		}
-//	};
+	public ThreadLocal<List<MCECached>> cached = new ThreadLocal()
+	{
+		@Override
+		protected List<MCECached> initialValue() 
+		{
+			ArrayList<MCECached> l = new ArrayList(MCEObj.this.fields.size());
+			List<MCEField> o = MCEObj.this.fields;
+			for(MCEField f : o) {
+				l.add(new MCECached(f));
+			}
+			l.trimToSize();
+		    return l;
+		}
+	};
 
 	public static void configure(String actualName, ClassNode classNode)
 	{

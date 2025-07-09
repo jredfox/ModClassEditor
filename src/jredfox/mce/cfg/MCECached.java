@@ -1,6 +1,10 @@
 package jredfox.mce.cfg;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import jredfox.mce.util.MCEUtil;
@@ -24,6 +28,14 @@ public class MCECached {
 	 * weather or not we accepted a MethodNode already
 	 */
 	public boolean accepted;
+	/**
+	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
+	 */
+	public MethodNode method;
+	/**
+	 * The cached Annotation node that comes from {@link #accept(AnnotationNode)}
+	 */
+	public AnnotationNode ann;
 	
 	public MCECached(MCEField field)
 	{
@@ -35,7 +47,25 @@ public class MCECached {
 		if(this.accepted && this.mceField.onlyOne)
 			return false;
 		
+		boolean wc = this.mceField.wc;
+		boolean wcd = this.mceField.wcd;
+		boolean mt = this.mceField.mt;
+
+		if ((wc ? WildCardMatcher.match(m.name, this.mceField.name, true) : m.name.equals(this.mceField.name))
+				&& (mt || (wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
+						: m.desc.equals(this.mceField.desc)))) 
+		{
+			this.accepted = true;
+			this.method = m;
+			return true;
+		}
 		
+		
+		return false;
+	}
+	
+	public boolean accept(AnnotationNode ann)
+	{
 		return false;
 	}
 	
@@ -46,6 +76,12 @@ public class MCECached {
 	{
 		if(!this.accepted)
 			return;
+		
+		if(this.method != null)
+			this.mceField.apply(this.method, this.point, this.opp);
+		else
+			this.mceField.apply(this.ann, this.point, this.opp);
+		this.clear();
 	}
 
 	/**
@@ -56,6 +92,8 @@ public class MCECached {
 	{
 		this.point = null;
 		this.opp = null;
+		this.method = null;
+		this.ann = null;
 	}
 
 }

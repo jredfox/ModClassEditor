@@ -31,6 +31,23 @@ public class MCEField
 	 */
 	public InsertionPoint inject;
 	
+	/**
+	 * cached boolean for if we accept more then one method
+	 */
+	public boolean onlyOne;
+	/**
+	 * cached method name has a wildcard
+	 */
+	public boolean wc;
+	/**
+	 * cached method desc has a wildcard
+	 */
+	public boolean wcd;
+	/**
+	 * cached method desc is empty
+	 */
+	public boolean mt;
+	
 	public MCEField()
 	{
 		
@@ -49,6 +66,12 @@ public class MCEField
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
+		
+		//cache booleans
+		this.wc = MCEUtil.isWildCard(this.name);
+		this.wcd = MCEUtil.isWildCard(this.desc);
+		this.mt = this.name.isEmpty();
+		this.onlyOne = !MCEUtil.isWildCard(this.name) && !MCEUtil.isWildCard(this.desc);
 	}
 
 	public void gc() {}

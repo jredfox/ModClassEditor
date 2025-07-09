@@ -97,6 +97,58 @@ public class MCEObj {
 			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
 		}
 	}
+	
+	public static void configure2(String actualName, ClassNode classNode)
+	{
+		System.out.println("Mod Class Editor:" + actualName);
+		MCEObj mce = get(actualName);
+		
+		//Sanity Check
+		if(mce == null) 
+		{
+			System.err.println("Error Missing " + actualName + " MCEObj from ModClassEditor.JSON this is a BUG!");
+			return;
+		}
+		
+		mce.configure(classNode);
+	}
+
+	public void configure(ClassNode classNode)
+	{	
+		//Avoid GETFIELD OPCODES
+		List<MethodNode> ml = classNode.methods;
+		int size = ml.size();
+		int index = 0;
+		
+		for(MethodNode m : ml)
+		{
+			List<MCECached> cache = new ArrayList<MCECached>(5);
+			for(MCEField f : this.fields)
+			{
+				MCECached c = new MCECached(f);
+				if(c.accept(m))
+					cache.add(c);
+			}
+
+			for(MCECached c : cache)
+			{
+				c.apply();
+			}
+		}
+	}
+
+//	public ThreadLocal<List<MCECached>> cached = new ThreadLocal()
+//	{
+//		@Override
+//		protected List<MCECached> initialValue() 
+//		{
+//			List<MCECached> l = new ArrayList(MCEObj.this.fields.size());
+//			List<MCEField> o = MCEObj.this.fields;
+//			for(MCEField f : o)
+//				l.add(new MCECached(f));
+//		       return l;
+//		}
+//	};
 
 	public static void configure(String actualName, ClassNode classNode)
 	{

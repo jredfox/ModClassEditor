@@ -1,13 +1,14 @@
 package jredfox.mce;
 
 import java.lang.reflect.Field;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import org.objectweb.asm.tree.LdcInsnNode;
 import org.ralleytn.simple.json.JSONParseException;
 
-import jredfox.mce.cfg.InsertionPoint;
+import jredfox.mce.cfg.MCEField;
 
 public class Test {
 	
@@ -112,15 +113,28 @@ public class Test {
 	}
 	
 //	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
-	
+	public static ThreadLocal<List<MCEField>> cacheArr = new ThreadLocal()
+			{
+				@Override
+			    protected List<MCEField> initialValue() 
+				{
+					List<MCEField> field = new ArrayList();
+					for(int i=0;i<10;i++)
+						field.add(new MCEField());
+			        return field;
+			    }
+			};
 	public static void main(String[] args) throws JSONParseException
 	{
-		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-		System.out.println(ldc.opp + ", '" + ((LdcInsnNode)ldc.point).cst + "'");
 		
-		InsertionPoint ldc2 = new InsertionPoint("LdcInsnNode, String, 128");
-		Object oldc2 = ((LdcInsnNode)ldc2.point).cst;
-		System.out.println(ldc2.opp + ", '" + ((LdcInsnNode)ldc2.point).cst + "' " + oldc2.getClass());
+//		index++;
+//		System.out.println(last + "," + index);
+//		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
+//		System.out.println(ldc.opp + ", '" + ((LdcInsnNode)ldc.point).cst + "'");
+//		
+//		InsertionPoint ldc2 = new InsertionPoint("LdcInsnNode, String, 128");
+//		Object oldc2 = ((LdcInsnNode)ldc2.point).cst;
+//		System.out.println(ldc2.opp + ", '" + ((LdcInsnNode)ldc2.point).cst + "' " + oldc2.getClass());
 		
 //		InsertionPoint b = new InsertionPoint("before");
 //		System.out.println(b.opp + ", " + b.type);

@@ -177,6 +177,11 @@ public class MCEUtil {
 		return value;
 	}
 	
+	public static boolean isWildCard(String n)
+	{
+		return n.contains("*") || n.contains("?");
+	}
+	
 	public static String[] splitFirst(String s, char delim)
 	{
 		int index = s.indexOf(delim);

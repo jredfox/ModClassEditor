@@ -138,4 +138,9 @@ public class WildCardMatcher {
         return list.toArray( new String[ list.size() ] );
     }
 
+	public static boolean isWildCard(String n)
+	{
+		return n.contains("*") || n.contains("?");
+	}
+
 }

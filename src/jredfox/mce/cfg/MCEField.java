@@ -189,7 +189,7 @@ public class MCEField
 		
 	}
 	
-	private void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 
+	public void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 
 	{
 		if(cip.opp == Opperation.AFTER)
 		{
@@ -330,9 +330,9 @@ public class MCEField
 		}
 	}
 	
-	private FieldNode cfn;
-	private boolean cisArr;
-	private DataType cdt;
+	protected FieldNode cfn;
+	protected boolean cisArr;
+	protected DataType cdt;
 	public boolean canEdit(ClassNode c)
 	{
 		this.chkErr = true;

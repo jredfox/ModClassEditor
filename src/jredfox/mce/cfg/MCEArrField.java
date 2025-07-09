@@ -2,8 +2,18 @@ package jredfox.mce.cfg;
 
 import java.util.List;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.types.DataType;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
 
 public class MCEArrField extends MCEField
@@ -77,6 +87,60 @@ public class MCEArrField extends MCEField
 			
 			//process increment
 		this.increment = MCEUtil.parseInt(MCEUtil.safeString(increment, "0"));
+	}
+	
+	@Override
+	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
+	{
+		if(this.cisArr)
+			return;
+		
+		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
+		FieldNode fn = this.cfn;
+		DataType type = this.cdt;
+		InsnList list = new InsnList();
+		
+		list.add(new FieldInsnNode(Opcodes.GETSTATIC, cn.name, this.name, fn.desc));//arr
+		if(this.values.length < 2)
+		{
+			String val = this.values[0];
+			if(this.index_start != this.index_end)
+			{
+				//ArrUtils#fill(arr, v, index_start, index_end, increment); or ArrUtils#fill(arr, v, index_start, index_end);
+				list.add(MCECoreUtils.getNumInsn(val, type));//value
+				list.add(MCECoreUtils.getIntInsn(this.index_start));//index_start
+				list.add(MCECoreUtils.getIntInsn(this.index_end));//index_end
+				if(type.hasIncrement)
+					list.add(MCECoreUtils.getIntInsn(this.increment));//inecrement
+				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "fill", type.getDescFill(val)));
+			}
+			else
+			{
+				//arr_short[index_start] = v;
+				//or ArrUtils#set(arr, index, v);
+				list.add(MCECoreUtils.getIntInsn(this.index_start));//set the index
+				list.add(MCECoreUtils.getNumInsn(val, type));//set the value
+				if(this.index_start > -1)
+				{
+					//convert the primitive datatype into it's object form before using AASTORE
+					if(type.isWrapper && val != null)
+						list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
+					list.add(new InsnNode(type.arrayStore));//stores the value
+				}
+				else
+					list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "set", type.getDescSet(val)));
+			}
+		}
+		else
+		{
+			//ArrUtils#insert(arr, new arr[]{this.values}, farr.index_start);
+			MCECoreUtils.genStaticArraySafe(list, this.values, type, this.hasNULL);
+			list.add(MCECoreUtils.getIntInsn(this.index_start));
+			list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/ArrUtils", "insert", type.getDescInsert(this.hasNULL)));
+		}
+		
+		//Inject the code
+		this.inject(m, list, p);
 	}
 		
 	@Override

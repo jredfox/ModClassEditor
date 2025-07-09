@@ -150,7 +150,9 @@ public class MCEObj {
 		{
 			ArrayList<MCECached> l = new ArrayList(MCEObj.this.fields.size());
 			List<MCEField> o = MCEObj.this.fields;
-			for(MCEField f : o) {
+			int len = o.size() - 1;
+			for(int i=len; i >= 0; i--) {
+				MCEField f = o.get(i);
 				l.add(new MCECached(f));
 			}
 			l.trimToSize();
@@ -274,7 +276,7 @@ public class MCEObj {
 		}
 	}
 
-	private static void inject(ClassNode classNode, MethodNode m, InsnList list, InsertionPoint in) 
+	public static void inject(ClassNode classNode, MethodNode m, InsnList list, InsertionPoint in) 
 	{
 		if(in.type == InsnTypes.NULL)
 		{

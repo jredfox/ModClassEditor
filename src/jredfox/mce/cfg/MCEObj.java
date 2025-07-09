@@ -84,7 +84,6 @@ public class MCEObj {
 		
 		//clear previous fields
 		this.fields.clear();
-//		this.cached = null;//TODO fix
 //		this.frs.clear();
 //		this.params.clear();
 		
@@ -114,10 +113,16 @@ public class MCEObj {
 		mce.configure(classNode);
 	}
 
-	public void configure(ClassNode cn)
-	{	
+	public synchronized void configure(ClassNode cn)
+	{
 		//Avoid GETFIELD OPCODES
-		List<MCECached> cf = cached.get();
+		List<MCEField> o = this.fields;
+		ArrayList<MCECached> cf = new ArrayList(o.size());
+		int len = o.size() - 1;
+		for(int i=len; i >= 0; i--) {
+			MCEField f = o.get(i);
+			cf.add(new MCECached(f));
+		}
 		List<MethodNode> ml = cn.methods;
 		int size = ml.size();
 		int index = 0;
@@ -142,23 +147,6 @@ public class MCEObj {
 			}
 		}
 	}
-
-	public ThreadLocal<List<MCECached>> cached = new ThreadLocal()
-	{
-		@Override
-		protected List<MCECached> initialValue() 
-		{
-			ArrayList<MCECached> l = new ArrayList(MCEObj.this.fields.size());
-			List<MCEField> o = MCEObj.this.fields;
-			int len = o.size() - 1;
-			for(int i=len; i >= 0; i--) {
-				MCEField f = o.get(i);
-				l.add(new MCECached(f));
-			}
-			l.trimToSize();
-		    return l;
-		}
-	};
 
 	public static void configure_old(String actualName, ClassNode classNode)
 	{

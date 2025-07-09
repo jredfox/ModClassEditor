@@ -67,6 +67,14 @@ public class MCEField
 	 */
 	public boolean onlyOne;
 	/**
+	 * Occurs when a MCEField cannot edit a class due to FieldNode Desc Mismatch
+	 */
+	public boolean err;
+	/**
+	 * When True we have checked if an MCEField {@link #canEdit(ClassNode)} the class
+	 */
+	public boolean chkErr;
+	/**
 	 * The real Cached Insertion Point not a Configuration Object like InsertionPoint!
 	 */
 	public CachedInsertionPoint cip;
@@ -106,16 +114,18 @@ public class MCEField
 	
 	public boolean accept(ClassNode cn, MethodNode m)
 	{
-		if(this.accepted && this.onlyOne)
+		if(this.err || this.accepted && this.onlyOne)
 			return false;
+		else if(!this.chkErr && !this.canEdit(cn))
+		{
+			this.err = true;
+			return false;
+		}
 		
 		if ((this.wc ? WildCardMatcher.match(m.name, this.method, true) : m.name.equals(this.method))
 				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.desc, true)
 						: m.desc.equals(this.desc)))) 
 		{
-			if(!this.canEdit(cn))
-				return false;
-			
 			this.cip = this.capture(cn, m);
 			if(this.cip == null)
 				return false;
@@ -145,6 +155,8 @@ public class MCEField
 	public void clear() 
 	{
 		this.accepted = false;
+		this.err = false;
+		this.chkErr = false;
 		this.cip = null;
 		this.ccn = null;
 		this.cmn = null;
@@ -156,17 +168,17 @@ public class MCEField
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
+		if(this.cisArr)
+			return;
+		
 		FieldNode fn = this.cfn;
 		DataType type = this.cdt;
 		
 		InsnList list = new InsnList();
-		if(!this.cisArr)
-		{
-			list.add(MCEObj.getNumInsn(this.value, type));
-			if(type.isWrapper && this.value != null)
-				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-			list.add(new FieldInsnNode(Opcodes.PUTSTATIC, cn.name, this.name, fn.desc));
-		}
+		list.add(MCEObj.getNumInsn(this.value, type));
+		if(type.isWrapper && this.value != null)
+			list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
+		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, cn.name, this.name, fn.desc));
 		
 		//Inject the code
 		this.inject(m, list, p);
@@ -318,6 +330,7 @@ public class MCEField
 	private DataType cdt;
 	public boolean canEdit(ClassNode c)
 	{
+		this.chkErr = true;
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
 		
 		//Sanity Checks

@@ -139,15 +139,6 @@ public class MCEField
 		return false;
 	}
 	
-	public void apply()
-	{
-		if(!this.accepted)
-			return;
-		
-		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
-		this.apply(this.ccn, this.cmn, this.cip);
-	}
-	
 	/**
 	 * Clears the Cached Data from Working on a Method / AnnotationNode
 	 * Calls {@link #gc()} at the end of the method call
@@ -165,12 +156,21 @@ public class MCEField
 		this.cdt = null;
 		this.gc();
 	}
+	
+	public void apply()
+	{
+		if(!this.accepted)
+			return;
+		
+		this.apply(this.ccn, this.cmn, this.cip);
+	}
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
 		if(this.cisArr)
 			return;
 		
+		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
 		FieldNode fn = this.cfn;
 		DataType type = this.cdt;
 		
@@ -182,6 +182,11 @@ public class MCEField
 		
 		//Inject the code
 		this.inject(m, list, p);
+	}
+	
+	public void apply(ClassNode cn, AnnotationNode ann, CachedInsertionPoint cip)
+	{
+		
 	}
 	
 	private void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 
@@ -324,7 +329,7 @@ public class MCEField
 			return new CachedInsertionPoint(spot, Opperation.AFTER, false);
 		}
 	}
-
+	
 	private FieldNode cfn;
 	private boolean cisArr;
 	private DataType cdt;
@@ -362,11 +367,6 @@ public class MCEField
 		this.cdt = type;
 		
 		return true;
-	}
-	
-	public void apply(ClassNode cn, AnnotationNode ann, CachedInsertionPoint cip)
-	{
-		
 	}
 	
 	public void gc() {}

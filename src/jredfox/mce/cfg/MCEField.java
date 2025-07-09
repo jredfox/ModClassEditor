@@ -1,14 +1,19 @@
 package jredfox.mce.cfg;
 
+import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
+import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.types.DataType;
 import jredfox.mce.types.InsnTypes;
 import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
@@ -64,14 +69,52 @@ public class MCEField
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint cip)
 	{
+		String str_type = this.type;
+		FieldNode fn = MCECoreUtils.getFieldNode(this.name, cn);
 		
-	}
-
-	public void apply(ClassNode cn, AnnotationNode ann, CachedInsertionPoint cip)
-	{
+		//Populate the Type
+		if(str_type.isEmpty())
+			str_type = MCEObj.getType(fn.desc);
 		
+		//Convert the type into a useable thing
+		boolean  isArr = str_type.startsWith("[");
+		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
+		
+		InsnList list = new InsnList();
+		if(!isArr)
+		{
+			list.add(MCEObj.getNumInsn(this.value, type));
+			if(type.isWrapper && this.value != null)
+				list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
+			list.add(new FieldInsnNode(Opcodes.PUTSTATIC, cn.name, this.name, fn.desc));
+		}
+		
+		//Inject the code
+		this.inject(m, list, cip);
+		
+		//Prevent Memory Leaks
+		this.gc();
 	}
 	
+	private void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 
+	{
+		if(cip.opp == Opperation.AFTER)
+		{
+//			MCEObj.addLabelNode(list);
+			m.instructions.insert(cip.point, list);
+		}
+		else if(cip.typeNormal && cip.point == null)
+		{
+//			MCEObj.insertLabelNode(list);
+			m.instructions.insert(list);
+		}
+		else if(cip.opp == Opperation.BEFORE)
+		{
+//			MCEObj.insertLabelNode(list);
+			m.instructions.insertBefore(cip.point, list);
+		}
+	}
+
 	public CachedInsertionPoint capture(ClassNode cn, MethodNode m) 
 	{
 		InsertionPoint in = this.inject;
@@ -189,5 +232,43 @@ public class MCEField
 		{
 			return new CachedInsertionPoint(spot, Opperation.AFTER, false);
 		}
+	}
+
+	public boolean canEdit(ClassNode c)
+	{
+		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
+		
+		//Sanity Checks
+		if(fn == null)
+		{
+			System.err.println("Field not Found:" + this.name + " in: " + c.name);
+			return false;
+		}
+		else if((fn.access & Opcodes.ACC_STATIC) == 0)
+		{
+			System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + this.name + " in:" + c.name);
+			return false;
+		}
+		
+		//Populate the Type
+		String str_type = MCEObj.getType(fn.desc);
+		
+		//Convert the type into a useable thing
+		boolean  isArr = str_type.startsWith("[");
+		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
+		
+		//disallow unsupported field opperations to prevent runtime crashing
+		if(type == DataType.NULL)
+		{
+			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + fn.desc + " in:" + c.name);
+			return false;
+		}
+		
+		return true;
+	}
+	
+	public void apply(ClassNode cn, AnnotationNode ann, CachedInsertionPoint cip)
+	{
+		
 	}
 }

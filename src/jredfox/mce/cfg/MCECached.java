@@ -75,6 +75,9 @@ public class MCECached {
 				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
 						: m.desc.equals(this.mceField.desc)))) 
 		{
+			if(!this.canEdit(c))
+				return false;
+			
 			this.point = this.mceField.capture(c, m);
 			if(this.point == null)
 				return false;
@@ -106,6 +109,11 @@ public class MCECached {
 		else
 			this.mceField.apply(this.cn, this.ann, this.point);
 		this.clear();
+	}
+	
+	public boolean canEdit(ClassNode c) 
+	{
+		return this.mceField.canEdit(c);
 	}
 
 	/**

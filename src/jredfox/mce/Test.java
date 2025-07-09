@@ -82,7 +82,7 @@ public class Test {
 		System.out.println("__________________________________________________\n\n");
 //		System.out.println("id_c:" + id_c + " valueOf:" + (int)id_c);
 //		System.out.println("id:" + id);
-//		System.out.println("id_str:" + id_str);
+		System.out.println("id_str:" + id_str);
 //		System.out.println("wrapped_id_bool:" + wrapped_id_bool);
 //		System.out.println("wrapped_id_b:" + wrapped_id_b);
 //		System.out.println("wrapped_id_s:" + wrapped_id_s);

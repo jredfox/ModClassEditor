@@ -114,11 +114,11 @@ public class MCEObj {
 		mce.configure(classNode);
 	}
 
-	public void configure(ClassNode classNode)
+	public void configure(ClassNode cn)
 	{	
 		//Avoid GETFIELD OPCODES
 		List<MCECached> cf = cached.get();
-		List<MethodNode> ml = classNode.methods;
+		List<MethodNode> ml = cn.methods;
 		int size = ml.size();
 		int index = 0;
 		
@@ -128,7 +128,7 @@ public class MCEObj {
 			List<MCECached> cache = new ArrayList(5);
 			for(MCECached c : cf)
 			{
-				if(c.accept(m))
+				if(c.accept(cn, m))
 					cache.add(c);
 				else if(last)
 					c.accepted = false;
@@ -396,7 +396,7 @@ public class MCEObj {
 		}
 	}
 
-	private static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
+	public static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
 	{
 		switch(type)
 		{

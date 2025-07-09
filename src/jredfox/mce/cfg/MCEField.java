@@ -2,9 +2,15 @@ package jredfox.mce.cfg;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.LabelNode;
+import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.types.InsnTypes;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
 
 public class MCEField
@@ -33,22 +39,6 @@ public class MCEField
 	 * the injection point
 	 */
 	public InsertionPoint inject;
-	/**
-	 * cached method name has a wildcard
-	 */
-	public boolean wc;
-	/**
-	 * cached method desc has a wildcard
-	 */
-	public boolean wcd;
-	/**
-	 * cached method desc is empty
-	 */
-	public boolean mt;
-	/**
-	 * cached boolean for if we accept more then one method
-	 */
-	public boolean onlyOne;
 	
 	public MCEField()
 	{
@@ -68,23 +58,136 @@ public class MCEField
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
-		
-		//cache booleans
-		this.wc = MCEUtil.isWildCard(this.name);
-		this.wcd = MCEUtil.isWildCard(this.desc);
-		this.mt = this.name.isEmpty();
-		this.onlyOne = !MCEUtil.isWildCard(this.name) && !MCEUtil.isWildCard(this.desc);
 	}
 
 	public void gc() {}
 
-	public void apply(MethodNode m, AbstractInsnNode point, Opperation opp)
+	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint cip)
 	{
 		
 	}
 
-	public void apply(AnnotationNode ann, AbstractInsnNode point, Opperation opp)
+	public void apply(ClassNode cn, AnnotationNode ann, CachedInsertionPoint cip)
 	{
 		
+	}
+	
+	public CachedInsertionPoint capture(ClassNode cn, MethodNode m) 
+	{
+		InsertionPoint in = this.inject;
+		if(in.type == InsnTypes.NULL)
+		{
+			if(in.opp == Opperation.AFTER)
+			{
+				return new CachedInsertionPoint(MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, true);
+			}
+			else if(in.opp == Opperation.BEFORE)
+			{
+				if(m.name.equals("<init>"))
+					return new CachedInsertionPoint(MCEObj.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
+				else
+					return new CachedInsertionPoint(null, Opperation.BEFORE, true);
+			}
+			return null;
+		}
+		
+		AbstractInsnNode point = in.point;
+		InsnTypes type = in.type;
+		int occurance = in.occurrence;
+		int shift = in.shift;
+		ShiftTo shiftTo = in.shiftTo;
+		
+		int found = 0;
+		int foundShift = 0;
+		
+		//Find the Injection Point
+		AbstractInsnNode ab = m.instructions.getFirst();
+		AbstractInsnNode inject = null;
+		while(ab != null)
+		{
+			if(MCEObj.equals(type, ab, point))
+			{
+				inject = ab;
+				if(found == occurance)
+					break;
+				found++;
+			}
+			ab = ab.getNext();
+		}
+		
+		//Injection Point not Found!
+		if(inject == null)
+		{
+			System.err.println("Error Failed to Inject Point Not Found in Bytecode! InsertionPoint:" + in);
+			return null;
+		}
+		
+		//ShiftTo either [LINE, LABEL, EXACT]
+		AbstractInsnNode spot = inject;
+		AbstractInsnNode insnIndex = spot;
+		boolean hasFoundShift = false;
+		
+		do
+		{
+			switch(shiftTo)
+			{
+				case LINE:
+				{
+					if(insnIndex instanceof LineNumberNode)
+					{
+						spot = insnIndex;
+						if(foundShift == shift)
+						{
+							hasFoundShift = true;
+							break;
+						}
+						foundShift++;
+					}
+				}
+				break;
+				case LABEL:
+				{
+					if(insnIndex instanceof LabelNode)
+					{
+						spot = insnIndex;
+						if(foundShift == shift)
+						{
+							hasFoundShift = true;
+							break;
+						}
+						foundShift++;
+					}
+				}
+				break;
+				
+				case EXACT:
+				{
+					spot = insnIndex;
+					if(foundShift == shift)
+					{
+						hasFoundShift = true;
+						break;
+					}
+					foundShift++;
+				}
+				break;
+					
+				default:
+					break;
+			}
+			insnIndex = (in.opp == Opperation.AFTER) ? (insnIndex.getNext()) : (insnIndex.getPrevious());
+		}
+		while(insnIndex != null && !hasFoundShift);
+		
+		//If inject == spot then We never shifted so we want to insertBefore if the opperation was before
+		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
+		if(in.opp == Opperation.BEFORE && (inject == spot || shiftTo == ShiftTo.EXACT))
+		{
+			return new CachedInsertionPoint(spot, Opperation.BEFORE, false);
+		}
+		else
+		{
+			return new CachedInsertionPoint(spot, Opperation.AFTER, false);
+		}
 	}
 }

@@ -5,11 +5,15 @@ import java.util.List;
 
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
+import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 
 import jredfox.mce.util.MCEUtil;
 import jredfox.mce.util.WildCardMatcher;
 
+/**
+ * Cached Data for MCEField as MCEField is READONLY (ThreadSafe to read not to write)
+ */
 public class MCECached {
 	
 	/**
@@ -17,17 +21,17 @@ public class MCECached {
 	 */
 	public MCEField mceField;
 	/**
-	 * Cached Real Injection Point
+	 * The real Cached Insertion Point not a Configuration Object like InsertionPoint!
 	 */
-	public AbstractInsnNode point;
-	/**
-	 * Cached Real Opperation before or after the point
-	 */
-	public Opperation opp;
+	public CachedInsertionPoint point;
 	/**
 	 * weather or not we accepted a MethodNode already
 	 */
 	public boolean accepted;
+	/**
+	 * The cached ClassNode that comes from {@link #accept(MethodNode)} or {@link #accept(AnnotationNode)}
+	 */
+	public ClassNode cn;
 	/**
 	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
 	 */
@@ -36,26 +40,48 @@ public class MCECached {
 	 * The cached Annotation node that comes from {@link #accept(AnnotationNode)}
 	 */
 	public AnnotationNode ann;
+	/**
+	 * cached method name has a wildcard
+	 */
+	public boolean wc;
+	/**
+	 * cached method desc has a wildcard
+	 */
+	public boolean wcd;
+	/**
+	 * cached method desc is empty
+	 */
+	public boolean mt;
+	/**
+	 * cached boolean for if we accept more then one method
+	 */
+	public boolean onlyOne;
 	
 	public MCECached(MCEField field)
 	{
 		this.mceField = field;
+		this.wc = MCEUtil.isWildCard(field.name);
+		this.wcd = MCEUtil.isWildCard(field.desc);
+		this.mt = field.name.isEmpty();
+		this.onlyOne = !MCEUtil.isWildCard(field.name) && !MCEUtil.isWildCard(field.desc);
 	}
 	
-	public boolean accept(MethodNode m)
+	public boolean accept(ClassNode c, MethodNode m)
 	{
-		if(this.accepted && this.mceField.onlyOne)
+		if(this.accepted && this.onlyOne)
 			return false;
 		
-		boolean wc = this.mceField.wc;
-		boolean wcd = this.mceField.wcd;
-		boolean mt = this.mceField.mt;
-
-		if ((wc ? WildCardMatcher.match(m.name, this.mceField.name, true) : m.name.equals(this.mceField.name))
-				&& (mt || (wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
+		if ((this.wc ? WildCardMatcher.match(m.name, this.mceField.name, true) : m.name.equals(this.mceField.name))
+				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
 						: m.desc.equals(this.mceField.desc)))) 
 		{
+			this.point = this.mceField.capture(c, m);
+			System.out.println(this.point);
+			if(this.point == null)
+				return false;
+			
 			this.accepted = true;
+			this.cn = c;
 			this.method = m;
 			return true;
 		}
@@ -63,8 +89,8 @@ public class MCECached {
 		
 		return false;
 	}
-	
-	public boolean accept(AnnotationNode ann)
+
+	public boolean accept(ClassNode c, AnnotationNode ann)
 	{
 		return false;
 	}
@@ -78,9 +104,9 @@ public class MCECached {
 			return;
 		
 		if(this.method != null)
-			this.mceField.apply(this.method, this.point, this.opp);
+			this.mceField.apply(this.cn, this.method, this.point);
 		else
-			this.mceField.apply(this.ann, this.point, this.opp);
+			this.mceField.apply(this.cn, this.ann, this.point);
 		this.clear();
 	}
 
@@ -91,7 +117,6 @@ public class MCECached {
 	public void clear() 
 	{
 		this.point = null;
-		this.opp = null;
 		this.method = null;
 		this.ann = null;
 	}

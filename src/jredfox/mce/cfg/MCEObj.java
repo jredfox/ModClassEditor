@@ -99,7 +99,7 @@ public class MCEObj {
 		}
 	}
 
-	public static void configure2(String actualName, ClassNode classNode)
+	public static void configure(String actualName, ClassNode classNode)
 	{
 		System.out.println("Mod Class Editor:" + actualName);
 		MCEObj mce = get(actualName);
@@ -124,6 +124,7 @@ public class MCEObj {
 		
 		for(MethodNode m : ml)
 		{
+			System.out.println("checking " + m.name + " " + cf.size());
 			boolean last = (index++ + 1) == size;
 			List<MCECached> cache = new ArrayList(5);
 			for(MCECached c : cf)
@@ -158,7 +159,7 @@ public class MCEObj {
 		}
 	};
 
-	public static void configure(String actualName, ClassNode classNode)
+	public static void configure_old(String actualName, ClassNode classNode)
 	{
 		System.out.println("Mod Class Editor:" + actualName);
 		MCEObj mce = get(actualName);

@@ -60,10 +60,10 @@ public class MCECached {
 	public MCECached(MCEField field)
 	{
 		this.mceField = field;
-		this.wc = MCEUtil.isWildCard(field.name);
+		this.wc =  MCEUtil.isWildCard(field.name);
 		this.wcd = MCEUtil.isWildCard(field.desc);
-		this.mt = field.name.isEmpty();
-		this.onlyOne = !MCEUtil.isWildCard(field.name) && !MCEUtil.isWildCard(field.desc);
+		this.mt = field.desc.isEmpty();
+		this.onlyOne = !wc && !wcd;
 	}
 	
 	public boolean accept(ClassNode c, MethodNode m)
@@ -71,12 +71,14 @@ public class MCECached {
 		if(this.accepted && this.onlyOne)
 			return false;
 		
+		System.out.println("HERE:" + m.name);
+		
 		if ((this.wc ? WildCardMatcher.match(m.name, this.mceField.name, true) : m.name.equals(this.mceField.name))
 				&& (this.mt || (this.wcd ? WildCardMatcher.match(m.desc, this.mceField.desc, true)
 						: m.desc.equals(this.mceField.desc)))) 
 		{
 			this.point = this.mceField.capture(c, m);
-			System.out.println(this.point);
+			System.out.println("Found InsertionPoint:" + this.point);
 			if(this.point == null)
 				return false;
 			

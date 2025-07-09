@@ -97,7 +97,6 @@ public class MCEField
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
-		
 		//cache frequently used booleans
 		this.wc =  MCEUtil.isWildCard(this.method);
 		this.wcd = MCEUtil.isWildCard(this.desc);
@@ -127,7 +126,6 @@ public class MCEField
 			return true;
 		}
 		
-		System.out.println("Method Not Matched:" + m.name + " " + m.desc + " " + this.method + " " + this.wc);
 		return false;
 	}
 	
@@ -150,24 +148,19 @@ public class MCEField
 		this.cip = null;
 		this.ccn = null;
 		this.cmn = null;
+		this.cfn = null;
+		this.cisArr = false;
+		this.cdt = null;
 		this.gc();
 	}
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
-		String str_type = this.type;
-		FieldNode fn = MCECoreUtils.getFieldNode(this.name, cn);
-		
-		//Populate the Type
-		if(str_type.isEmpty())
-			str_type = MCEObj.getType(fn.desc);
-		
-		//Convert the type into a useable thing
-		boolean  isArr = str_type.startsWith("[");
-		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
+		FieldNode fn = this.cfn;
+		DataType type = this.cdt;
 		
 		InsnList list = new InsnList();
-		if(!isArr)
+		if(!this.cisArr)
 		{
 			list.add(MCEObj.getNumInsn(this.value, type));
 			if(type.isWrapper && this.value != null)
@@ -198,6 +191,9 @@ public class MCEField
 		}
 	}
 
+	/**
+	 * Captures the Real Injection Point with the actual Opperation & type
+	 */
 	public CachedInsertionPoint capture(ClassNode cn, MethodNode m) 
 	{
 		InsertionPoint in = this.inject;
@@ -317,6 +313,9 @@ public class MCEField
 		}
 	}
 
+	private FieldNode cfn;
+	private boolean cisArr;
+	private DataType cdt;
 	public boolean canEdit(ClassNode c)
 	{
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
@@ -332,11 +331,9 @@ public class MCEField
 			System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + this.name + " in:" + c.name);
 			return false;
 		}
+		this.cfn = fn;
 		
-		//Populate the Type
 		String str_type = MCEObj.getType(fn.desc);
-		
-		//Convert the type into a useable thing
 		boolean  isArr = str_type.startsWith("[");
 		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
 		
@@ -346,6 +343,10 @@ public class MCEField
 			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + fn.desc + " in:" + c.name);
 			return false;
 		}
+		
+		//Set Cached Values for re-use
+		this.cisArr = isArr;
+		this.cdt = type;
 		
 		return true;
 	}

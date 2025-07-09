@@ -99,7 +99,7 @@ public class MCEField
 		this.inject = inject;
 		
 		//cache frequently used booleans
-		this.wc =  MCEUtil.isWildCard(this.name);
+		this.wc =  MCEUtil.isWildCard(this.method);
 		this.wcd = MCEUtil.isWildCard(this.desc);
 		this.mt = this.desc.isEmpty();
 		this.onlyOne = !this.wc && !this.wcd;
@@ -127,6 +127,7 @@ public class MCEField
 			return true;
 		}
 		
+		System.out.println("Method Not Matched:" + m.name + " " + m.desc + " " + this.method + " " + this.wc);
 		return false;
 	}
 	
@@ -135,6 +136,7 @@ public class MCEField
 		if(!this.accepted)
 			return;
 		
+		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
 		this.apply(this.ccn, this.cmn, this.cip);
 		this.clear();
 	}

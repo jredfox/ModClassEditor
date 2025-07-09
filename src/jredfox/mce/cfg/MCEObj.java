@@ -115,18 +115,19 @@ public class MCEObj {
 	{
 		//Avoid GETFIELD OPCODES
 		List<MCEField> cf = this.fields;
+		int len = cf.size() - 1;
+		
 		List<MethodNode> ml = cn.methods;
 		int size = ml.size();
-		int index = 0;
-		int len = cf.size();
+		int mi = 0;
 		
 		for(MethodNode m : ml)
 		{
-			boolean last = (index++ + 1) == size;
+			boolean last = (mi++ + 1) == size;
 			List<MCEField> cache = new ArrayList(5);
 			for(int i=len; i >= 0; i--) 
 			{
-				MCEField c = cf.get(index);
+				MCEField c = cf.get(i);
 				if(c.accept(cn, m))
 					cache.add(c);
 				else if(last)

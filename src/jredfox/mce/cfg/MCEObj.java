@@ -131,14 +131,14 @@ public class MCEObj {
 				if(c.accept(cn, m))
 					cache.add(c);
 				else if(last)
-					c.accepted = false;
+					c.clear();
 			}
 			
 			for(MCEField c : cache)
 			{
 				c.apply();
 				if(last)
-					c.accepted = false;
+					c.clear();
 			}
 		}
 	}

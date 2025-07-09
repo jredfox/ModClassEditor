@@ -138,18 +138,19 @@ public class MCEField
 		
 		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
 		this.apply(this.ccn, this.cmn, this.cip);
-		this.clear();
 	}
 	
 	/**
-	 * Clears the Cached Injection Point ONLY doesn't set {@link #accepted} 
-	 * to false this is done when on the last MethodNode / AnnotationNode iteration
+	 * Clears the Cached Data from Working on a Method / AnnotationNode
+	 * Calls {@link #gc()} at the end of the method call
 	 */
 	public void clear() 
 	{
+		this.accepted = false;
 		this.cip = null;
 		this.ccn = null;
 		this.cmn = null;
+		this.gc();
 	}
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
@@ -176,12 +177,6 @@ public class MCEField
 		
 		//Inject the code
 		this.inject(m, list, p);
-		
-		//Clear CachedInsertionPoint
-		this.clear();
-		
-		//Prevent Memory Leaks
-		this.gc();
 	}
 	
 	private void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 

@@ -110,7 +110,6 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		
 //		index++;
 //		System.out.println(last + "," + index);
 //		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");

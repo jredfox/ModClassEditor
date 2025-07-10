@@ -3,6 +3,7 @@ package jredfox.mce.cfg;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.FieldInsnNode;
+import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.JumpInsnNode;
@@ -236,6 +237,11 @@ public class InsertionPoint
 			{
 				this.point = new MCEOpcode(OpcodeHelper.getOppcode(arr[typeIndex + 1]));
 				this.type = InsnTypes.Opcode;
+			}
+			else if(nf && type.equals("iincinsnnode") || type.equals("iincinsn"))
+			{
+				this.point = new IincInsnNode(MCEUtil.parseInt(arr[typeIndex + 1]), MCEUtil.parseInt(arr[typeIndex + 2]));
+				this.type = InsnTypes.IincInsnNode;
 			}
 			else
 			{

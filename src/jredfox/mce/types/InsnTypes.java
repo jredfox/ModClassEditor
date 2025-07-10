@@ -54,6 +54,10 @@ public enum InsnTypes {
 	 */
 	LabelNode,
 	/**
+	 * Pushes an local variable Integer then increments it after i++ for example
+	 */
+	IincInsnNode,
+	/**
 	 * NULL or Unsupported Insn
 	 */
 	NULL

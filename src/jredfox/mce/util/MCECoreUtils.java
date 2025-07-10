@@ -16,6 +16,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.InsnNode;
@@ -240,14 +241,16 @@ public class MCECoreUtils {
 			case LdcInsnNode:
 				return ab instanceof LdcInsnNode && MCECoreUtils.equals((LdcInsnNode) ab, (LdcInsnNode) point);
 			case Opcode:
-				return MCECoreUtils.equalsOpcode(ab, point);
+				return ab != null && MCECoreUtils.equalsOpcode(ab, point);
+			case IincInsnNode:
+				return ab instanceof IincInsnNode && MCECoreUtils.equals((IincInsnNode) ab, (IincInsnNode)point);
 
 			default:
 				break;
 		}
 		return false;
 	}
-	
+
 	public static boolean equals(InsnNode a, InsnNode b)
 	{
 		return a.getOpcode() == b.getOpcode();
@@ -296,6 +299,11 @@ public class MCECoreUtils {
 	public static boolean equalsOpcode(AbstractInsnNode a, AbstractInsnNode b)
 	{
 		return a.getOpcode() == b.getOpcode();
+	}
+	
+	public static boolean equals(IincInsnNode a, IincInsnNode b)
+	{
+		return a.var == b.var && a.incr == b.incr;
 	}
 	
 	public static void addLabelNode(InsnList list)

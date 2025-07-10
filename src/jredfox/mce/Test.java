@@ -1,14 +1,10 @@
 package jredfox.mce;
 
 import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.ralleytn.simple.json.JSONParseException;
-
-import jredfox.mce.cfg.MCEField;
 
 public class Test {
 	
@@ -112,18 +108,6 @@ public class Test {
 		TestDemo.B.init();
 	}
 	
-//	public static int[] arr_biggums = new int[Short.MAX_VALUE + 2];
-	public static ThreadLocal<List<MCEField>> cacheArr = new ThreadLocal()
-			{
-				@Override
-			    protected List<MCEField> initialValue() 
-				{
-					List<MCEField> field = new ArrayList();
-					for(int i=0;i<10;i++)
-						field.add(new MCEField());
-			        return field;
-			    }
-			};
 	public static void main(String[] args) throws JSONParseException
 	{
 		

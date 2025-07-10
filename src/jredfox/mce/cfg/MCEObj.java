@@ -69,7 +69,7 @@ public class MCEObj {
 				continue;//Why are there comments in here
 			
 			JSONObject f = (JSONObject) o;
-			this.fields.add(!f.containsKey("values") ? new MCEField(f) : new MCEArrField(f));
+			this.fields.add(!f.containsKey("values") ? new MCEField(this, f) : new MCEArrField(this, f));
 		}
 	}
 

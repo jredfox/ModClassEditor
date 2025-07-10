@@ -22,6 +22,10 @@ import jredfox.mce.util.WildCardMatcher;
 public class MCEField
 {
 	/**
+	 * The Transformed & Deobfuscated Class Name that is the Owner of the Field
+	 */
+	public String owner;
+	/**
 	 * The name of the Field
 	 */
 	public String name;
@@ -45,11 +49,6 @@ public class MCEField
 	 * the injection point
 	 */
 	public InsertionPoint inject;
-	
-	/**
-	 * weather or not we accepted a MethodNode already
-	 */
-	public boolean accepted;
 	/**
 	 * cached method name has a wildcard
 	 */
@@ -66,6 +65,10 @@ public class MCEField
 	 * cached boolean for if we accept more then one method
 	 */
 	public boolean onlyOne;
+	/**
+	 * weather or not we accepted a MethodNode already
+	 */
+	public boolean accepted;
 	/**
 	 * Occurs when a MCEField cannot edit a class due to FieldNode Desc Mismatch
 	 */
@@ -92,13 +95,14 @@ public class MCEField
 		
 	}
 		
-	public MCEField(JSONObject json)
+	public MCEField(MCEObj parent, JSONObject json)
 	{
-		this(json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
+		this(parent.classNameASM, json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
 	}
 		
-	public MCEField(String name, String value, String type, String method, String desc, InsertionPoint inject)
+	public MCEField(String owner, String name, String value, String type, String method, String desc, InsertionPoint inject)
 	{
+		this.owner = owner;
 		this.name = name.trim();
 		this.value = value;
 		this.type = MCEUtil.safeString(type).trim();
@@ -178,7 +182,7 @@ public class MCEField
 		list.add(MCECoreUtils.getNumInsn(this.value, type));
 		if(type.isWrapper && this.value != null)
 			list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, cn.name, this.name, fn.desc));
+		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, this.owner, this.name, fn.desc));
 		
 		//Inject the code
 		this.inject(m, list, p);

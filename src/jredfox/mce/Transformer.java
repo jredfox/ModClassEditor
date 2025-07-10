@@ -17,8 +17,12 @@ import jredfox.mce.util.MCECoreUtils;
 public class Transformer implements IClassTransformer {
 	
 	public boolean init;
-	public boolean recomputeFrames;
-	public boolean generateFieldNames;
+	public static boolean recomputeFrames;
+	public static boolean generateFieldNames;
+	public static boolean gc;
+	public static boolean dump;
+	public static boolean dumpOrg;
+	public static boolean batchLoad;
 	public static MCEGen gen;
 	public Map<String, String> arr = new ConcurrentHashMap();
 	
@@ -66,22 +70,24 @@ public class Transformer implements IClassTransformer {
 	public void init_options()
 	{
 		File cfg = new File(System.getProperty("user.dir"), "config/ModClassEditor/options.json");
-		
-		//Initialize the config for the first time
-		if(!cfg.exists())
-		{
-			JSONObject json = new JSONObject();
-			json.put("Recompute Frames", true);
-			json.put("Generate Field Names", false);
-			JSONUtils.save(json, cfg);
-		}
-		
 		JSONObject ojson = JSONUtils.getJson(cfg);
-		this.recomputeFrames = ojson.getBoolean("Recompute Frames");
-		this.generateFieldNames = ojson.getBoolean("Generate Field Names");
+		int size = ojson.size();
+		
+		this.recomputeFrames = JSONUtils.getorGenBoolean(ojson, "Recompute Frames", true);
+		this.generateFieldNames = JSONUtils.getorGenBoolean(ojson, "Generate Field Names", false);
+		this.gc = JSONUtils.getorGenBoolean(ojson, "GC MCEField Optimizations", true);
+		this.dump = JSONUtils.getorGenBoolean(ojson,"ASM Dump", false) || Boolean.parseBoolean(System.getProperty("asm.dump", "false"));
+		this.dumpOrg = JSONUtils.getorGenBoolean(ojson,"ASM Dump Original", false);
+		this.batchLoad = JSONUtils.getorGenBoolean(ojson, "batchLoad", true);
+		
+		//Detect new Config Options
+		if(size != ojson.size())
+			JSONUtils.save(ojson, cfg);
+		
 		gen = new MCEGen("config/ModClassEditor/GeneratedFieldNames.json", this.generateFieldNames);
 		gen.init();
 		System.out.println("Recompute frames:" + this.recomputeFrames + ", GenFieldNames:" + this.generateFieldNames);
+		System.out.println("GC:" + this.gc + " Dump:" + this.dump + " DumpOrg:" + this.dumpOrg + " batchLoad:" + this.batchLoad);
 	}
 	
 	/**
@@ -110,6 +116,14 @@ public class Transformer implements IClassTransformer {
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())
 			MCEObj.register(c, json);
+	}
+
+	public static void batchLoad()
+	{
+		if(Transformer.batchLoad)
+		{
+			MCECoreUtils.batchLoad("", MCEObj.registry.keySet());
+		}
 	}
 
 }

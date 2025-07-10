@@ -8,6 +8,11 @@ import cpw.mods.fml.common.event.FMLPreInitializationEvent;
 @Mod(modid="modclasseditor", name="Mod Class Editor @ALPHA", version="0.7.0", dependencies="after:*")
 public class MCEMod {
 	
+	public MCEMod()
+	{
+		Transformer.batchLoad();
+	}
+	
 	static
 	{
 		Test.load();//TODO: REMOVE

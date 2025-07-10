@@ -24,8 +24,8 @@ public class JSONUtils {
 	public static JSONObject getJson(File f) 
 	{
 		//Create Directory if it doesn't exist
-		if(!f.getParentFile().exists())
-			f.getParentFile().mkdirs();
+		if(!f.exists())
+			return new JSONObject();
 		
 		FileReader r = null;
 		try 
@@ -51,8 +51,8 @@ public class JSONUtils {
 	public static JSONArray getJsonArray(File f)
 	{
 		//Create Directory if it doesn't exist
-		if(!f.getParentFile().exists())
-			f.getParentFile().mkdirs();
+		if(!f.exists())
+			return new JSONArray();
 		
 		BufferedReader r = null;
 		try 
@@ -121,8 +121,9 @@ public class JSONUtils {
 	public static void save(String str, File f, boolean utf8)
 	{
 		//Create Directory if it doesn't exist
-		if(!f.getParentFile().exists())
-			f.getParentFile().mkdirs();
+		File pf = f.getAbsoluteFile().getParentFile();
+		if(!pf.exists())
+			pf.mkdirs();
 		
 		BufferedWriter writer = null;
 		try
@@ -156,6 +157,16 @@ public class JSONUtils {
 				}
 			}
 		}
+	}
+
+	public static boolean getorGenBoolean(JSONObject ojson, String key, boolean def)
+	{
+		if(!ojson.containsKey(key))
+		{
+			ojson.put(key, def);
+			return def;
+		}
+		return ojson.getBoolean(key);
 	}
 
 }

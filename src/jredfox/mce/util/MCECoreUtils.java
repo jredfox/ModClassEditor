@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.objectweb.asm.ClassReader;
@@ -33,6 +34,7 @@ import org.ralleytn.simple.json.internal.Util;
 
 import jredfox.mce.ArrCache;
 import jredfox.mce.ArrUtils;
+import jredfox.mce.Transformer;
 import jredfox.mce.types.DataType;
 import jredfox.mce.types.InsnTypes;
 
@@ -71,13 +73,10 @@ public class MCECoreUtils {
 	public static byte[] toByteArray(ClassWriter classWriter, String transformedName, byte[] org) throws IOException 
 	{
         byte[] bytes = classWriter.toByteArray();
-        if(Boolean.parseBoolean(System.getProperty("asm.dump", "false")))
-        {
+        if(Transformer.dump)
         	dumpFile(transformedName, bytes);
-//        	if(org != null)
-//        		dumpFile(transformedName + "_org", org);
-//TODO: UNCOMMENT
-        }
+    	if(Transformer.dumpOrg && org != null)
+    		dumpFile(transformedName + "_org", org);
         
         return bytes;
 	}
@@ -731,6 +730,30 @@ public class MCECoreUtils {
 								: desc.equals("Ljava/lang/Double;") ? "Double"
 							: desc.equals("Ljava/lang/Character;") ? "Character"
 						: UNSUPPORTED;
+	}
+	
+	public static void batchLoad(String bl, Collection<String> arr) 
+	{
+		long ms = System.currentTimeMillis();
+		System.out.println("MCE Batch Loading....");
+		ClassLoader cl = MCECoreUtils.class.getClassLoader();
+		for (String c : arr)
+		{
+			if (c.equals(bl))
+				continue;
+			try
+			{
+				Class clazz = Class.forName(c, false, cl);
+			} 
+			catch (ClassNotFoundException e) 
+			{
+				System.err.println("ClassNotFound:" + c);
+			} 
+			catch (Throwable t) 
+			{
+				t.printStackTrace();
+			}
+		}
 	}
 
 }

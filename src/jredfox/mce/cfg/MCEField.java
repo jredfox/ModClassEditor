@@ -13,6 +13,7 @@ import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.Transformer;
 import jredfox.mce.types.DataType;
 import jredfox.mce.types.InsnTypes;
 import jredfox.mce.util.MCECoreUtils;
@@ -160,7 +161,8 @@ public class MCEField
 		this.cfn = null;
 		this.cisArr = false;
 		this.cdt = null;
-		this.gc();
+		if(Transformer.gc)
+			this.gc();
 	}
 	
 	public void apply()

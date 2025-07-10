@@ -731,29 +731,5 @@ public class MCECoreUtils {
 							: desc.equals("Ljava/lang/Character;") ? "Character"
 						: UNSUPPORTED;
 	}
-	
-	public static void batchLoad(String bl, Collection<String> arr) 
-	{
-		long ms = System.currentTimeMillis();
-		System.out.println("MCE Batch Loading....");
-		ClassLoader cl = MCECoreUtils.class.getClassLoader();
-		for (String c : arr)
-		{
-			if (c.equals(bl))
-				continue;
-			try
-			{
-				Class clazz = Class.forName(c, false, cl);
-			} 
-			catch (ClassNotFoundException e) 
-			{
-				System.err.println("ClassNotFound:" + c);
-			} 
-			catch (Throwable t) 
-			{
-				t.printStackTrace();
-			}
-		}
-	}
 
 }

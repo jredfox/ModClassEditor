@@ -87,7 +87,7 @@ public class Transformer implements IClassTransformer {
 		gen = new MCEGen("config/ModClassEditor/GeneratedFieldNames.json", this.generateFieldNames);
 		gen.init();
 		System.out.println("Recompute frames:" + this.recomputeFrames + ", GenFieldNames:" + this.generateFieldNames);
-		System.out.println("GC:" + this.gc + " Dump:" + this.dump + " DumpOrg:" + this.dumpOrg + " batchLoad:" + this.batchLoad);
+		System.out.println("GC:" + this.gc + " Dump:" + this.dump + " DumpOrg:" + this.dumpOrg + " BatchLoad:" + this.batchLoad);
 	}
 	
 	/**
@@ -120,9 +120,24 @@ public class Transformer implements IClassTransformer {
 
 	public static void batchLoad()
 	{
-		if(Transformer.batchLoad)
+		if (!Transformer.batchLoad)
+			return;
+		System.out.println("MCE Batch Loading....");
+		ClassLoader cl = MCECoreUtils.class.getClassLoader();
+		for (String c : MCEObj.registry.keySet()) 
 		{
-			MCECoreUtils.batchLoad("", MCEObj.registry.keySet());
+			try 
+			{
+				Class clazz = Class.forName(c, false, cl);
+			}
+			catch (ClassNotFoundException e) 
+			{
+				System.err.println("ClassNotFound:" + c);
+			} 
+			catch (Throwable t) 
+			{
+				t.printStackTrace();
+			}
 		}
 	}
 

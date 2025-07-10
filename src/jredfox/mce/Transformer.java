@@ -78,7 +78,7 @@ public class Transformer implements IClassTransformer {
 		this.gc = JSONUtils.getorGenBoolean(ojson, "GC MCEField Optimizations", true);
 		this.dump = JSONUtils.getorGenBoolean(ojson,"ASM Dump", false) || Boolean.parseBoolean(System.getProperty("asm.dump", "false"));
 		this.dumpOrg = JSONUtils.getorGenBoolean(ojson,"ASM Dump Original", false);
-		this.batchLoad = JSONUtils.getorGenBoolean(ojson, "batchLoad", true);
+		this.batchLoad = JSONUtils.getorGenBoolean(ojson, "Batch Load", true);
 		
 		//Detect new Config Options
 		if(size != ojson.size())

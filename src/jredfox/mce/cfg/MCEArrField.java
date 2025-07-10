@@ -92,7 +92,7 @@ public class MCEArrField extends MCEField
 	@Override
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
-		if(this.cisArr)
+		if(!this.cisArr)
 			return;
 		
 		if(this.values == null)

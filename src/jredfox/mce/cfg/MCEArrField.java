@@ -94,8 +94,7 @@ public class MCEArrField extends MCEField
 	{
 		if(!this.cisArr)
 			return;
-		
-		if(this.values == null)
+		else if(this.values == null)
 			throw new RuntimeException("MCEArrField#values[] has already been garbage collected! Please Disable \"GC Optimizations\" in the Config Or Try Enabling \"BatchLoading\"!");
 		
 		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);

@@ -21,7 +21,7 @@ public class MCEMod {
 		Transformer.gen.stage = "preInit";
 		MCEGenInitPre.init();
 	}
-	
+
 	@Mod.Init
 	public void mceInit(FMLInitializationEvent e)
 	{

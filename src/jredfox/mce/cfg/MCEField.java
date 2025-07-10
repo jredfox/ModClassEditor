@@ -114,6 +114,8 @@ public class MCEField
 		this.wcd = MCEUtil.isWildCard(this.desc);
 		this.mt = this.desc.isEmpty();
 		this.onlyOne = !this.wc && !this.wcd;
+		
+		System.out.println("DEBUG:" + this.owner + " " + this.name + " " + this.method + " " + this.inject);
 	}
 	
 	public boolean accept(ClassNode cn, MethodNode m)

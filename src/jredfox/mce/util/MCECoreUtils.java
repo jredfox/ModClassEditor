@@ -304,7 +304,8 @@ public class MCECoreUtils {
 		return a.var == b.var && a.incr == b.incr;
 	}
 	
-	private static boolean LABEL_DISABLED = false;
+	private static boolean LABEL_DISABLED = true;
+	
 	public static void addLabelNode(InsnList list)
 	{
 		if(LABEL_DISABLED)

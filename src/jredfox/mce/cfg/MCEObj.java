@@ -99,6 +99,7 @@ public class MCEObj {
 		List<MethodNode> ml = new ArrayList(cn.methods);//TODO work around
 		int size = ml.size();
 		int mi = 0;
+		Map<InsertionPoint, MethodNode> dsc = new HashMap(Transformer.ds ? 10 : 1);
 		
 		for(MethodNode m : ml)
 		{
@@ -107,7 +108,7 @@ public class MCEObj {
 			for(int i=len; i >= 0; i--)
 			{
 				MCEField c = cf.get(i);
-				if(c.accept(cn, m))
+				if(c.accept(cn, dsc, m))
 					cache.add(c);
 				else if(last)
 					c.clear();

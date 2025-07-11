@@ -283,9 +283,7 @@ public class InsertionPoint
 		else if (!(ot instanceof InsertionPoint))
 			return false;
 		InsertionPoint o = (InsertionPoint) ot;
-		if(this.point == null && o.point != null)
-			return false;
-
+		
 		return  this.type == o.type
 				&& MCECoreUtils.equals(this.type, this.point, o.point) 
 				&& this.opp == o.opp

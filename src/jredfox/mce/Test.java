@@ -6,6 +6,8 @@ import java.util.Map;
 
 import org.ralleytn.simple.json.JSONParseException;
 
+import jredfox.mce.cfg.InsertionPoint;
+
 public class Test {
 	
 	private static char id_c = 'a'; 
@@ -110,67 +112,9 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-//		index++;
-//		System.out.println(last + "," + index);
-//		InsertionPoint ldc = new InsertionPoint("LdcInsnNode, \"my \"custom\",,,,,,, string\"");
-//		System.out.println(ldc.opp + ", '" + ((LdcInsnNode)ldc.point).cst + "'");
-//		
-//		InsertionPoint ldc2 = new InsertionPoint("LdcInsnNode, String, 128");
-//		Object oldc2 = ((LdcInsnNode)ldc2.point).cst;
-//		System.out.println(ldc2.opp + ", '" + ((LdcInsnNode)ldc2.point).cst + "' " + oldc2.getClass());
-		
-//		InsertionPoint b = new InsertionPoint("before");
-//		System.out.println(b.opp + ", " + b.type);
-//		
-//		InsertionPoint a = new InsertionPoint("after");
-//		System.out.println(a.opp + ", " + a.type);
-//		InsertionPoint a2 = new InsertionPoint(" ");
-//		System.out.println(a2.opp + ", " + a2.type);
-//		
-//		InsertionPoint insn = new InsertionPoint("after, InsnNode, ICONST_3");
-//		System.out.println(insn.opp + ", " + insn.type + ", " + OpcodeHelper.getOppcodeInsnName(((InsnNode)insn.point).getOpcode()) );
-//		
-//		InsertionPoint finsn = new InsertionPoint("FIELDINSNNODE, PUTSTATIC, \"jredfox/mce/Test\", \"o_arr_char\", \"[Ljava/lang/Character;]\"");
-//		FieldInsnNode fn = (FieldInsnNode) finsn.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(fn.getOpcode()) + "," + fn.owner + "," + fn.name + "," + fn.desc);
-//		
-//		InsertionPoint i_insn = new InsertionPoint("IntInsnNode, BIPUSH, 30000");
-//		IntInsnNode in = (IntInsnNode) i_insn.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(in.getOpcode()) + "," + in.operand);
-//		
-//		InsertionPoint jump = new InsertionPoint("JumpInsnNode, GOTO, l40");
-//		System.out.println(jump.opp + "," + OpcodeHelper.getOppcodeInsnName(jump.point.getOpcode()));
-//		
-//		InsertionPoint lnode = new InsertionPoint("LineNUMBERNode, 141");
-//		LineNumberNode ln0 = (LineNumberNode) lnode.point;
-//		System.out.println(lnode.opp + "," + ln0.line);
-//		
-//		InsertionPoint minsn = new InsertionPoint("MethodInsnNode, INVOKESPECIAL, \"jredfox/mce/MCEObj$InsertionPoint\", \"<init>\", \"(Ljava/lang/String;)V\"");
-//		MethodInsnNode mn = (MethodInsnNode) minsn.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(mn.getOpcode()) + "," + mn.owner + "," + mn.name + "," + mn.desc);
-//		
-//		InsertionPoint type = new InsertionPoint("TypeInsnNode, ANEWARRAY, \"java/lang/String\"");
-//		TypeInsnNode t = (TypeInsnNode) type.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(t.getOpcode()) + "," + t.desc);
-//		
-//		InsertionPoint var = new InsertionPoint("VARINSNNODE, ALOAD, 2");
-//		VarInsnNode v = (VarInsnNode) var.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(v.getOpcode()) + "," + v.var);
-//		
-//		InsertionPoint l1 = new InsertionPoint("line:2");
-//		LineNumberNode l1n = (LineNumberNode) l1.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(l1n.getOpcode()) + "," + l1n.line);
-//		
-//		InsertionPoint label2 = new InsertionPoint("label:12");
-//		MCEIndexLabel label2n = (MCEIndexLabel) label2.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(label2n.getOpcode()) + "," + label2n.index);
-//		
-//		InsertionPoint label3 = new InsertionPoint("LabelNODE, 1");
-//		MCEIndexLabel label3n = (MCEIndexLabel) label3.point;
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(label3n.getOpcode()) + "," + label3n.index);
-//		
-//		InsertionPoint iop = new InsertionPoint("OPCODE, ACC_BRIDGE");
-//		System.out.println(OpcodeHelper.getOppcodeInsnName(iop.point.getOpcode()) + "," + iop.point.getOpcode());
+		InsertionPoint p = new InsertionPoint("after");
+		InsertionPoint p2 = new InsertionPoint("after");
+		System.out.println(p.equals(p2));
 	}
 	
     public static int getCapacity(Map map) {

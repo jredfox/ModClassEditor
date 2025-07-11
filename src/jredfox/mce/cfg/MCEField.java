@@ -1,6 +1,7 @@
 package jredfox.mce.cfg;
 
 import java.util.HashMap;
+import java.util.Map;
 
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
@@ -93,10 +94,6 @@ public class MCEField
 	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
 	 */
 	public MethodNode cmn;
-	/**
-	 * The Dynamic Setter Gen Index we are currently on
-	 */
-	private int setterIndex = 0;
 	
 	public MCEField()
 	{
@@ -126,7 +123,7 @@ public class MCEField
 		System.out.println("DEBUG:" + this.owner + " " + this.name + " " + this.method + " " + this.inject);
 	}
 	
-	public boolean accept(ClassNode cn, MethodNode m)
+	public boolean accept(ClassNode cn, Map<InsertionPoint, MethodNode> dsc, MethodNode m)
 	{
 		if(this.err || this.accepted && this.onlyOne)
 			return false;
@@ -145,7 +142,7 @@ public class MCEField
 				return false;
 			
 			this.ccn = cn;
-			this.cmn = this.getDynamicSetter(cn, m);
+			this.cmn = this.getDynamicSetter(cn, dsc, m);
 			this.accepted = true;
 			return true;
 		}
@@ -154,16 +151,18 @@ public class MCEField
 	}
 	
 	private static final String base = "mce_setter_";
-	private HashMap<InsertionPoint, MethodNode> dsc = new HashMap();
-	public MethodNode getDynamicSetter(ClassNode c, MethodNode p_m)
+	public MethodNode getDynamicSetter(ClassNode c, Map<InsertionPoint, MethodNode> dsc, MethodNode org)
 	{
+		if(!Transformer.ds)
+			return org;
 		MethodNode cachedMN = dsc.get(this.inject);
 		if(cachedMN != null)
 			return cachedMN;
 		
-		while(MCECoreUtils.getMethodNode(this.ccn, (base + this.setterIndex), "()V") != null)
-			this.setterIndex++;
-		String setName = base + this.setterIndex;
+		int size = dsc.size();
+		while(MCECoreUtils.getMethodNode(c, (base + size), "()V") != null)
+			size++;
+		String setName = base + size;
 		MethodNode m = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, setName, "()V", null, null);
 		InsnList l = new InsnList();
 		m.instructions = l;
@@ -171,7 +170,7 @@ public class MCEField
 		l.add(l0);
 		l.add(new LineNumberNode(0, l0));
 		l.add(new InsnNode(Opcodes.RETURN));
-//		l.add(new LabelNode());
+		l.add(new LabelNode());
 		m.visitMaxs(0, 0);
 		
 		//Add the method to the class
@@ -198,9 +197,6 @@ public class MCEField
 		this.cfn = null;
 		this.cisArr = false;
 		this.cdt = null;
-		//Dynamic Setter Clear
-		this.setterIndex = 0;
-		this.dsc.clear();
 		if(Transformer.gc)
 			this.gc();
 	}

@@ -269,6 +269,8 @@ public class MCECoreUtils {
 				return ab != null && MCECoreUtils.equalsOpcode(ab, point);
 			case IincInsnNode:
 				return ab instanceof IincInsnNode && MCECoreUtils.equals((IincInsnNode) ab, (IincInsnNode)point);
+			case NULL:
+				return ab == null && point == null;
 
 			default:
 				break;

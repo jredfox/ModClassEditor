@@ -323,10 +323,13 @@ public class MCEField
 						if(foundShift == shift)
 						{
 							hasFoundShift = true;
-							AbstractInsnNode nxt = MCECoreUtils.nextSkipFrames(spot);
 							//Shift to injecting to after the LineNumberNode for AFTER as it's alot safer but only if it's the next insn
-							if(opp == Opperation.AFTER && nxt instanceof LineNumberNode)
-								spot = nxt;
+							if(type == InsnTypes.LabelNode && opp == Opperation.AFTER)
+							{
+								AbstractInsnNode nxt = MCECoreUtils.nextSkipFrames(spot);
+								if(nxt instanceof LineNumberNode)
+									spot = nxt;
+							}
 							break;
 						}
 						foundShift++;

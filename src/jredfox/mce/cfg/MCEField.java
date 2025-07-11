@@ -319,6 +319,9 @@ public class MCEField
 						if(foundShift == shift)
 						{
 							hasFoundShift = true;
+							//Shift to injecting to after the LineNumberNode for AFTER as it's alot safer but only if it's the next insn
+							if(in.opp == Opperation.AFTER && spot.getNext() instanceof LineNumberNode)
+								spot = spot.getNext();
 							break;
 						}
 						foundShift++;

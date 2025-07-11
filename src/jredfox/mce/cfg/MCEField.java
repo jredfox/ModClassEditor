@@ -245,13 +245,14 @@ public class MCEField
 	public CachedInsertionPoint capture(ClassNode cn, MethodNode m) 
 	{
 		InsertionPoint in = this.inject;
+		Opperation opp = in.opp;
 		if(in.type == InsnTypes.NULL)
 		{
-			if(in.opp == Opperation.AFTER)
+			if(opp == Opperation.AFTER)
 			{
 				return new CachedInsertionPoint(MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, true, false);
 			}
-			else if(in.opp == Opperation.BEFORE)
+			else if(opp == Opperation.BEFORE)
 			{
 				if(m.name.equals("<init>"))
 					return new CachedInsertionPoint(MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true, true);
@@ -324,7 +325,7 @@ public class MCEField
 						{
 							hasFoundShift = true;
 							//Shift to injecting to after the LineNumberNode for AFTER as it's alot safer but only if it's the next insn
-							if(in.opp == Opperation.AFTER && spot.getNext() instanceof LineNumberNode)
+							if(opp == Opperation.AFTER && spot.getNext() instanceof LineNumberNode)
 								spot = spot.getNext();
 							break;
 						}
@@ -348,14 +349,14 @@ public class MCEField
 				default:
 					break;
 			}
-			insnIndex = (in.opp == Opperation.AFTER) ? (insnIndex.getNext()) : (insnIndex.getPrevious());
+			insnIndex = (opp == Opperation.AFTER) ? (insnIndex.getNext()) : (insnIndex.getPrevious());
 		}
 		while(insnIndex != null && !hasFoundShift);
 		
 		boolean exact = shiftTo == ShiftTo.EXACT;
 		//If inject == spot then We never shifted so we want to insertBefore if the opperation was before
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
-		if(in.opp == Opperation.BEFORE && (inject == spot || exact))
+		if(opp == Opperation.BEFORE && (inject == spot || exact))
 		{
 			return new CachedInsertionPoint(spot, Opperation.BEFORE, false, spot instanceof LabelNode);
 		}

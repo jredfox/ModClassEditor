@@ -198,8 +198,12 @@ public class MCEField
 		
 	}
 	
+	private static boolean labelDisabled = false;
 	public void applyLabel()
 	{
+		if(cip.firstInsn == null || labelDisabled)
+			return;
+		
 		InsnList l = new InsnList();
 		LabelNode l0 = new LabelNode();
 		l.add(l0);
@@ -356,7 +360,7 @@ public class MCEField
 		}
 		else
 		{
-			return new CachedInsertionPoint(spot, Opperation.AFTER, false, false);
+			return new CachedInsertionPoint(spot, Opperation.AFTER, false, (shiftTo == ShiftTo.EXACT));
 		}
 	}
 	

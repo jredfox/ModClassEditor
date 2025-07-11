@@ -763,4 +763,9 @@ public class MCECoreUtils {
 						: UNSUPPORTED;
 	}
 
+	public static boolean isLineOrLabel(AbstractInsnNode p) 
+	{
+		return p instanceof LineNumberNode || p instanceof LabelNode;
+	}
+
 }

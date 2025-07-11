@@ -10,6 +10,8 @@ import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
+import jredfox.mce.Transformer;
+
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
  * @author jredfox
@@ -102,7 +104,7 @@ public class MCEObj {
 		{
 			boolean last = (mi++ + 1) == size;
 			List<MCEField> cache = new ArrayList(5);
-			for(int i=len; i >= 0; i--) 
+			for(int i=len; i >= 0; i--)
 			{
 				MCEField c = cf.get(i);
 				if(c.accept(cn, m))
@@ -111,11 +113,28 @@ public class MCEObj {
 					c.clear();
 			}
 			
-			for(MCEField c : cache)
+			if(Transformer.label)
 			{
-				c.apply();
-				if(last)
-					c.clear();
+				for(MCEField c : cache)
+				{
+					c.apply();
+				}
+				
+				for(MCEField c : cache)
+				{
+					c.applyLabel();
+					if(last)
+						c.clear();
+				}
+			}
+			else
+			{
+				for(MCEField c : cache)
+				{
+					c.apply();
+					if(last)
+						c.clear();
+				}
 			}
 		}
 	}

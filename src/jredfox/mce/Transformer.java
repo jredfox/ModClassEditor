@@ -19,11 +19,13 @@ public class Transformer implements IClassTransformer {
 	public boolean init;
 	public static boolean recomputeFrames;
 	public static boolean generateFieldNames;
+	public static boolean label;
 	public static boolean gc;
 	public static boolean dump;
 	public static boolean dumpOrg;
 	public static boolean batchLoad;
 	public static MCEGen gen;
+
 	public Map<String, String> arr = new ConcurrentHashMap();
 	
 	public Transformer()
@@ -75,6 +77,7 @@ public class Transformer implements IClassTransformer {
 		
 		this.recomputeFrames = JSONUtils.getorGenBoolean(ojson, "Recompute Frames", true);
 		this.generateFieldNames = JSONUtils.getorGenBoolean(ojson, "Generate Field Names", false);
+		this.label = JSONUtils.getorGenBoolean(ojson, "Generate Labels", true);
 		this.gc = JSONUtils.getorGenBoolean(ojson, "GC MCEField Optimizations", true);
 		this.dump = JSONUtils.getorGenBoolean(ojson,"ASM Dump", false) || Boolean.parseBoolean(System.getProperty("asm.dump", "false"));
 		this.dumpOrg = JSONUtils.getorGenBoolean(ojson,"ASM Dump Original", false);

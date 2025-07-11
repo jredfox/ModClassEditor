@@ -6,6 +6,7 @@ import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.InsnList;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
@@ -197,23 +198,48 @@ public class MCEField
 		
 	}
 	
+	private static boolean disableLabels = false;
+	public void applyLabel()
+	{
+		if(disableLabels)
+			return;
+		
+		InsnList l = new InsnList();
+		LabelNode l0 = new LabelNode();
+		l.add(l0);
+		l.add(new LineNumberNode(0, l0));
+		if(cip.beforeLabel && cip.firstInsn != null)
+		{
+			System.out.println("BEFOOOOOOOORE injecting Label:" + cip.firstInsn + " " + cip.lastInsn);
+			this.cmn.instructions.insertBefore(this.cip.firstInsn, l);
+		}
+		if(cip.afterLabel && cip.lastInsn != null)
+			this.cmn.instructions.insert(this.cip.lastInsn, l);
+	}
+
 	public void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 
 	{
+		if(Transformer.label)
+		{
+			cip.firstInsn = list.getFirst();
+			cip.lastInsn = list.getLast();
+		}
+		
 		if(cip.opp == Opperation.AFTER)
 		{
-//			MCEObj.addLabelNode(list);
 			m.instructions.insert(cip.point, list);
 		}
 		else if(cip.typeNormal && cip.point == null)
 		{
-//			MCEObj.insertLabelNode(list);
 			m.instructions.insert(list);
 		}
 		else if(cip.opp == Opperation.BEFORE)
 		{
-//			MCEObj.insertLabelNode(list);
 			m.instructions.insertBefore(cip.point, list);
 		}
+		
+		cip.beforeLabel = cip.firstInsn == null;
+		cip.afterLabel = !cip.beforeLabel;
 	}
 
 	/**

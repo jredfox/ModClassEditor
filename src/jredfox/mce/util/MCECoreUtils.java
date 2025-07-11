@@ -16,6 +16,7 @@ import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.FrameNode;
 import org.objectweb.asm.tree.IincInsnNode;
 import org.objectweb.asm.tree.InnerClassNode;
 import org.objectweb.asm.tree.InsnList;
@@ -214,6 +215,26 @@ public class MCECoreUtils {
 			}
 		}
 		return null;
+	}
+	
+	public static AbstractInsnNode prevSkipFrames(AbstractInsnNode a)
+	{
+		do
+		{
+			a = a.getPrevious();
+		} while (a != null && a instanceof FrameNode);
+		
+		return a;
+	}
+	
+	public static AbstractInsnNode nextSkipFrames(AbstractInsnNode a)
+	{
+		do
+		{
+			a = a.getNext();
+		} while (a != null && a instanceof FrameNode);
+		
+		return a;
 	}
 	
 	public static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 

@@ -99,12 +99,12 @@ public class MCEObj {
 		List<MethodNode> ml = new ArrayList(cn.methods);//TODO work around
 		int size = ml.size();
 		int mi = 0;
-		Map<InsertionPoint, MethodNode> dsc = new HashMap(Transformer.ds ? 10 : 1);
 		
 		for(MethodNode m : ml)
 		{
 			boolean last = (mi++ + 1) == size;
 			List<MCEField> cache = new ArrayList(5);
+			Map<InsertionPoint, MethodNode> dsc = new HashMap(5);
 			for(int i=len; i >= 0; i--)
 			{
 				MCEField c = cf.get(i);

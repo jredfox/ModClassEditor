@@ -219,6 +219,9 @@ public class MCECoreUtils {
 	
 	public static AbstractInsnNode prevSkipFrames(AbstractInsnNode a)
 	{
+		if(a == null)
+			return null;
+		
 		do
 		{
 			a = a.getPrevious();
@@ -229,6 +232,9 @@ public class MCECoreUtils {
 	
 	public static AbstractInsnNode nextSkipFrames(AbstractInsnNode a)
 	{
+		if(a == null)
+			return null;
+		
 		do
 		{
 			a = a.getNext();

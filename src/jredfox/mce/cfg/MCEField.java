@@ -198,22 +198,18 @@ public class MCEField
 		
 	}
 	
-	private static boolean disableLabels = false;
 	public void applyLabel()
 	{
-		if(disableLabels)
-			return;
-		
 		InsnList l = new InsnList();
 		LabelNode l0 = new LabelNode();
 		l.add(l0);
 		l.add(new LineNumberNode(0, l0));
-		if(cip.beforeLabel && cip.firstInsn != null)
-		{
-			System.out.println("BEFOOOOOOOORE injecting Label:" + cip.firstInsn + " " + cip.lastInsn);
+		
+		AbstractInsnNode prev = MCECoreUtils.prevSkipFrames(this.cip.firstInsn);
+		AbstractInsnNode next = MCECoreUtils.nextSkipFrames(this.cip.lastInsn);
+		if(this.cip.labelBefore)
 			this.cmn.instructions.insertBefore(this.cip.firstInsn, l);
-		}
-		if(cip.afterLabel && cip.lastInsn != null)
+		else
 			this.cmn.instructions.insert(this.cip.lastInsn, l);
 	}
 
@@ -237,9 +233,6 @@ public class MCEField
 		{
 			m.instructions.insertBefore(cip.point, list);
 		}
-		
-		cip.beforeLabel = cip.firstInsn == null;
-		cip.afterLabel = !cip.beforeLabel;
 	}
 
 	/**
@@ -252,14 +245,14 @@ public class MCEField
 		{
 			if(in.opp == Opperation.AFTER)
 			{
-				return new CachedInsertionPoint(MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, true);
+				return new CachedInsertionPoint(MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, true, false);
 			}
 			else if(in.opp == Opperation.BEFORE)
 			{
 				if(m.name.equals("<init>"))
-					return new CachedInsertionPoint(MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
+					return new CachedInsertionPoint(MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true, true);
 				else
-					return new CachedInsertionPoint(null, Opperation.BEFORE, true);
+					return new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 			}
 			return null;
 		}
@@ -356,11 +349,11 @@ public class MCEField
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
 		if(in.opp == Opperation.BEFORE && (inject == spot || shiftTo == ShiftTo.EXACT))
 		{
-			return new CachedInsertionPoint(spot, Opperation.BEFORE, false);
+			return new CachedInsertionPoint(spot, Opperation.BEFORE, false, false);
 		}
 		else
 		{
-			return new CachedInsertionPoint(spot, Opperation.AFTER, false);
+			return new CachedInsertionPoint(spot, Opperation.AFTER, false, false);
 		}
 	}
 	

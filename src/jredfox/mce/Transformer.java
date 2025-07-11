@@ -25,7 +25,6 @@ public class Transformer implements IClassTransformer {
 	public static boolean dumpOrg;
 	public static boolean batchLoad;
 	public static MCEGen gen;
-
 	public Map<String, String> arr = new ConcurrentHashMap();
 	
 	public Transformer()

@@ -774,4 +774,58 @@ public class MCECoreUtils {
 		return p instanceof LineNumberNode || p instanceof LabelNode;
 	}
 
+	/**
+	 * Hash Code for all InsnTypes Supported
+	 */
+	public static int hash(InsnTypes type, AbstractInsnNode point) 
+	{
+		if(point == null)
+			return 0;
+		
+		switch(type)
+		{
+			case InsnNode:
+			case Opcode:
+			case JumpInsnNode:
+				return point.getOpcode();
+			case IincInsnNode:
+			{
+				IincInsnNode v = (IincInsnNode)point;
+				return 31 * v.var + v.incr;
+			}
+			case VarInsnNode:
+			{
+				VarInsnNode v = (VarInsnNode)point;
+				return 31 * v.getOpcode() + v.var;
+			}
+			case IntInsnNode:
+			{
+				IntInsnNode v = (IntInsnNode)point;
+				return 31 * v.getOpcode() + v.operand;
+			}
+			case TypeInsnNode:
+				return ((TypeInsnNode)point).desc.hashCode();
+			case LdcInsnNode:
+				return ((LdcInsnNode)point).cst.hashCode();
+			case FieldInsnNode:
+			{
+				FieldInsnNode v = (FieldInsnNode) point;
+				return 31 * v.getOpcode() + (v.name + v.desc + v.owner).hashCode();
+			}
+			case MethodInsnNode:
+			{
+				MethodInsnNode v = (MethodInsnNode) point;
+				return 31 * v.getOpcode() + (v.name + v.desc + v.owner).hashCode();
+			}
+			case LabelNode:
+				return 31 * Opcodes.GOTO;
+			case LineNumberNode:
+				return ((LineNumberNode)point).line;
+
+			default:
+				break;
+		}
+		return 0;
+	}
+
 }

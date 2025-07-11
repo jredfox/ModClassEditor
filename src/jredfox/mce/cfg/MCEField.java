@@ -7,6 +7,7 @@ import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
 import org.objectweb.asm.tree.InsnList;
+import org.objectweb.asm.tree.InsnNode;
 import org.objectweb.asm.tree.LabelNode;
 import org.objectweb.asm.tree.LineNumberNode;
 import org.objectweb.asm.tree.MethodInsnNode;
@@ -138,7 +139,7 @@ public class MCEField
 				return false;
 			
 			this.ccn = cn;
-			this.cmn = m;
+			this.cmn = this.getDynamicSetter(cn, m);
 			this.accepted = true;
 			return true;
 		}
@@ -146,6 +147,27 @@ public class MCEField
 		return false;
 	}
 	
+	private static final String base = "mce_setter_";
+	public MethodNode getDynamicSetter(ClassNode c, MethodNode p_m)
+	{
+		int index = 0;
+		while(MCECoreUtils.getMethodNode(this.ccn, (base + index), "()V") != null)
+			index++;
+		String setName = base + index;
+		MethodNode m = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, setName, "()V", null, null);
+		InsnList l = new InsnList();
+		m.instructions = l;
+		LabelNode l0 = new LabelNode();
+		l.add(l0);
+		l.add(new LineNumberNode(0, l0));
+		l.add(new InsnNode(Opcodes.RETURN));
+		l.add(new LabelNode());
+		m.visitMaxs(0, 0);
+		c.methods.add(m);
+		
+		return null;
+	}
+
 	/**
 	 * Clears the Cached Data from Working on a Method / AnnotationNode
 	 * Calls {@link #gc()} at the end of the method call

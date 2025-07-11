@@ -24,6 +24,7 @@ public class Transformer implements IClassTransformer {
 	public static boolean dump;
 	public static boolean dumpOrg;
 	public static boolean batchLoad;
+	public static boolean ds;
 	public static MCEGen gen;
 	public Map<String, String> arr = new ConcurrentHashMap();
 	
@@ -81,7 +82,8 @@ public class Transformer implements IClassTransformer {
 		this.dump = JSONUtils.getorGenBoolean(ojson,"ASM Dump", false) || Boolean.parseBoolean(System.getProperty("asm.dump", "false"));
 		this.dumpOrg = JSONUtils.getorGenBoolean(ojson,"ASM Dump Original", false);
 		this.batchLoad = JSONUtils.getorGenBoolean(ojson, "Batch Load", true);
-		
+		this.ds = JSONUtils.getorGenBoolean(ojson, "Dynamic Setters", true);
+				
 		//Detect new Config Options
 		if(size != ojson.size())
 			JSONUtils.save(ojson, cfg);

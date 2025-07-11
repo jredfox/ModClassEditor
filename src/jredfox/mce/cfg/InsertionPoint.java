@@ -17,6 +17,7 @@ import org.ralleytn.simple.json.JSONObject;
 import jredfox.mce.tree.MCEIndexLabel;
 import jredfox.mce.tree.MCEOpcode;
 import jredfox.mce.types.InsnTypes;
+import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
 import jredfox.mce.util.OpcodeHelper;
 
@@ -71,6 +72,7 @@ public class InsertionPoint
 	{
 		this.parse(p);
 	}
+	
 	protected void parse(String p) 
 	{
 		p = MCEUtil.safeString(p, "after");
@@ -258,6 +260,38 @@ public class InsertionPoint
 			System.err.println("Error while parsing Injection Point(Insertion Point):" + p);
 			e.printStackTrace();
 		}
+	}
+	
+	@Override
+	public int hashCode()
+	{
+	    int hash = 7;
+	    hash = 31 * hash + this.opp.ordinal();
+	    hash = 31 * hash + this.type.ordinal();
+	    hash = 31 * hash + MCECoreUtils.hash(this.type, this.point);
+	    hash = 31 * hash + this.occurrence;
+	    hash = 31 * hash + this.shift;
+	    hash = 31 * hash + this.shiftTo.ordinal();
+	    return hash;
+	}
+	
+	@Override
+	public boolean equals(Object ot) 
+	{
+		if (this == ot)
+			return true;
+		else if (!(ot instanceof InsertionPoint))
+			return false;
+		InsertionPoint o = (InsertionPoint) ot;
+		if(this.point == null && o.point != null)
+			return false;
+
+		return  this.type == o.type
+				&& MCECoreUtils.equals(this.type, this.point, o.point) 
+				&& this.opp == o.opp
+				&& this.occurrence == o.occurrence 
+				&& this.shift == o.shift 
+				&& this.shiftTo == o.shiftTo;
 	}
 		
 	@Override

@@ -96,7 +96,7 @@ public class MCEObj {
 		List<MCEField> cf = this.fields;
 		int len = cf.size() - 1;
 		
-		List<MethodNode> ml = new ArrayList(cn.methods);//TODO work around
+		List<MethodNode> ml = Transformer.ds ? new ArrayList(cn.methods) : cn.methods;
 		int size = ml.size();
 		int mi = 0;
 		

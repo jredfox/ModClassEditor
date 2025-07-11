@@ -197,10 +197,9 @@ public class MCEField
 		
 	}
 	
-	private static boolean labelDisabled = false;
 	public void applyLabel()
 	{
-		if(cip.firstInsn == null || labelDisabled)
+		if(cip.firstInsn == null)
 			return;
 		
 		InsnList l = new InsnList();
@@ -324,9 +323,10 @@ public class MCEField
 						if(foundShift == shift)
 						{
 							hasFoundShift = true;
+							AbstractInsnNode nxt = MCECoreUtils.nextSkipFrames(spot);
 							//Shift to injecting to after the LineNumberNode for AFTER as it's alot safer but only if it's the next insn
-							if(opp == Opperation.AFTER && spot.getNext() instanceof LineNumberNode)
-								spot = spot.getNext();
+							if(opp == Opperation.AFTER && nxt instanceof LineNumberNode)
+								spot = nxt;
 							break;
 						}
 						foundShift++;

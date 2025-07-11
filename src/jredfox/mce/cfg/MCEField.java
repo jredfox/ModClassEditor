@@ -360,7 +360,7 @@ public class MCEField
 		}
 		else
 		{
-			return new CachedInsertionPoint(spot, Opperation.AFTER, false, (exact && !MCECoreUtils.isLineOrLabel(spot)));
+			return new CachedInsertionPoint(spot, Opperation.AFTER, false, !MCECoreUtils.isLineOrLabel(spot));
 		}
 	}
 	

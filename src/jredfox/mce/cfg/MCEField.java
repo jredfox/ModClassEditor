@@ -1,5 +1,7 @@
 package jredfox.mce.cfg;
 
+import java.util.HashMap;
+
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.AnnotationNode;
@@ -91,6 +93,10 @@ public class MCEField
 	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
 	 */
 	public MethodNode cmn;
+	/**
+	 * The Dynamic Setter Gen Index we are currently on
+	 */
+	private int setterIndex = 0;
 	
 	public MCEField()
 	{
@@ -148,12 +154,16 @@ public class MCEField
 	}
 	
 	private static final String base = "mce_setter_";
+	private HashMap<InsertionPoint, MethodNode> dsc = new HashMap();
 	public MethodNode getDynamicSetter(ClassNode c, MethodNode p_m)
 	{
-		int index = 0;
-		while(MCECoreUtils.getMethodNode(this.ccn, (base + index), "()V") != null)
-			index++;
-		String setName = base + index;
+		MethodNode cachedMN = dsc.get(this.inject);
+		if(cachedMN != null)
+			return cachedMN;
+		
+		while(MCECoreUtils.getMethodNode(this.ccn, (base + this.setterIndex), "()V") != null)
+			this.setterIndex++;
+		String setName = base + this.setterIndex;
 		MethodNode m = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, setName, "()V", null, null);
 		InsnList l = new InsnList();
 		m.instructions = l;
@@ -161,11 +171,16 @@ public class MCEField
 		l.add(l0);
 		l.add(new LineNumberNode(0, l0));
 		l.add(new InsnNode(Opcodes.RETURN));
-		l.add(new LabelNode());
+//		l.add(new LabelNode());
 		m.visitMaxs(0, 0);
+		
+		//Add the method to the class
 		c.methods.add(m);
 		
-		return null;
+		//Add the method to the cache
+		dsc.put(this.inject, m);
+		
+		return m;
 	}
 
 	/**
@@ -183,6 +198,9 @@ public class MCEField
 		this.cfn = null;
 		this.cisArr = false;
 		this.cdt = null;
+		//Dynamic Setter Clear
+		this.setterIndex = 0;
+		this.dsc.clear();
 		if(Transformer.gc)
 			this.gc();
 	}
@@ -221,7 +239,7 @@ public class MCEField
 	
 	public void applyLabel()
 	{
-		if(cip.firstInsn == null)
+		if(cip.firstInsn == null || Transformer.ds)//TODO: fix labels
 			return;
 		
 		InsnList l = new InsnList();
@@ -244,6 +262,15 @@ public class MCEField
 		{
 			cip.firstInsn = list.getFirst();
 			cip.lastInsn = list.getLast();
+		}
+		
+		if(Transformer.ds)
+		{
+			LabelNode l0 = new LabelNode();
+			list.add(l0);
+			list.add(new LineNumberNode(0, l0));
+			m.instructions.insert(MCECoreUtils.getLastReturn(m).getPrevious(), list);
+			return;
 		}
 		
 		if(cip.opp == Opperation.AFTER)

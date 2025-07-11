@@ -206,7 +206,8 @@ public class MCEField
 		InsnList l = new InsnList();
 		LabelNode l0 = new LabelNode();
 		l.add(l0);
-		l.add(new LineNumberNode(0, l0));
+		if(MCECoreUtils.ASM_VERSION < 5)
+			l.add(new LineNumberNode(0, l0));
 		
 		AbstractInsnNode prev = MCECoreUtils.prevSkipFrames(this.cip.firstInsn);
 		AbstractInsnNode next = MCECoreUtils.nextSkipFrames(this.cip.lastInsn);

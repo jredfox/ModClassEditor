@@ -40,7 +40,7 @@ import jredfox.mce.types.InsnTypes;
 
 public class MCECoreUtils {
 	
-	private static int ASM_VERSION = detectASMVersion();
+	public static int ASM_VERSION = detectASMVersion();
 
 	private static int detectASMVersion() 
 	{

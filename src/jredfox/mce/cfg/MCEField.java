@@ -352,15 +352,16 @@ public class MCEField
 		}
 		while(insnIndex != null && !hasFoundShift);
 		
+		boolean exact = shiftTo == ShiftTo.EXACT;
 		//If inject == spot then We never shifted so we want to insertBefore if the opperation was before
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
-		if(in.opp == Opperation.BEFORE && (inject == spot || shiftTo == ShiftTo.EXACT))
+		if(in.opp == Opperation.BEFORE && (inject == spot || exact))
 		{
-			return new CachedInsertionPoint(spot, Opperation.BEFORE, false, false);
+			return new CachedInsertionPoint(spot, Opperation.BEFORE, false, spot instanceof LabelNode);
 		}
 		else
 		{
-			return new CachedInsertionPoint(spot, Opperation.AFTER, false, (shiftTo == ShiftTo.EXACT && !MCECoreUtils.isLineOrLabel(spot)));
+			return new CachedInsertionPoint(spot, Opperation.AFTER, false, (exact && !MCECoreUtils.isLineOrLabel(spot)));
 		}
 	}
 	

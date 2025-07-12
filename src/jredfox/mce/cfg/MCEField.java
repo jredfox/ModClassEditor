@@ -173,7 +173,7 @@ public class MCEField
 		if(cachedMN != null)
 		{
 			this.ocmn = this.cmn;
-			this.ocip = cip;
+			this.ocip = this.cip;
 			this.cmn = cachedMN;
 			this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 			return cachedMN;
@@ -206,7 +206,7 @@ public class MCEField
 		
 		//Cache MethodNode / Old CachedInjectionPoint
 		this.ocmn = this.cmn;
-		this.ocip = cip;
+		this.ocip = this.cip;
 		//Re-Direct MethodNode
 		this.cmn = m;
 		//Re-Direct the CachedInsertionPoint
@@ -277,7 +277,7 @@ public class MCEField
 
 	public void applyLabel(MethodNode m, CachedInsertionPoint cip)
 	{
-		if(cip.firstInsn == null)
+		if(cip == null || cip.firstInsn == null)
 			return;
 		
 		InsnList l = new InsnList();

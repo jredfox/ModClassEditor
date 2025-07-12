@@ -98,6 +98,15 @@ public class MCEField
 	 * The Reference to the MCEObj's Dynamic Setter MethodNode Cache when {@link MCEObj#configure(ClassNode)} is running
 	 */
 	public Map<InsertionPoint, MethodNode> dsMap;
+	/**
+	 * The cached Insertion Point of the Invokation Hook of the Dynamic Setter
+	 */
+	public CachedInsertionPoint ocip;
+	/**
+	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
+	 */
+	public MethodNode ocmn;
+
 	
 	public MCEField()
 	{
@@ -163,6 +172,8 @@ public class MCEField
 		MethodNode cachedMN = dsc.get(this.inject);
 		if(cachedMN != null)
 		{
+			this.ocmn = this.cmn;
+			this.ocip = cip;
 			this.cmn = cachedMN;
 			this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 			return cachedMN;
@@ -193,6 +204,9 @@ public class MCEField
 		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.owner, setName, "()V"));
 		this.inject(org, list, this.cip);
 		
+		//Cache MethodNode / Old CachedInjectionPoint
+		this.ocmn = this.cmn;
+		this.ocip = cip;
 		//Re-Direct MethodNode
 		this.cmn = m;
 		//Re-Direct the CachedInsertionPoint
@@ -217,6 +231,8 @@ public class MCEField
 		this.cisArr = false;
 		this.cdt = null;
 		this.dsMap = null;
+		this.ocmn = null;
+		this.ocip = null;
 		if(Transformer.gc)
 			this.gc();
 	}
@@ -234,7 +250,7 @@ public class MCEField
 		if(this.cisArr)
 			return;
 		
-		System.out.println("Applying:" + this.ccn + " " + this.cmn + " " + this.cip);
+		System.out.println("Applying:" + cn + " " + m + " " + p);
 		FieldNode fn = this.cfn;
 		DataType type = this.cdt;
 		
@@ -255,6 +271,12 @@ public class MCEField
 	
 	public void applyLabel()
 	{
+		this.applyLabel(this.ocmn, this.ocip);
+		this.applyLabel(this.cmn,  this.cip);
+	}
+
+	public void applyLabel(MethodNode m, CachedInsertionPoint cip)
+	{
 		if(cip.firstInsn == null)
 			return;
 		
@@ -264,12 +286,12 @@ public class MCEField
 		if(MCECoreUtils.ASM_VERSION < 5)
 			l.add(new LineNumberNode(0, l0));
 		
-		AbstractInsnNode prev = MCECoreUtils.prevSkipFrames(this.cip.firstInsn);
-		AbstractInsnNode next = MCECoreUtils.nextSkipFrames(this.cip.lastInsn);
-		if(this.cip.labelBefore)
-			this.cmn.instructions.insertBefore(this.cip.firstInsn, l);
+		AbstractInsnNode prev = MCECoreUtils.prevSkipFrames(cip.firstInsn);
+		AbstractInsnNode next = MCECoreUtils.nextSkipFrames(cip.lastInsn);
+		if(cip.labelBefore)
+			m.instructions.insertBefore(cip.firstInsn, l);
 		else
-			this.cmn.instructions.insert(this.cip.lastInsn, l);
+			m.instructions.insert(cip.lastInsn, l);
 	}
 
 	public void inject(MethodNode m, InsnList list, CachedInsertionPoint cip) 

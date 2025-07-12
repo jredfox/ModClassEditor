@@ -163,6 +163,7 @@ public class MCEField
 		MethodNode cachedMN = dsc.get(this.inject);
 		if(cachedMN != null)
 		{
+			this.cmn = cachedMN;
 			this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 			return cachedMN;
 		}
@@ -192,6 +193,8 @@ public class MCEField
 		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.owner, setName, "()V"));
 		this.inject(org, list, this.cip);
 		
+		//Re-Direct MethodNode
+		this.cmn = m;
 		//Re-Direct the CachedInsertionPoint
 		this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 
@@ -252,7 +255,7 @@ public class MCEField
 	
 	public void applyLabel()
 	{
-		if(cip.firstInsn == null || Transformer.ds)//TODO: fix labels
+		if(cip.firstInsn == null)
 			return;
 		
 		InsnList l = new InsnList();

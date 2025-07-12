@@ -94,6 +94,10 @@ public class MCEField
 	 * The cached MethodNode that comes from {@link #accept(MethodNode)}
 	 */
 	public MethodNode cmn;
+	/**
+	 * The Reference to the MCEObj's Dynamic Setter MethodNode Cache when {@link MCEObj#configure(ClassNode)} is running
+	 */
+	public Map<InsertionPoint, MethodNode> dsMap;
 	
 	public MCEField()
 	{
@@ -142,7 +146,8 @@ public class MCEField
 				return false;
 			
 			this.ccn = cn;
-			this.cmn = this.getDynamicSetter(cn, dsc, m);
+			this.cmn = m;
+			this.dsMap = dsc;
 			this.accepted = true;
 			return true;
 		}
@@ -157,7 +162,10 @@ public class MCEField
 			return org;
 		MethodNode cachedMN = dsc.get(this.inject);
 		if(cachedMN != null)
+		{
+			this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
 			return cachedMN;
+		}
 		
 		int size = dsc.size();
 		while(MCECoreUtils.getMethodNode(c, (base + size), "()V") != null)
@@ -165,12 +173,12 @@ public class MCEField
 		String setName = base + size;
 		MethodNode m = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, setName, "()V", null, null);
 		InsnList l = new InsnList();
-		m.instructions = l;
 		LabelNode l0 = new LabelNode();
 		l.add(l0);
 		l.add(new LineNumberNode(0, l0));
 		l.add(new InsnNode(Opcodes.RETURN));
 		l.add(new LabelNode());
+		m.instructions = l;
 		m.visitMaxs(0, 0);
 		
 		//Add the method to the class
@@ -179,6 +187,14 @@ public class MCEField
 		//Add the method to the cache
 		dsc.put(this.inject, m);
 		
+		//Hook Dynamic Setter
+		InsnList list = new InsnList();
+		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.owner, setName, "()V"));
+		this.inject(org, list, this.cip);
+		
+		//Re-Direct the CachedInsertionPoint
+		this.cip = new CachedInsertionPoint(null, Opperation.BEFORE, true, true);
+
 		return m;
 	}
 
@@ -197,6 +213,7 @@ public class MCEField
 		this.cfn = null;
 		this.cisArr = false;
 		this.cdt = null;
+		this.dsMap = null;
 		if(Transformer.gc)
 			this.gc();
 	}
@@ -206,7 +223,7 @@ public class MCEField
 		if(!this.accepted)
 			return;
 		
-		this.apply(this.ccn, this.cmn, this.cip);
+		this.apply(this.ccn, this.getDynamicSetter(this.ccn, this.dsMap, this.cmn), this.cip);
 	}
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
@@ -258,15 +275,6 @@ public class MCEField
 		{
 			cip.firstInsn = list.getFirst();
 			cip.lastInsn = list.getLast();
-		}
-		
-		if(Transformer.ds)
-		{
-			LabelNode l0 = new LabelNode();
-			list.add(l0);
-			list.add(new LineNumberNode(0, l0));
-			m.instructions.insert(MCECoreUtils.getLastReturn(m).getPrevious(), list);
-			return;
 		}
 		
 		if(cip.opp == Opperation.AFTER)

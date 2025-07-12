@@ -68,6 +68,11 @@ public class Test {
 		
 	}
 	
+	public static void amethod()
+	{
+		
+	}
+	
 	private int o_id = new Integer(200);
 	private short o_id_s = 201;
 	private byte o_id_b = (byte) 202;

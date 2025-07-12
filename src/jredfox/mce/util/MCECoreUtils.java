@@ -140,6 +140,8 @@ public class MCECoreUtils {
 		for(int i=arr.length-1;i>=0;i--)
 		{
 			AbstractInsnNode ab = arr[i];
+			if(ab == null)
+				continue;
 			if(!found && isReturnOpcode(ab.getOpcode()))
 				found = true;
 			
@@ -160,6 +162,8 @@ public class MCECoreUtils {
 		for(int i=arr.length-1;i>=0;i--)
 		{
 			AbstractInsnNode ab = arr[i];
+			if(ab == null)
+				continue;
 			if(isReturnOpcode(ab.getOpcode()))
 				return ab;
 		}

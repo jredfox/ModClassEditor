@@ -1,9 +1,16 @@
+TODONOW:
+- Dynamic Setter Fix Method Number Inversion
+- Investigate why Inversion Happens
+
 TODO 2:
-- Support Injection Points with Actual ASM injection points for before or after them including Line Numbers or RETURN
 - Support Object Field Editing Assuming they have the Instance of the Object
+- Support Editing another Classs Fields assuming both type and "class or owner" are non null
+- AT all classes that are not on the list but are in an MCEField setter that's setting a custom class's fields
 - Support Editing Static Arrays for opperations replace, append, and grow
-- Dynamic Setter methods for before / after and when enabled per custom injection point
-- Investigate proper solution for fields whose values need to be edited inside another class that is not where the field is loaded including
+- MCEGen gen array output for x limit of indexes alloud using Object and then a dynamic instanceof check
+- Wildcards support '|' for or and '!' for not
+- Variables with incremental value in Main JSON that can be used in either value or values tag. This is so we can just say "@ID" instead of "0" then "1" then "2" because id will say it is 0 with increment of 1
+- Index Opperations for both array "index" and ASM injection point "occurance" and "shift" and "index" for FindAndReplace examples: "0-(end - 1)", "(end+1)", "(start+5)-(end*start+3)" opperations supports +, -, *, % and will go from left to right with the index base being defined by the starting number. Variable support included?
 
 TODO 3:
 - Fields
@@ -13,6 +20,72 @@ TODO 3:
 - Change Params of method instructions
 - MCWriter 2 (Backported and or re-written version of MCWriter from EviLNotchLib)
 - Support Static Arrays 2d - 12d
+
+ChangeLog 0.8.0:
+- Added Dynamic Setters to prevent exceeding bytecode limit of 65535 bytes per method
+- Added Config Option to Disable Dynamic Setter Methods and revert to pure injections instead of wrappers(Dynamic Setters)
+- Fixed Possible NullPointerExceptions in MCECoreUtils#getLastReturn as ASM 4 seems to love to put null indexes into InsnList#toArray
+- Fixed MCEGen possibly exceeding the bytecode limit of 65535 bytes per method
+- Fixed MCEGen not using labels for each line of code for MCEGen#capValue & MCEGen#saveChanges
+
+ChangeLog 0.7.2:
+- Fixed Injection Point when opperation was 'AFTER' shiftTo was 'LABEL' and next insn was a FrameNode and after was LineNumberNode
+- Fixed Injection Point Improperly shifting to LineNumberNode when opperation was 'AFTER' shiftTo was 'LABEL' and the InsnTypes was not equal to LabelNode. "after:label:21" was ok but "OPCODE BIPUSH" wasn't when shiftTo was 'LABEL'
+- Small Cleanup in MCEField#capture
+
+ChangeLog 0.7.1
+- Fixed Injecting Code Before LineNumberNode when shiftTo was 'LABEL' and Opperation was 'AFTER'. It's alot more safer and expected to inject after LineNumberNode
+- Fixed Label Injection Mutation Issue
+- Fixed Label Injection for insertion of before / after logic
+- Fixed Java's JIT Not optimizing Code while setting fields due to no LabelNode
+- Added Config Option to disable Label Injection Either for self debug on your ModClassEditor.JSON or you run into a bug. If it's a bug please report to github.com/jredfox/ModClassEditor/issues
+
+ChangeLog 0.7.0:
+- Refactored & Cleaned Codebase
+- Fixed Mutation Issue with ASM Injection Points but not Label Indexes we have disabled label insertion for now again
+- Fixed Possible NullPointerException With Opcode ASM Injection Points
+- Optimized Main Configure Loop
+- Optimized Core Utilities toByteArray to check only the cached boolean for asm.dump
+- Added Support for IincInsnNode on ASM Injection Points
+- Added Config Option ASM Dump default is false
+- Added Config Option ASM Dump Original default is false
+- Added Config Option Batch Load default is true
+
+Known Bugs 0.6.0:
+- Mutation Caused by reading the same ASM Injection points as we are writing to will directly interfere with ASM Injection Point & Label Detection
+For example if you want the point of "IntInsnNode, BIPUSH, 128" And your occuranse is set to 1 if a previous injection from the mod generates that your index will now be incorrect
+- Labels Insertion on MCE has been disabled this effects JIT(Java's Just In Time Compiler) Optimizations. This is to allow label indexing to work for now :(
+
+ChangeLog 0.6.0:
+- Added ASM Injection Points [Opcode, InsnNode, IntInsnNode, VarInsnNode, JumpInsnNode, TypeInsnNode, LdcInsnNode, FieldInsnNode, MethodInsnNode, LabelNode]
+- Added New Optional JSONObject Injection Point format with prefix name of either "insert" or "inject". 
+- "point" is the injection(insertion) Point. Prefixed with opperation of 'before' or 'after'. Then it's either Label:<Int> or ASM injection Point.
+- "occurance" The Indexed Occurance of the point. How many times does this match starting at 0 starting before we know it's the actual point. For Example IntInsnNode BIPUSH 60 may happen multiple times in one method
+- "shift" The amount of Instructions to shift to backwards(before) or forwards(after). if "shiftTo" is LINE and "shift" value is 1 then we shift two times as it's an index based number;
+- "shiftTo" The Type of Instructions we are shifting twords. Values 'LINE' = LineNumberNode, 'LABEL' = LabelNode and 'EXACT' = (Exact Amount of actual Instructions) to shift twords.. let's say "shiftTo" is LINE and "shift" is 0 and the opperation is before. We will shift backwards to the first LineNumberNode after the first match of the point has been found
+Warning EXACT will oftent result in crashes if the END USER doesn't know what they are doing or understand safe places to inject code into. Most of the time it's after an method invocation and the next instruction is a label node or right after a LineNumberNode
+
+- Example JSON
+			"insert":
+			{
+				"point": "before, label:33",
+				"occurrence": "0",
+				"shift": "0",
+				"shiftTo": "LINE"
+			}
+			"inject":
+			{
+				"point": "AFTER:MethodInsn, INVOKEVIRTUAL, \"java/io/PrintStream\", \"println\", \"(I)V\", false",
+				"occurrence": "0",
+				"shift": "1",
+				"shiftTo": "EXACT"
+			}
+
+ChangeLog 0.5.2:
+- Fixed inject opperation "before" not injecting LineNumberNode in the correct order
+- Fixed inject opperation "before" with Constructors
+- Fixed finding only one method when the descriptor had wild cards and the method didn't
+- Added looser parsing for "name, desc, inject, method, type" parsing from JSON in case they had whitespaces by accident. Can't be done with values though
 
 ChangeLog 0.5.1:
 - Fixed Mod Throwing NumberFormatException when a number was parsed that wasn't a number it now quietly returns 0

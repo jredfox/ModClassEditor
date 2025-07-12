@@ -337,13 +337,8 @@ public class MCECoreUtils {
 		return a.var == b.var && a.incr == b.incr;
 	}
 	
-	private static boolean LABEL_DISABLED = true;
-	
 	public static void addLabelNode(InsnList list)
 	{
-		if(LABEL_DISABLED)
-			return;
-		
 		LabelNode l1 = new LabelNode();
 		list.add(l1);
 		if(ASM_VERSION < 5)
@@ -352,9 +347,6 @@ public class MCECoreUtils {
 	
 	public static void insertLabelNode(InsnList list)
 	{
-		if(LABEL_DISABLED)
-			return;
-		
 		LabelNode l1 = new LabelNode();
 		if(ASM_VERSION < 5)
 			list.insert(new LineNumberNode(0, l1));//Force Labels to be created so JIT can do it's Job and optimize code
@@ -363,9 +355,6 @@ public class MCECoreUtils {
 	
 	public static void insertLabelNode(InsnList list, AbstractInsnNode spot)
 	{
-		if(LABEL_DISABLED)
-			return;
-		
 		InsnList l = new InsnList();
 		LabelNode label = new LabelNode();
 		l.add(label);

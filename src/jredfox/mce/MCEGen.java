@@ -62,12 +62,11 @@ public class MCEGen {
 		
 		synchronized (this)
 		{
-			MethodNode clinit = MCECoreUtils.getMethodNode(classNode, "<clinit>", "()V");
 			JSONArray fields = new JSONArray();
 			root.put(actualName, fields);
 			
-			AbstractInsnNode spot = MCECoreUtils.getLastReturn(clinit);
-			
+			MethodNode mcgen = getMCEGen(actualName.replace('.', '/'), classNode);
+			AbstractInsnNode spot = MCECoreUtils.getLastReturn(mcgen);
 			for (int i = 0; i <= 1; i++) 
 			{
 				for (FieldNode fn : classNode.fields) 
@@ -92,22 +91,52 @@ public class MCEGen {
 						li.add(new LdcInsnNode(fn.name));
 						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fn.name, fn.desc));
 						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + fn.desc + ")V"));
-						clinit.instructions.insertBefore(spot, li);
+						MCECoreUtils.addLabelNode(li);
+						mcgen.instructions.insertBefore(spot, li);
 					}
 				}
 			}
 			
 			//Save Changes in Mod's <clinit> after all fields have their values generated
-			clinit.instructions.insertBefore(spot, new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
-			
-			//Add LabelNode
-			MCECoreUtils.insertLabelNode(clinit.instructions, spot.getPrevious());
+			InsnList sl = new InsnList();
+			sl.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+			MCECoreUtils.addLabelNode(sl);
+			mcgen.instructions.insertBefore(spot, sl);
 			
 			//Save Progres
 			this.save();
 		}
 	}
 	
+	private static final String base = "mce_gen_";
+	public MethodNode getMCEGen(String actualName, ClassNode c) 
+	{
+		int index = 0;
+		while(MCECoreUtils.getMethodNode(c, (base + index), "()V") != null)
+			index++;
+		String genName = base + index;
+		MethodNode m = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, genName, "()V", null, null);
+		InsnList l = new InsnList();
+		LabelNode l0 = new LabelNode();
+		l.add(l0);
+		l.add(new LineNumberNode(0, l0));
+		l.add(new InsnNode(Opcodes.RETURN));
+		l.add(new LabelNode());
+		m.instructions = l;
+		m.visitMaxs(0, 0);
+		
+		//Add the method to the class
+		c.methods.add(m);
+		
+		//Hook Method to Invoke MCEGen
+		MethodNode clinit = MCECoreUtils.getMethodNode(c, "<clinit>", "()V");
+		InsnList list = new InsnList();
+		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, actualName, genName, "()V"));
+		clinit.instructions.insertBefore(MCECoreUtils.getLastReturn(clinit), list);
+		
+		return m;
+	}
+
 	public void save()
 	{
 		JSONUtils.save(this.root, this.file_gen);

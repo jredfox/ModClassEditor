@@ -277,7 +277,7 @@ public class MCEField
 		if(Transformer.label)
 		{
 			cip.firstInsn = list.getFirst();
-			cip.lastInsn = list.getLast();
+			cip.lastInsn =  list.getLast();
 		}
 		
 		if(cip.opp == Opperation.AFTER)

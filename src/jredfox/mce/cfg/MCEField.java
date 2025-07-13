@@ -97,7 +97,7 @@ public class MCEField
 	/**
 	 * The Reference to the MCEObj's Dynamic Setter MethodNode Cache when {@link MCEObj#configure(ClassNode)} is running
 	 */
-	public Map<InsertionPoint, MethodNode> dsMap;
+	public Map<CachedInsertionPoint, MethodNode> dsMap;
 	/**
 	 * The cached Insertion Point of the Invokation Hook of the Dynamic Setter
 	 */
@@ -136,7 +136,7 @@ public class MCEField
 		System.out.println("DEBUG:" + this.owner + " " + this.name + " " + this.method + " " + this.inject);
 	}
 	
-	public boolean accept(ClassNode cn, Map<InsertionPoint, MethodNode> dsc, MethodNode m)
+	public boolean accept(ClassNode cn, Map<CachedInsertionPoint, MethodNode> dsc, MethodNode m)
 	{
 		if(this.err || this.accepted && this.onlyOne)
 			return false;
@@ -168,11 +168,12 @@ public class MCEField
 	private static final String base = "mce_setter_";
 	public void genDynamicSetter()
 	{
-		Map<InsertionPoint, MethodNode> dsm = this.dsMap;
-		MethodNode cachedMN = dsm.get(this.inject);
+		Map<CachedInsertionPoint, MethodNode> dsm = this.dsMap;
+		boolean nr = this.ocip == null;
+		MethodNode cachedMN = dsm.get(nr ? (this.cip) : (this.ocip));
 		if(cachedMN != null)
 		{
-			if(this.ocip == null)
+			if(nr)
 			{
 				this.ocmn = this.cmn;
 				this.ocip = this.cip;
@@ -201,7 +202,7 @@ public class MCEField
 		c.methods.add(m);
 		
 		//Add the method to the cache
-		dsm.put(this.inject, m);
+		dsm.put(this.cip, m);
 		
 		//Hook Dynamic Setter
 		InsnList list = new InsnList();

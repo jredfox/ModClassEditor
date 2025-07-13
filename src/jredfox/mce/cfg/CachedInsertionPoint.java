@@ -6,6 +6,7 @@ public class CachedInsertionPoint {
 	
 	public Opperation opp;
 	public AbstractInsnNode point;
+	
 	public boolean labelBefore;
 	public AbstractInsnNode firstInsn;
 	public AbstractInsnNode lastInsn;
@@ -21,6 +22,26 @@ public class CachedInsertionPoint {
 	public String toString()
 	{
 		return this.opp + " " + this.point + " labelBefore:" + this.labelBefore;
+	}
+	
+	@Override
+	public int hashCode()
+	{
+	    int hash = 7;
+	    hash = 31 * hash + this.opp.ordinal();
+	    hash = 31 * hash + (this.point == null ? 0 : this.point.hashCode());
+	    return hash;
+	}
+	
+	@Override
+	public boolean equals(Object obj)
+	{
+		if(this == obj)
+			return true;
+		else if(!(obj instanceof CachedInsertionPoint))
+			return false;
+		CachedInsertionPoint o = (CachedInsertionPoint) obj;
+		return this.opp == o.opp && this.point == o.point;
 	}
 
 }

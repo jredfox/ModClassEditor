@@ -106,7 +106,7 @@ public class MCEObj {
 		{
 			boolean last = (mi++ + 1) == size;
 			List<MCEField> cache = new ArrayList(5);
-			Map<InsertionPoint, MethodNode> dsc = new HashMap(5);
+			Map<CachedInsertionPoint, MethodNode> dsc = new HashMap(5);
 			for(int i=0; i < cfSize; i++)
 			{
 				MCEField c = cf.get(i);

@@ -131,11 +131,6 @@ public class MCEObj {
 					MCEField c = cache.get(i);
 					if(c.ocip == null && c.cip.opp.isAfter())
 						c.genDynamicSetter();
-				}
-				
-				for(int i=cSize - 1; i >= 0; i--)
-				{
-					MCEField c = cache.get(i);
 					c.apply();
 				}
 			}

@@ -561,6 +561,7 @@ public class MCECoreUtils {
 						continue;
 					valInsn = getIntInsn(v);
 				}
+				break;
 				
 				default:
 					break;

@@ -94,7 +94,7 @@ public class MCEObj {
 	{
 		//Avoid GETFIELD OPCODES
 		List<MCEField> cf = this.fields;
-		int len = cf.size() - 1;
+		int cfSize = cf.size();
 		
 		List<MethodNode> ml = Transformer.ds ? new ArrayList(cn.methods) : cn.methods;
 		int size = ml.size();
@@ -105,7 +105,7 @@ public class MCEObj {
 			boolean last = (mi++ + 1) == size;
 			List<MCEField> cache = new ArrayList(5);
 			Map<InsertionPoint, MethodNode> dsc = new HashMap(5);
-			for(int i=len; i >= 0; i--)
+			for(int i=0; i < cfSize; i++)
 			{
 				MCEField c = cf.get(i);
 				if(c.accept(cn, dsc, m))
@@ -118,7 +118,15 @@ public class MCEObj {
 			{
 				for(MCEField c : cache)
 				{
-					c.apply();
+					if(c.cip.opp == Opperation.BEFORE)
+						c.apply();
+				}
+				
+				for(int i=cache.size() - 1; i >= 0; i--)
+				{
+					MCEField c = cache.get(i);
+					if(c.cip.opp.isAfter())
+						c.apply();
 				}
 				
 				for(MCEField c : cache)
@@ -132,7 +140,15 @@ public class MCEObj {
 			{
 				for(MCEField c : cache)
 				{
-					c.apply();
+					if(c.cip.opp == Opperation.BEFORE)
+						c.apply();
+				}
+				
+				for(int i=cache.size() - 1; i >= 0; i--)
+				{
+					MCEField c = cache.get(i);
+					if(c.cip.opp.isAfter())
+						c.apply();
 					if(last)
 						c.clear();
 				}

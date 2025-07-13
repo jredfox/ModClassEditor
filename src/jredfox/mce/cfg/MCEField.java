@@ -166,7 +166,7 @@ public class MCEField
 	}
 	
 	private static final String base = "mce_setter_";
-	public MethodNode genDynamicSetter()
+	public void genDynamicSetter()
 	{
 		Map<InsertionPoint, MethodNode> dsm = this.dsMap;
 		MethodNode cachedMN = dsm.get(this.inject);
@@ -179,7 +179,7 @@ public class MCEField
 				this.cmn = cachedMN;
 				this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
 			}
-			return cachedMN;
+			return;
 		}
 		
 		int size = dsm.size();
@@ -215,8 +215,6 @@ public class MCEField
 		this.cmn = m;
 		//Re-Direct the CachedInsertionPoint
 		this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
-
-		return m;
 	}
 
 	/**

@@ -68,10 +68,9 @@ public class Test {
 		
 	}
 	
-	public static void amethod()
-	{
-		
-	}
+	public static void mce_gen_0() {}
+	public static void mce_setter_0() {}
+	public static void mce_setter_2() {}
 	
 	private int o_id = new Integer(200);
 	private short o_id_s = 201;

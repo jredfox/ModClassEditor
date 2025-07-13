@@ -115,6 +115,9 @@ public class MCEObj {
 				else if(last)
 					c.clear();
 			}
+			//Optimization for when no MCEFields accept the method
+			if(cache.isEmpty())
+				continue;
 			
 			int cSize = cache.size();
 			for(int i=0; i < cSize; i++)

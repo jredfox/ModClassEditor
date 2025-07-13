@@ -154,6 +154,7 @@ public class MCEField
 			if(this.cip == null)
 				return false;
 			
+			this.ocip = null;
 			this.ccn = cn;
 			this.cmn = m;
 			this.dsMap = dsc;
@@ -165,21 +166,24 @@ public class MCEField
 	}
 	
 	private static final String base = "mce_setter_";
-	public MethodNode getDynamicSetter(ClassNode c, Map<InsertionPoint, MethodNode> dsc, MethodNode org)
+	public MethodNode genDynamicSetter()
 	{
-		if(!Transformer.ds)
-			return org;
-		MethodNode cachedMN = dsc.get(this.inject);
+		Map<InsertionPoint, MethodNode> dsm = this.dsMap;
+		MethodNode cachedMN = dsm.get(this.inject);
 		if(cachedMN != null)
 		{
-			this.ocmn = this.cmn;
-			this.ocip = this.cip;
-			this.cmn = cachedMN;
-			this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
+			if(this.ocip == null)
+			{
+				this.ocmn = this.cmn;
+				this.ocip = this.cip;
+				this.cmn = cachedMN;
+				this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
+			}
 			return cachedMN;
 		}
 		
-		int size = dsc.size();
+		int size = dsm.size();
+		ClassNode c = this.ccn;
 		while(MCECoreUtils.getMethodNode(c, (base + size), "()V") != null)
 			size++;
 		String setName = base + size;
@@ -197,12 +201,12 @@ public class MCEField
 		c.methods.add(m);
 		
 		//Add the method to the cache
-		dsc.put(this.inject, m);
+		dsm.put(this.inject, m);
 		
 		//Hook Dynamic Setter
 		InsnList list = new InsnList();
 		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.owner, setName, "()V"));
-		this.inject(org, list, this.cip);
+		this.inject(this.cmn, list, this.cip);
 		
 		//Cache MethodNode / Old CachedInjectionPoint
 		this.ocmn = this.cmn;
@@ -242,7 +246,7 @@ public class MCEField
 		if(!this.accepted)
 			return;
 		
-		this.apply(this.ccn, this.getDynamicSetter(this.ccn, this.dsMap, this.cmn), this.cip);
+		this.apply(this.ccn, this.cmn, this.cip);
 	}
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)

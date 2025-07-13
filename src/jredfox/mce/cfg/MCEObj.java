@@ -93,10 +93,12 @@ public class MCEObj {
 	public synchronized void configure(ClassNode cn)
 	{
 		//Avoid GETFIELD OPCODES
+		boolean ds = Transformer.ds;
+		boolean labels = Transformer.label;
 		List<MCEField> cf = this.fields;
 		int cfSize = cf.size();
 		
-		List<MethodNode> ml = Transformer.ds ? new ArrayList(cn.methods) : cn.methods;
+		List<MethodNode> ml = ds ? new ArrayList(cn.methods) : cn.methods;
 		int size = ml.size();
 		int mi = 0;
 		
@@ -114,41 +116,53 @@ public class MCEObj {
 					c.clear();
 			}
 			
-			if(Transformer.label)
+			int cSize = cache.size();
+			if(ds)
 			{
-				for(MCEField c : cache)
+				for(int i=0; i < cSize; i++)
 				{
+					MCEField c = cf.get(i);
 					if(c.cip.opp == Opperation.BEFORE)
-						c.apply();
+						c.genDynamicSetter();
 				}
 				
-				for(int i=cache.size() - 1; i >= 0; i--)
+				for(int i=cSize - 1; i >= 0; i--)
 				{
 					MCEField c = cache.get(i);
-					if(c.cip.opp.isAfter())
-						c.apply();
+					if(c.ocip == null && c.cip.opp.isAfter())
+						c.genDynamicSetter();
 				}
 				
-				for(MCEField c : cache)
+				for(int i=cSize - 1; i >= 0; i--)
 				{
-					c.applyLabel();
-					if(last)
-						c.clear();
+					MCEField c = cache.get(i);
+					c.apply();
 				}
 			}
 			else
 			{
-				for(MCEField c : cache)
+				for(int i=0; i < cSize; i++)
 				{
+					MCEField c = cache.get(i);
 					if(c.cip.opp == Opperation.BEFORE)
 						c.apply();
 				}
 				
-				for(int i=cache.size() - 1; i >= 0; i--)
+				for(int i=cSize - 1; i >= 0; i--)
 				{
 					MCEField c = cache.get(i);
 					if(c.cip.opp.isAfter())
 						c.apply();
+				}
+			}
+			
+			if(labels || last)
+			{
+				for(int i=0; i < cSize; i++)
+				{
+					MCEField c = cache.get(i);
+					if(labels)
+						c.applyLabel();
 					if(last)
 						c.clear();
 				}

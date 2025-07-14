@@ -115,15 +115,15 @@ public class MCEField
 		
 	public MCEField(MCEObj parent, JSONObject json)
 	{
-		this(json.findStringDef(parent.classNameASM, '.', '/', "class", "owner"), json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
+		this(json.findStringDef(parent.classNameASM, '.', '/', "class", "owner"), json.getString("type"), json.getString("name"), json.getAsStringN("value"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
 	}
 		
-	public MCEField(String owner, String name, String value, String type, String method, String desc, InsertionPoint inject)
+	public MCEField(String owner, String type, String name, String value, String method, String desc, InsertionPoint inject)
 	{
 		this.owner = owner;
+		this.type = MCEUtil.safeString(type).trim();
 		this.name = name.trim();
 		this.value = value;
-		this.type = MCEUtil.safeString(type).trim();
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
@@ -133,7 +133,7 @@ public class MCEField
 		this.mt = this.desc.isEmpty();
 		this.onlyOne = !this.wc && !this.wcd;
 		
-		System.out.println("DEBUG:" + this.owner + " " + this.name + " " + this.method + " " + this.inject);
+		System.out.println("DEBUG:" + this.owner + " " + this.type + " " + this.name + " " + this.method + " " + this.inject);
 	}
 	
 	public boolean accept(ClassNode cn, Map<CachedInsertionPoint, MethodNode> dsc, MethodNode m)

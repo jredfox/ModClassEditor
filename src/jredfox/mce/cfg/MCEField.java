@@ -115,7 +115,7 @@ public class MCEField
 		
 	public MCEField(MCEObj parent, JSONObject json)
 	{
-		this(parent.classNameASM, json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
+		this(json.findStringDef(parent.classNameASM, '.', '/', "class", "owner"), json.getString("name"), json.getAsStringN("value"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
 	}
 		
 	public MCEField(String owner, String name, String value, String type, String method, String desc, InsertionPoint inject)

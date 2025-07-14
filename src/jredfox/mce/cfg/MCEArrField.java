@@ -55,7 +55,7 @@ public class MCEArrField extends MCEField
 	
 	public MCEArrField(MCEObj parent, JSONObject json)
 	{
-		this(parent.classNameASM, json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json), json.getAsString("index"), json.getAsString("increment"));
+		this(json.findStringDef(parent.classNameASM, '.', '/', "class", "owner"), json.getString("name"), json.getJSONArray("values"), json.getString("type"), json.getString("method"), json.getString("desc"), new InsertionPoint(json), json.getAsString("index"), json.getAsString("increment"));
 	}
 		
 	public MCEArrField(String owner, String name, List values, String type, String method, String desc, InsertionPoint inject, String index, String increment)

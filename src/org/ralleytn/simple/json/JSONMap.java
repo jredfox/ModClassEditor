@@ -118,6 +118,17 @@ public class JSONMap extends LinkedHashMap<Object, Object>{
 		return null;
 	}
 	
+	public String findStringDef(String def, char oc, char nc, String... keys)
+	{
+		for(String k : keys)
+		{
+			Object o = this.get(k);
+			if(o != null)
+				return o.toString().replace(oc, nc);
+		}
+		return def;
+	}
+	
 	public String getString(Object key)
 	{
 		return (String) this.get(key);

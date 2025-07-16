@@ -9,6 +9,12 @@ public class DataTypeContainer {
 	
 	public DataTypeContainer(String d, boolean desc)
 	{
+		if(d.isEmpty())
+		{
+			this.type = DataType.NULL;
+			return;
+		}
+		
 		boolean arr = d.startsWith("[");
 		if(arr)
 		{
@@ -29,11 +35,17 @@ public class DataTypeContainer {
 		this.type = DataType.NULL;
 	}
 	
-	public DataTypeContainer(DataType t, boolean arr, int dimCount)
+	public DataTypeContainer(DataType t, boolean arr, int dimCount, String desc)
 	{
 		this.type = t;
 		this.isArr = arr;
 		this.arrDim = dimCount;
+		this.desc = desc == null ? this.getDesc() : desc;
+	}
+
+	public DataTypeContainer copy() 
+	{
+		return new DataTypeContainer(this.type, this.isArr, this.arrDim, this.desc);
 	}
 	
 	protected String getDesc() 

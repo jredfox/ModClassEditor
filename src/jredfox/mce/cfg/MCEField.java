@@ -28,6 +28,10 @@ import jredfox.mce.util.WildCardMatcher;
 public class MCEField
 {
 	/**
+	 * The Transformed & Deobfuscated Class Name that is the Owner of the Field that we are injecting into
+	 */
+	public String clazzName;
+	/**
 	 * The Transformed & Deobfuscated Class Name that is the Owner of the Field
 	 */
 	public String owner;
@@ -55,6 +59,10 @@ public class MCEField
 	 * the injection point
 	 */
 	public InsertionPoint inject;
+	/**
+	 * when true we have a custom class that's not matching the current class
+	 */
+	public boolean ownerCustom;
 	/**
 	 * cached method name has a wildcard
 	 */
@@ -116,12 +124,13 @@ public class MCEField
 		
 	public MCEField(MCEObj parent, JSONObject json)
 	{
-		this(json.findStringDef(parent.classNameASM, '.', '/', "class", "owner"), json.getString("type"), json.getString("name"), json.getAsStringN("value"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
+		this(parent.classNameASM, json.findStringDef("", '.', '/', "class", "owner"), json.getString("type"), json.getString("name"), json.getAsStringN("value"), json.getString("method"), json.getString("desc"), new InsertionPoint(json));
 	}
-		
-	public MCEField(String owner, String type, String name, String value, String method, String desc, InsertionPoint inject)
+	
+	public MCEField(String clazzNameASM, String owner, String type, String name, String value, String method, String desc, InsertionPoint inject)
 	{
-		this.owner = owner;
+		this.clazzName = clazzNameASM;
+		this.owner = owner.isEmpty() ? clazzNameASM : owner;
 		this.typec = new DataTypeContainer(MCEUtil.safeString(type).trim(), false);
 		this.name = name.trim();
 		this.value = value;
@@ -129,6 +138,7 @@ public class MCEField
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
 		//cache frequently used booleans
+		this.ownerCustom = !owner.isEmpty();
 		this.wc =  MCEUtil.isWildCard(this.method);
 		this.wcd = MCEUtil.isWildCard(this.desc);
 		this.mt = this.desc.isEmpty();
@@ -207,7 +217,7 @@ public class MCEField
 		
 		//Hook Dynamic Setter
 		InsnList list = new InsnList();
-		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.owner, setName, "()V"));
+		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, this.clazzName, setName, "()V"));
 		this.inject(this.cmn, list, this.cip);
 		
 		//Cache MethodNode / Old CachedInjectionPoint
@@ -455,10 +465,10 @@ public class MCEField
 		this.chkErr = true;
 		
 		//Support editing another classes fields
-		if(this.typec.type != DataType.NULL)
+		if(this.ownerCustom)
 		{
-			this.cdtc = this.typec;
-			return true;
+			this.cdtc = this.typec.copy();
+			return this.isNonNullType(this.cdtc.type);
 		}
 		
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
@@ -466,7 +476,7 @@ public class MCEField
 		//Sanity Checks
 		if(fn == null)
 		{
-			System.err.println("Field not Found:" + this.name + " in: " + c.name);
+			System.err.println("Field not Found:" + this.name + " in: " + this.clazzName);
 			return false;
 		}
 		else if((fn.access & Opcodes.ACC_STATIC) == 0)
@@ -475,19 +485,19 @@ public class MCEField
 			return false;
 		}
 		
-		DataTypeContainer dtc = new DataTypeContainer(fn.desc, true);
-		
-		//disallow unsupported field opperations to prevent runtime crashing
-		if(dtc.type == DataType.NULL)
-		{
-			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + fn.desc + " in:" + c.name);
-			return false;
-		}
-		
-		this.cdtc = dtc;
-		
-		return true;
+		this.cdtc = new DataTypeContainer(fn.desc, true);
+		return this.isNonNullType(this.cdtc.type);
 	}
 	
+	protected boolean isNonNullType(DataType type)
+	{
+		if(this.cdtc.type == DataType.NULL)
+		{
+			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + this.cdtc.desc + " in:" + this.clazzName);
+			return false;
+		}
+		return true;
+	}
+
 	public void gc() {}
 }

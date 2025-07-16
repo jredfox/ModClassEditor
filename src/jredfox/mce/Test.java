@@ -8,6 +8,7 @@ import org.ralleytn.simple.json.JSONParseException;
 
 import jredfox.mce.types.DataType;
 import jredfox.mce.types.DataTypeContainer;
+import net.minecraft.client.Minecraft;
 import net.minecraft.world.World;
 
 public class Test {
@@ -123,7 +124,7 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		DataTypeContainer dtc = new DataTypeContainer("[[boolean", false);
+		DataTypeContainer dtc = new DataTypeContainer("[[boolean", false).copy().copy();
 		System.out.println(dtc.type + " " + dtc.isArr + " " + dtc.arrDim);
 		System.out.println(dtc.desc);
 	}

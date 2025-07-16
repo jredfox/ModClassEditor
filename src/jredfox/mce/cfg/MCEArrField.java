@@ -92,17 +92,17 @@ public class MCEArrField extends MCEField
 	@Override
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
-		if(!this.cisArr)
+		if(!this.cdtc.isArr)
 			return;
 		else if(this.values == null)
 			throw new RuntimeException("MCEArrField#values[] has already been garbage collected! Please Disable \"GC MCEField Optimizations\" in the Config Or Try Enabling \"BatchLoading\"!");
 		
 		System.out.println("Applying:" + cn + " " + m + " " + p);
-		FieldNode fn = this.cfn;
-		DataType type = this.cdt;
+		String desc = this.cdtc.getDesc();
+		DataType type = this.cdtc.type;
 		InsnList list = new InsnList();
 		
-		list.add(new FieldInsnNode(Opcodes.GETSTATIC, this.owner, this.name, fn.desc));//arr
+		list.add(new FieldInsnNode(Opcodes.GETSTATIC, this.owner, this.name, desc));//arr
 		if(this.values.length < 2)
 		{
 			String val = this.values[0];

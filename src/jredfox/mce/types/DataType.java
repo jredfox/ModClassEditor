@@ -153,5 +153,27 @@ public enum DataType {
 		
 		return NULL;
 	}
+	
+	public static DataType getTypeFromDesc(String desc) 
+	{
+		return desc.equals("B") ? BYTE
+				: desc.equals("S") ? SHORT
+						: desc.equals("I") ? INT
+								: desc.equals("J") ? LONG
+										: desc.equals("Ljava/lang/String;") ? STRING
+												: desc.equals("Z") ? BOOLEAN
+														: desc.equals("F") ? FLOAT
+																: desc.equals("D") ? DOUBLE
+																			: desc.equals("C") ? CHAR
+																		: desc.equals("Ljava/lang/Boolean;") ? WRAPPED_BOOLEAN
+																: desc.equals("Ljava/lang/Byte;") ? WRAPPED_BYTE
+															: desc.equals("Ljava/lang/Short;") ? WRAPPED_SHORT
+														: desc.equals("Ljava/lang/Integer;") ? WRAPPED_INT
+												: desc.equals("Ljava/lang/Long;") ? WRAPPED_LONG
+										: desc.equals("Ljava/lang/Float;") ? WRAPPED_FLOAT
+								: desc.equals("Ljava/lang/Double;") ? WRAPPED_DOUBLE
+							: desc.equals("Ljava/lang/Character;") ? WRAPPED_CHAR
+						: NULL;
+	}
 
 }

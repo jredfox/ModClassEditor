@@ -19,6 +19,7 @@ import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.Transformer;
 import jredfox.mce.types.DataType;
+import jredfox.mce.types.DataTypeContainer;
 import jredfox.mce.types.InsnTypes;
 import jredfox.mce.util.MCECoreUtils;
 import jredfox.mce.util.MCEUtil;
@@ -31,6 +32,10 @@ public class MCEField
 	 */
 	public String owner;
 	/**
+	 * the type [String, char, boolean, byte, short, int, long, float, double, Boolean, Character, Byte, Short, Integer, Long, Float, Double]
+	 */
+	public DataTypeContainer typec;
+	/**
 	 * The name of the Field
 	 */
 	public String name;
@@ -38,10 +43,6 @@ public class MCEField
 	 * the value to replace
 	 */
 	public String value;
-	/**
-	 * the type [string, boolean, byte, short, int, long, float, double, Boolean, Byte, Short, Integer, Long, Float, Double]
-	 */
-	public String type;
 	/**
 	 * The method to inject into
 	 */
@@ -121,7 +122,7 @@ public class MCEField
 	public MCEField(String owner, String type, String name, String value, String method, String desc, InsertionPoint inject)
 	{
 		this.owner = owner;
-		this.type = MCEUtil.safeString(type).trim();
+		this.typec = new DataTypeContainer(MCEUtil.safeString(type).trim(), false);
 		this.name = name.trim();
 		this.value = value;
 		this.method = MCEUtil.safeString(method, "<clinit>").trim();
@@ -133,7 +134,7 @@ public class MCEField
 		this.mt = this.desc.isEmpty();
 		this.onlyOne = !this.wc && !this.wcd;
 		
-		System.out.println("DEBUG:" + this.owner + " " + this.type + " " + this.name + " " + this.method + " " + this.inject);
+		System.out.println("DEBUG:" + this.owner + " " + this.typec.type + " " + this.name + " " + this.method + " " + this.inject);
 	}
 	
 	public boolean accept(ClassNode cn, Map<CachedInsertionPoint, MethodNode> dsc, MethodNode m)
@@ -230,9 +231,7 @@ public class MCEField
 		this.cip = null;
 		this.ccn = null;
 		this.cmn = null;
-		this.cfn = null;
-		this.cisArr = false;
-		this.cdt = null;
+		this.cdtc = null;
 		this.dsMap = null;
 		this.ocmn = null;
 		this.ocip = null;
@@ -250,18 +249,18 @@ public class MCEField
 
 	public void apply(ClassNode cn, MethodNode m, CachedInsertionPoint p)
 	{
-		if(this.cisArr)
+		if(this.cdtc.isArr)
 			return;
 		
 		System.out.println("Applying:" + cn + " " + m + " " + p);
-		FieldNode fn = this.cfn;
-		DataType type = this.cdt;
+		DataType type = this.cdtc.type;
+		String desc = this.cdtc.getDesc();
 		
 		InsnList list = new InsnList();
 		list.add(MCECoreUtils.getNumInsn(this.value, type));
 		if(type.isWrapper && this.value != null)
 			list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, type.clazz, "valueOf", type.descValueOf));
-		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, this.owner, this.name, fn.desc));
+		list.add(new FieldInsnNode(Opcodes.PUTSTATIC, this.owner, this.name, desc));
 		
 		//Inject the code
 		this.inject(m, list, p);
@@ -450,12 +449,18 @@ public class MCEField
 		}
 	}
 	
-	protected FieldNode cfn;
-	protected boolean cisArr;
-	protected DataType cdt;
+	protected DataTypeContainer cdtc;
 	public boolean canEdit(ClassNode c)
 	{
 		this.chkErr = true;
+		
+		//Support editing another classes fields
+		if(this.typec.type != DataType.NULL)
+		{
+			this.cdtc = this.typec;
+			return true;
+		}
+		
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
 		
 		//Sanity Checks
@@ -469,22 +474,17 @@ public class MCEField
 			System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + this.name + " in:" + c.name);
 			return false;
 		}
-		this.cfn = fn;
 		
-		String str_type = MCECoreUtils.getType(fn.desc);
-		boolean  isArr = str_type.startsWith("[");
-		DataType type = DataType.getType(isArr ? str_type.replace("[", "") : str_type);
+		DataTypeContainer dtc = new DataTypeContainer(fn.desc, true);
 		
 		//disallow unsupported field opperations to prevent runtime crashing
-		if(type == DataType.NULL)
+		if(dtc.type == DataType.NULL)
 		{
 			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + fn.desc + " in:" + c.name);
 			return false;
 		}
 		
-		//Set Cached Values for re-use
-		this.cisArr = isArr;
-		this.cdt = type;
+		this.cdtc = dtc;
 		
 		return true;
 	}

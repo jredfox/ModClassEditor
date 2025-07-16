@@ -6,7 +6,8 @@ import java.util.Map;
 
 import org.ralleytn.simple.json.JSONParseException;
 
-import jredfox.mce.cfg.InsertionPoint;
+import jredfox.mce.types.DataType;
+import jredfox.mce.types.DataTypeContainer;
 import net.minecraft.world.World;
 
 public class Test {
@@ -122,9 +123,9 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		InsertionPoint p = new InsertionPoint("after");
-		InsertionPoint p2 = new InsertionPoint("after");
-		System.out.println(p.equals(p2));
+		DataTypeContainer dtc = new DataTypeContainer("[[boolean", false);
+		System.out.println(dtc.type + " " + dtc.isArr + " " + dtc.arrDim);
+		System.out.println(dtc.getDesc());
 	}
 	
     public static int getCapacity(Map map) {

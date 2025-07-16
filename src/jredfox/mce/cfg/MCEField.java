@@ -254,7 +254,7 @@ public class MCEField
 		
 		System.out.println("Applying:" + cn + " " + m + " " + p);
 		DataType type = this.cdtc.type;
-		String desc = this.cdtc.getDesc();
+		String desc = this.cdtc.desc;
 		
 		InsnList list = new InsnList();
 		list.add(MCECoreUtils.getNumInsn(this.value, type));

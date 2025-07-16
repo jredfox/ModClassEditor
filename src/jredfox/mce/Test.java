@@ -125,7 +125,7 @@ public class Test {
 	{
 		DataTypeContainer dtc = new DataTypeContainer("[[boolean", false);
 		System.out.println(dtc.type + " " + dtc.isArr + " " + dtc.arrDim);
-		System.out.println(dtc.getDesc());
+		System.out.println(dtc.desc);
 	}
 	
     public static int getCapacity(Map map) {

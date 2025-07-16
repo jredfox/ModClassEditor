@@ -126,7 +126,7 @@ public enum DataType {
 	/**
 	 * converts string to Type
 	 */
-	public static DataType getType(String type) 
+	public static DataType get(String type) 
 	{
 		boolean isWrapper = Character.isUpperCase(type.charAt(0));
 		type = type.toLowerCase();
@@ -154,7 +154,7 @@ public enum DataType {
 		return NULL;
 	}
 	
-	public static DataType getTypeFromDesc(String desc) 
+	public static DataType fromDesc(String desc) 
 	{
 		return desc.equals("B") ? BYTE
 				: desc.equals("S") ? SHORT

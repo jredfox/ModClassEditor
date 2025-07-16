@@ -5,6 +5,7 @@ public class DataTypeContainer {
 	public DataType type;
 	public boolean isArr;
 	public int arrDim;
+	public String desc;
 	
 	public DataTypeContainer(String d, boolean desc)
 	{
@@ -13,13 +14,14 @@ public class DataTypeContainer {
 		{
 			this.isArr = true;
 			this.arrDim = d.lastIndexOf('[') + 1;
-			this.type = desc ? DataType.getTypeFromDesc(d.replace("[", "")) : DataType.getType(d.replace("[", ""));
+			this.type = desc ? DataType.fromDesc(d.replace("[", "")) : DataType.get(d.replace("[", ""));
 		}
 		else
 		{
 			this.isArr = false;
-			this.type = desc ? DataType.getTypeFromDesc(d) : DataType.getType(d);
+			this.type = desc ? DataType.fromDesc(d) : DataType.get(d);
 		}
+		this.desc = this.getDesc();
 	}
 	
 	public DataTypeContainer()
@@ -33,8 +35,8 @@ public class DataTypeContainer {
 		this.isArr = arr;
 		this.arrDim = dimCount;
 	}
-
-	public String getDesc() 
+	
+	protected String getDesc() 
 	{
 		if(!this.isArr)
 			return this.type.desc;

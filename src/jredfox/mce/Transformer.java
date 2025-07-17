@@ -115,7 +115,7 @@ public class Transformer implements IClassTransformer {
 		//Load the Classes List
 		JSONObject json = JSONUtils.getJson(cfg);
 		for(Object s : json.getJSONArray("ModClasses"))
-			this.arr.put((String) s, "");
+			this.arr.put(((String) s).replace('/', '.'), "");
 		
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())

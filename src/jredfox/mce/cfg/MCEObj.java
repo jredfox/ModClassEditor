@@ -27,7 +27,7 @@ public class MCEObj {
 	 */
 	public static void register(String c, JSONObject root) 
 	{
-		MCEObj.registry.put(c, new MCEObj(c, root.getJSONObject(c)));
+		MCEObj.registry.put(c, new MCEObj(c, getCFG(root, c, '.', '/')) );
 	}
 	
 	/**
@@ -36,6 +36,12 @@ public class MCEObj {
 	public static MCEObj get(String actualName) 
 	{
 		return registry.get(actualName);
+	}
+	
+	private static JSONObject getCFG(JSONObject root, String key, char oc, char nc)
+	{
+		Object o = root.get(key);
+		return o != null ? ((JSONObject) o) : ((JSONObject) root.get(key.replace(oc, nc)));
 	}
 	
 	public String className;

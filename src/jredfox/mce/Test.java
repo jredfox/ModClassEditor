@@ -122,7 +122,7 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		DataTypeContainer dtc = new DataTypeContainer("[[boolean", false).copy().copy();
+		DataTypeContainer dtc = new DataTypeContainer("[[booleana", false).copy().copy();
 		System.out.println(dtc.type + " " + dtc.isArr + " " + dtc.arrDim);
 		System.out.println(dtc.desc);
 	}

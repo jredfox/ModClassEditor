@@ -467,7 +467,7 @@ public class MCEField
 		if(this.custom)
 		{
 			this.cdtc = this.typec.copy();
-			return this.isNonNullType(this.cdtc.type);
+			return this.isNonNullType(this.cdtc, true);
 		}
 		
 		FieldNode fn = MCECoreUtils.getFieldNode(this.name, c);
@@ -485,14 +485,17 @@ public class MCEField
 		}
 		
 		this.cdtc = new DataTypeContainer(fn.desc, true);
-		return this.isNonNullType(this.cdtc.type);
+		return this.isNonNullType(this.cdtc, false);
 	}
 	
-	protected boolean isNonNullType(DataType type)
+	protected boolean isNonNullType(DataTypeContainer c, boolean custom)
 	{
-		if(type == DataType.NULL)
+		if(c.isNULL)
 		{
-			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + this.cdtc.desc + " in:" + this.clazzName);
+			if(custom)
+				System.err.println("Field is Type is Missing or Unsupported! owner:\"" + this.owner + "\" name:" + this.name + " in:" + this.clazzName);
+			else
+				System.err.println("Unsupported Type for Field:" + this.name + " desc:" + this.cdtc.desc + " in:" + this.clazzName);
 			return false;
 		}
 		return true;

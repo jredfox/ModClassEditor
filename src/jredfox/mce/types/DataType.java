@@ -21,7 +21,7 @@ public enum DataType {
 	WRAPPED_LONG("Ljava/lang/Long;", "java/lang/Long", "(J)Ljava/lang/Long;", -1, Opcodes.AASTORE, true, 				"([Ljava/lang/Long;IJ)V", "([Ljava/lang/Long;JIII)V", "([Ljava/lang/Long;[JI)V", "([Ljava/lang/Long;ILjava/lang/Long;)V", "([Ljava/lang/Long;Ljava/lang/Long;III)V", "([Ljava/lang/Long;[Ljava/lang/Long;I)V"),
 	WRAPPED_FLOAT("Ljava/lang/Float;", "java/lang/Float", "(F)Ljava/lang/Float;", -1, Opcodes.AASTORE, true, 			"([Ljava/lang/Float;IF)V", "([Ljava/lang/Float;FIII)V", "([Ljava/lang/Float;[FI)V", "([Ljava/lang/Float;ILjava/lang/Float;)V", "([Ljava/lang/Float;Ljava/lang/Float;III)V", "([Ljava/lang/Float;[Ljava/lang/Float;I)V"),
 	WRAPPED_DOUBLE("Ljava/lang/Double;", "java/lang/Double", "(D)Ljava/lang/Double;", -1, Opcodes.AASTORE, true, 		"([Ljava/lang/Double;ID)V", "([Ljava/lang/Double;DIII)V", "([Ljava/lang/Double;[DI)V", "([Ljava/lang/Double;ILjava/lang/Double;)V", "([Ljava/lang/Double;Ljava/lang/Double;III)V", "([Ljava/lang/Double;[Ljava/lang/Double;I)V"),
-	NULL(null, null, null, -1, -1, false, null, null, null);
+	NULL("", null, null, -1, -1, false, null, null, null);
 	
 	//java information
 	public final String desc;

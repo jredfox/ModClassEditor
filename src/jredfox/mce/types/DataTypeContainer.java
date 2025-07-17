@@ -6,12 +6,15 @@ public class DataTypeContainer {
 	public boolean isArr;
 	public int arrDim;
 	public String desc;
+	public boolean isNULL;
 	
 	public DataTypeContainer(String d, boolean desc)
 	{
 		if(d.isEmpty())
 		{
 			this.type = DataType.NULL;
+			this.desc = this.getDesc();
+			this.isNULL = true;
 			return;
 		}
 		
@@ -28,6 +31,7 @@ public class DataTypeContainer {
 			this.type = desc ? DataType.fromDesc(d) : DataType.get(d);
 		}
 		this.desc = this.getDesc();
+		this.isNULL = this.type == DataType.NULL;
 	}
 	
 	public DataTypeContainer()
@@ -35,17 +39,18 @@ public class DataTypeContainer {
 		this.type = DataType.NULL;
 	}
 	
-	public DataTypeContainer(DataType t, boolean arr, int dimCount, String desc)
+	public DataTypeContainer(DataType t, boolean arr, int dimCount, String desc, boolean isNULL)
 	{
 		this.type = t;
 		this.isArr = arr;
 		this.arrDim = dimCount;
-		this.desc = desc == null ? this.getDesc() : desc;
+		this.desc = desc;
+		this.isNULL = isNULL;
 	}
 
 	public DataTypeContainer copy() 
 	{
-		return new DataTypeContainer(this.type, this.isArr, this.arrDim, this.desc);
+		return new DataTypeContainer(this.type, this.isArr, this.arrDim, this.desc, this.isNULL);
 	}
 	
 	protected String getDesc() 

@@ -25,9 +25,9 @@ public class MCEObj {
 	 * @param class name
 	 * @param JSONObject root
 	 */
-	public static void register(String c, JSONObject root) 
+	public static void register(String c, JSONObject root, Transformer t) 
 	{
-		MCEObj.registry.put(c, new MCEObj(c, getCFG(root, c, '.', '/')) );
+		MCEObj.registry.put(c, new MCEObj(c, getCFG(root, c, '.', '/'), t) );
 	}
 	
 	/**
@@ -47,16 +47,18 @@ public class MCEObj {
 	public String className;
 	public String classNameASM;
 	public List<MCEField> fields = new ArrayList();
+	protected Transformer transformer;
 	
-	public MCEObj(String className)
+	public MCEObj(String className, Transformer t)
 	{
 		this.className = className.replace('/', '.');
 		this.classNameASM = className.replace('.', '/');
+		this.transformer = t;
 	}
 	
-	public MCEObj(String c, JSONObject json)
+	public MCEObj(String c, JSONObject json, Transformer t)
 	{
-		this(c);
+		this(c, t);
 		this.parse(json);
 	}
 	
@@ -68,14 +70,24 @@ public class MCEObj {
 		//clear previous fields
 		this.fields.clear();
 		
+		Transformer t = this.transformer;//avoid duplicate GETFIELD
 		JSONArray arr = json.getJSONArray("Fields");
 		for(Object o : arr)
 		{
 			if(!(o instanceof JSONObject))
 				continue;//Why are there comments in here
 			
-			JSONObject f = (JSONObject) o;
-			this.fields.add(!f.containsKey("values") ? new MCEField(this, f) : new MCEArrField(this, f));
+			JSONObject j = (JSONObject) o;
+			MCEField f = !j.containsKey("values") ? new MCEField(this, j) : new MCEArrField(this, j);
+			this.fields.add(f);
+			
+			//Auto AT Custom Classes Who are not in ModClasses
+			if(f.custom && t != null)
+			{
+				String key = f.owner.replace('/', '.');
+				if(!t.arr.containsKey(key))
+					t.at.put(key, "");
+			}
 		}
 	}
 

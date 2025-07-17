@@ -124,21 +124,7 @@ public class Transformer implements IClassTransformer {
 		
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())
-			MCEObj.register(c, json);
-		
-		//Auto AT Classes that are specified inside of MCEField but are not added into the ModClasses
-		for(MCEObj o : MCEObj.registry.values())
-		{
-			for(MCEField f : o.fields)
-			{
-				if(f.custom)
-				{
-					String key = f.owner.replace('/', '.');
-					if(!this.arr.containsKey(key))
-						this.at.put(key, "");
-				}
-			}
-		}
+			MCEObj.register(c, json, this);
 	}
 
 	public static void batchLoad()

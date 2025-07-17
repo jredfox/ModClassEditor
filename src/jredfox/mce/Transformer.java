@@ -10,7 +10,6 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
-import jredfox.mce.cfg.MCEField;
 import jredfox.mce.cfg.MCEObj;
 import jredfox.mce.util.JSONUtils;
 import jredfox.mce.util.MCECoreUtils;
@@ -29,6 +28,7 @@ public class Transformer implements IClassTransformer {
 	public static MCEGen gen;
 	public Map<String, String> arr = new HashMap();
 	public Map<String, String> at = new HashMap();
+	public boolean hat;//has AT
 	
 	public Transformer()
 	{
@@ -43,7 +43,7 @@ public class Transformer implements IClassTransformer {
 		else if(clazz == null)
 			return null;
 		
-		return this.arr.containsKey(actualName) ? configureModClass(actualName, clazz, false) : (this.at.containsKey(actualName) ? configureModClass(actualName, clazz, true) : clazz);
+		return this.arr.containsKey(actualName) ? configureModClass(actualName, clazz, false) : ((this.hat && this.at.containsKey(actualName)) ? configureModClass(actualName, clazz, true) : clazz);
 	}
 
 	public byte[] configureModClass(String actualName, byte[] clazz, boolean isAT)
@@ -125,6 +125,9 @@ public class Transformer implements IClassTransformer {
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())
 			MCEObj.register(c, json, this);
+		
+		//Update Has AT boolean
+		this.hat = !this.at.isEmpty();
 	}
 
 	public static void batchLoad()

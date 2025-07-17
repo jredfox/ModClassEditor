@@ -7,7 +7,6 @@ import java.util.Map;
 import org.ralleytn.simple.json.JSONParseException;
 
 import jredfox.mce.types.DataTypeContainer;
-import net.minecraft.world.World;
 
 public class Test {
 	

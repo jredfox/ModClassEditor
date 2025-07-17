@@ -37,6 +37,8 @@ public class DataTypeContainer {
 	public DataTypeContainer()
 	{
 		this.type = DataType.NULL;
+		this.desc = "";
+		this.isNULL = true;
 	}
 	
 	public DataTypeContainer(DataType t, boolean arr, int dimCount, String desc, boolean isNULL)

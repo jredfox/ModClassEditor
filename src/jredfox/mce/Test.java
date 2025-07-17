@@ -69,20 +69,11 @@ public class Test {
 		
 	}
 	
-	public static void mce_gen_0() {}
-	
 	public int o_id = new Integer(200);
 	public short o_id_s = 201;
 	public byte o_id_b = (byte) 202;
 	public long o_id_l = 203;
 	public String o_id_str = "Entity Id";
-	public static Test t = new Test();
-	private static World w = null;
-	
-	private static void objTst()
-	{
-		t.o_id = 21;
-	}
 	
 	private static void method_st(Object obj)
 	{

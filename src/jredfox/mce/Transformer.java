@@ -3,7 +3,6 @@ package jredfox.mce;
 import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.tree.ClassNode;
@@ -29,6 +28,7 @@ public class Transformer implements IClassTransformer {
 	public static boolean ds;
 	public static MCEGen gen;
 	public Map<String, String> arr = new HashMap();
+	public Map<String, String> at = new HashMap();
 	
 	public Transformer()
 	{
@@ -40,11 +40,13 @@ public class Transformer implements IClassTransformer {
 	{
 		if(actualName.startsWith("jredfox.mce.MCEGenInit"))
 			return this.gen.hookGenInit(actualName, clazz);
+		else if(clazz == null)
+			return null;
 		
-		return (clazz != null && this.arr.containsKey(actualName)) ? configureModClass(actualName, clazz) : clazz;
+		return this.arr.containsKey(actualName) ? configureModClass(actualName, clazz, false) : (this.at.containsKey(actualName) ? configureModClass(actualName, clazz, true) : clazz);
 	}
 
-	public byte[] configureModClass(String actualName, byte[] clazz)
+	public byte[] configureModClass(String actualName, byte[] clazz, boolean isAT)
 	{
 		try
 		{
@@ -52,7 +54,8 @@ public class Transformer implements IClassTransformer {
 			MCECoreUtils.pubMinusFinal(classNode, true);
 			int flags = this.recomputeFrames ? (ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES) : ClassWriter.COMPUTE_MAXS;
 			gen.gen(actualName, classNode);
-			MCEObj.configure(actualName, classNode);
+			if(!isAT)
+				MCEObj.configure(actualName, classNode);
 			return MCECoreUtils.toByteArray(MCECoreUtils.getClassWriter(classNode, flags), actualName, clazz);
 		}
 		catch(Throwable t)
@@ -123,14 +126,16 @@ public class Transformer implements IClassTransformer {
 		for(String c : this.arr.keySet())
 			MCEObj.register(c, json);
 		
-		//Add Classes for the AT and MCEGen
+		//Auto AT Classes that are specified inside of MCEField but are not added into the ModClasses
 		for(MCEObj o : MCEObj.registry.values())
 		{
 			for(MCEField f : o.fields)
 			{
 				if(f.custom)
 				{
-					this.arr.put(f.owner.replace('/', '.'), "");
+					String key = f.owner.replace('/', '.');
+					if(!this.arr.containsKey(key))
+						this.at.put(key, "");
 				}
 			}
 		}

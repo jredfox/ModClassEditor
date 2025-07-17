@@ -28,7 +28,7 @@ import jredfox.mce.util.WildCardMatcher;
 public class MCEField
 {
 	/**
-	 * The Transformed & Deobfuscated Class Name that is the Owner of the Field that we are injecting into
+	 * The Transformed & Deobfuscated Class Name that is the Class we are Transforming
 	 */
 	public String clazzName;
 	/**
@@ -62,7 +62,7 @@ public class MCEField
 	/**
 	 * when true we have a custom class that's not matching the current class
 	 */
-	public boolean ownerCustom;
+	public boolean custom;
 	/**
 	 * cached method name has a wildcard
 	 */
@@ -138,7 +138,7 @@ public class MCEField
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
 		//cache frequently used booleans
-		this.ownerCustom = !owner.isEmpty();
+		this.custom = !owner.isEmpty();
 		this.wc =  MCEUtil.isWildCard(this.method);
 		this.wcd = MCEUtil.isWildCard(this.desc);
 		this.mt = this.desc.isEmpty();
@@ -262,7 +262,7 @@ public class MCEField
 		if(this.cdtc.isArr)
 			return;
 		
-		System.out.println("Applying:" + cn + " " + m + " " + p);
+		System.out.println("Applying:" + cn.name + " " + m.name + " " + m.desc + " " + p);
 		DataType type = this.cdtc.type;
 		String desc = this.cdtc.desc;
 		
@@ -465,7 +465,7 @@ public class MCEField
 		this.chkErr = true;
 		
 		//Support editing another classes fields
-		if(this.ownerCustom)
+		if(this.custom)
 		{
 			this.cdtc = this.typec.copy();
 			return this.isNonNullType(this.cdtc.type);
@@ -481,7 +481,7 @@ public class MCEField
 		}
 		else if((fn.access & Opcodes.ACC_STATIC) == 0)
 		{
-			System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + this.name + " in:" + c.name);
+			System.err.println("Object Fields are not Supported for Editing yet as it's more complex and Per Object to Edit:" + this.name + " in:" + this.clazzName);
 			return false;
 		}
 		
@@ -491,7 +491,7 @@ public class MCEField
 	
 	protected boolean isNonNullType(DataType type)
 	{
-		if(this.cdtc.type == DataType.NULL)
+		if(type == DataType.NULL)
 		{
 			System.err.println("Unsupported Type for Field:" + this.name + " desc:" + this.cdtc.desc + " in:" + this.clazzName);
 			return false;

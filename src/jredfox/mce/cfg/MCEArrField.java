@@ -97,7 +97,7 @@ public class MCEArrField extends MCEField
 		else if(this.values == null)
 			throw new RuntimeException("MCEArrField#values[] has already been garbage collected! Please Disable \"GC MCEField Optimizations\" in the Config Or Try Enabling \"BatchLoading\"!");
 		
-		System.out.println("Applying:" + cn + " " + m + " " + p);
+		System.out.println("Applying:" + cn.name + " " + m.name + " " + m.desc + " " + p);
 		String desc = this.cdtc.desc;
 		DataType type = this.cdtc.type;
 		InsnList list = new InsnList();

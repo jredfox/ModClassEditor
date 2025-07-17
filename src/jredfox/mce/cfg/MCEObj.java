@@ -47,8 +47,6 @@ public class MCEObj {
 	public String className;
 	public String classNameASM;
 	public List<MCEField> fields = new ArrayList();
-//	public List<MCEFindAndReplace> frs = new ArrayList();
-//	public List<MCEParam> params = new ArrayList();
 	
 	public MCEObj(String className)
 	{

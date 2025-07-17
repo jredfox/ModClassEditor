@@ -1,6 +1,7 @@
 package jredfox.mce;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -10,6 +11,7 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
+import jredfox.mce.cfg.MCEField;
 import jredfox.mce.cfg.MCEObj;
 import jredfox.mce.util.JSONUtils;
 import jredfox.mce.util.MCECoreUtils;
@@ -26,7 +28,7 @@ public class Transformer implements IClassTransformer {
 	public static boolean batchLoad;
 	public static boolean ds;
 	public static MCEGen gen;
-	public Map<String, String> arr = new ConcurrentHashMap();
+	public Map<String, String> arr = new HashMap();
 	
 	public Transformer()
 	{
@@ -63,7 +65,7 @@ public class Transformer implements IClassTransformer {
 	/**
 	 * Initializes the Main Configuration file so we know what we want to edit
 	 */
-	public void init() 
+	public synchronized void init() 
 	{
 		this.init_options();
 		this.init_mce();
@@ -120,6 +122,18 @@ public class Transformer implements IClassTransformer {
 		//Load the ModClassEditor Into Objects
 		for(String c : this.arr.keySet())
 			MCEObj.register(c, json);
+		
+		//Add Classes for the AT and MCEGen
+		for(MCEObj o : MCEObj.registry.values())
+		{
+			for(MCEField f : o.fields)
+			{
+				if(f.custom)
+				{
+					this.arr.put(f.owner.replace('/', '.'), "");
+				}
+			}
+		}
 	}
 
 	public static void batchLoad()

@@ -129,7 +129,15 @@ public class MCEField
 	public MCEField(String clazzNameASM, String owner, String type, String name, String value, String method, String desc, InsertionPoint inject)
 	{
 		this.clazzName = clazzNameASM;
-		this.owner = owner.isEmpty() ? clazzNameASM : owner;
+		if(owner.isEmpty())
+		{
+			this.owner = clazzNameASM;
+		}
+		else
+		{
+			this.owner = owner;
+			this.custom = true;
+		}
 		this.typec = new DataTypeContainer(MCEUtil.safeString(type).trim(), false);
 		this.name = name.trim();
 		this.value = value;
@@ -137,7 +145,6 @@ public class MCEField
 		this.desc = MCEUtil.safeString(desc).trim();
 		this.inject = inject;
 		//cache frequently used booleans
-		this.custom = !owner.isEmpty();
 		this.wc =  MCEUtil.isWildCard(this.method);
 		this.wcd = MCEUtil.isWildCard(this.desc);
 		this.mt = this.desc.isEmpty();

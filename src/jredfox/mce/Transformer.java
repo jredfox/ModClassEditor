@@ -104,7 +104,11 @@ public class Transformer implements IClassTransformer {
 	 */
 	public void init_mce() 
 	{
-		this.arr.clear();
+		if(!this.arr.isEmpty())
+		{
+			this.arr.clear();
+			this.at.clear();
+		}
 		File cfg = new File(System.getProperty("user.dir"), "config/ModClassEditor/ModClassEditor.json");
 		
 		//Create ModClassEditor.json if it does not exist

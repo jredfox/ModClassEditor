@@ -7,11 +7,15 @@ public class CachedInsertionPoint {
 	/**
 	 * Which direction to insert into BEFORE is backwards and AFTER is forwards
 	 */
-	public Opperation opp;
+	private Opperation opp;
 	/**
 	 * The Originally Described AbstractInsnNode but if the Index is before it's actual insertion point will be insert after the previous instruction
 	 */
-	public AbstractInsnNode point;
+	private AbstractInsnNode point;
+	/**
+	 * The Actual Point to Insert to after or null if index is 0
+	 */
+	public AbstractInsnNode cachedPoint;
 	/**
 	 * The Insertion Index inside of the InsnList. uses the InsnList Builtin APIs to determine the index and get the AbstractInsnNode later
 	 */
@@ -26,7 +30,10 @@ public class CachedInsertionPoint {
 		this.point = p;
 		this.opp = o;
 		this.labelBefore = lb;
-		this.index = o == Opperation.INSERT ? 0 : ((o == Opperation.BEFORE) ? (l.indexOf(p)) : (l.indexOf(p) + 1));
+		int index = o == Opperation.INSERT ? 0 : ((o == Opperation.BEFORE) ? (l.indexOf(p)) : (l.indexOf(p) + 1));
+		this.index = index;
+		if(index != 0)
+			this.cachedPoint = l.get(index - 1);
 	}
 
 	@Override

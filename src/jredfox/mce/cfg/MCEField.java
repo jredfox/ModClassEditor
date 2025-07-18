@@ -323,7 +323,7 @@ public class MCEField
 		if(cip.index == 0)
 			m.instructions.insert(list);
 		else
-			m.instructions.insert(m.instructions.get(cip.index - 1), list);
+			m.instructions.insert(cip.cachedPoint, list);
 	}
 
 	/**

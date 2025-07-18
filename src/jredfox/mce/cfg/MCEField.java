@@ -384,6 +384,7 @@ public class MCEField
 		AbstractInsnNode spot = inject;
 		AbstractInsnNode insnIndex = spot;
 		boolean hasFoundShift = false;
+		boolean aftr = opp == Opperation.AFTER;
 		
 		do
 		{
@@ -440,7 +441,7 @@ public class MCEField
 				default:
 					break;
 			}
-			insnIndex = (opp == Opperation.AFTER) ? (insnIndex.getNext()) : (insnIndex.getPrevious());
+			insnIndex = aftr ? (insnIndex.getNext()) : (insnIndex.getPrevious());
 		}
 		while(insnIndex != null && !hasFoundShift);
 		

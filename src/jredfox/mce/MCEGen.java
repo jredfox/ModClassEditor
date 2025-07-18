@@ -333,6 +333,13 @@ public class MCEGen {
 				}
 				
 				InsnList slist = new InsnList();
+				AbstractInsnNode spotSave = MCECoreUtils.getLastReturn(init);
+				if(!MCECoreUtils.isLineOrLabel(spotSave.getPrevious()))
+				{
+					LabelNode lprev = new LabelNode();
+					slist.add(lprev);
+					slist.add(new LineNumberNode(line++, lprev));
+				}
 				slist.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
 				LabelNode L0Save = new LabelNode();
 				slist.add(L0Save);
@@ -345,7 +352,7 @@ public class MCEGen {
 					slist.add(L_0);
 					slist.add(new LineNumberNode(line++, L_0));
 				}
-				init.instructions.insertBefore(MCECoreUtils.getLastReturn(init), slist);
+				init.instructions.insertBefore(spotSave, slist);
 				
 				return MCECoreUtils.toByteArray(MCECoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName, null);
 			}

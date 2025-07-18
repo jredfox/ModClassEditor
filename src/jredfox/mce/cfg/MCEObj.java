@@ -136,29 +136,12 @@ public class MCEObj {
 				continue;
 			
 			int cSize = cache.size();
-			for(int i=0; i < cSize; i++)
-			{
-				MCEField c = cache.get(i);
-				if(c.cip.opp == Opperation.BEFORE)
-				{
-					if(ds)
-						c.genDynamicSetter();
-					else
-						c.apply();
-				}
-			}
-			
 			for(int i=cSize - 1; i >= 0; i--)
 			{
 				MCEField c = cache.get(i);
 				if(ds)
-				{
-					if(c.ocip == null && c.cip.opp.isAfter())
-						c.genDynamicSetter();
-					c.apply();
-				}
-				else if(c.cip.opp.isAfter())
-					c.apply();
+					c.genDynamicSetter();
+				c.apply();
 			}
 			
 			if(labels || last)

@@ -195,7 +195,7 @@ public class MCEField
 				this.ocmn = this.cmn;
 				this.ocip = this.cip;
 				this.cmn = cachedMN;
-				this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
+				this.cip = new CachedInsertionPoint(null, null, Opperation.INSERT, true);
 			}
 			return;
 		}
@@ -232,7 +232,7 @@ public class MCEField
 		//Re-Direct MethodNode
 		this.cmn = m;
 		//Re-Direct the CachedInsertionPoint
-		this.cip = new CachedInsertionPoint(null, Opperation.INSERT, true);
+		this.cip = new CachedInsertionPoint(null, null, Opperation.INSERT, true);
 	}
 
 	/**
@@ -320,18 +320,10 @@ public class MCEField
 			cip.lastInsn =  list.getLast();
 		}
 		
-		if(cip.opp == Opperation.AFTER)
-		{
-			m.instructions.insert(cip.point, list);
-		}
-		else if(cip.opp == Opperation.INSERT)
-		{
+		if(cip.index == 0)
 			m.instructions.insert(list);
-		}
-		else if(cip.opp == Opperation.BEFORE)
-		{
-			m.instructions.insertBefore(cip.point, list);
-		}
+		else
+			m.instructions.insert(m.instructions.get(cip.index - 1), list);
 	}
 
 	/**
@@ -345,14 +337,14 @@ public class MCEField
 		{
 			if(opp == Opperation.AFTER)
 			{
-				return new CachedInsertionPoint(MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, false);
+				return new CachedInsertionPoint(m.instructions, MCECoreUtils.getLastReturn(m).getPrevious(), Opperation.AFTER, false);
 			}
 			else if(opp == Opperation.BEFORE)
 			{
 				if(m.name.equals("<init>"))
-					return new CachedInsertionPoint(MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
+					return new CachedInsertionPoint(m.instructions, MCECoreUtils.getFirstCtrInsn(cn, m), Opperation.AFTER, true);
 				else
-					return new CachedInsertionPoint(null, Opperation.INSERT, true);
+					return new CachedInsertionPoint(null, null, Opperation.INSERT, true);
 			}
 			return null;
 		}
@@ -457,11 +449,11 @@ public class MCEField
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
 		if(opp == Opperation.BEFORE && (inject == spot || exact))
 		{
-			return new CachedInsertionPoint(spot, Opperation.BEFORE, spot instanceof LabelNode);
+			return new CachedInsertionPoint(m.instructions, spot, Opperation.BEFORE, spot instanceof LabelNode);
 		}
 		else
 		{
-			return new CachedInsertionPoint(spot, Opperation.AFTER, !MCECoreUtils.isLineOrLabel(spot));
+			return new CachedInsertionPoint(m.instructions, spot, Opperation.AFTER, !MCECoreUtils.isLineOrLabel(spot));
 		}
 	}
 	

@@ -247,6 +247,16 @@ public class MCECoreUtils {
 		return a;
 	}
 	
+	/**
+	 * Iterates Until Next / Previous is not a FrameNode. Will not iterate if it's not currently a FrameNode
+	 */
+	public static AbstractInsnNode skipFrames(AbstractInsnNode a, boolean nxt)
+	{
+		while(a != null && a instanceof FrameNode)
+			a = nxt ? a.getNext() : a.getPrevious();
+		return a;
+	}
+	
 	public static boolean equals(InsnTypes type, AbstractInsnNode ab, AbstractInsnNode point) 
 	{
 		switch(type)

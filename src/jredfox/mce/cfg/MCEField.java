@@ -449,12 +449,13 @@ public class MCEField
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
 		if(opp == Opperation.BEFORE && (inject == spot || exact))
 		{
-			AbstractInsnNode prv = spot.getPrevious();
+			AbstractInsnNode prv = MCECoreUtils.prevSkipFrames(spot);
 			return new CachedInsertionPoint(m.instructions, spot, Opperation.BEFORE, (prv == null || !MCECoreUtils.isLineOrLabel(prv)));
 		}
 		else
 		{
-			return new CachedInsertionPoint(m.instructions, spot, Opperation.AFTER, !MCECoreUtils.isLineOrLabel(spot));
+			AbstractInsnNode nt = MCECoreUtils.skipFrames(spot, false);
+			return new CachedInsertionPoint(m.instructions, spot, Opperation.AFTER, (nt == null || !MCECoreUtils.isLineOrLabel(nt)));
 		}
 	}
 	

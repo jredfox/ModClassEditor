@@ -133,7 +133,7 @@ public class MCECoreUtils {
 	/**
 	 * Gets the Last LabelNode either before the return of the method or last label
 	 */
-	public static LabelNode getLastLabelNode(MethodNode method, boolean afterReturn)
+	public static AbstractInsnNode getLastLabelNode(MethodNode method, boolean afterReturn)
 	{
 		AbstractInsnNode[] arr = method.instructions.toArray();
 		boolean found = afterReturn;
@@ -145,9 +145,9 @@ public class MCECoreUtils {
 			if(!found && isReturnOpcode(ab.getOpcode()))
 				found = true;
 			
-			if(found && ab instanceof LabelNode)
+			if(found && (ab instanceof LabelNode || ab instanceof LineNumberNode))
 			{
-				return (LabelNode) ab;
+				return ab;
 			}
 		}
 		return null;
@@ -822,6 +822,18 @@ public class MCECoreUtils {
 				break;
 		}
 		return 0;
+	}
+
+	public static LineNumberNode nextLineNumberNode(AbstractInsnNode a) 
+	{
+		AbstractInsnNode index = a.getNext();
+		while(index != null)
+		{
+			if(index instanceof LineNumberNode)
+				return (LineNumberNode) index;
+			index = index.getNext();
+		}
+		return null;
 	}
 
 }

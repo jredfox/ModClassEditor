@@ -65,7 +65,7 @@ public class MCEGen {
 			JSONArray fields = new JSONArray();
 			root.put(actualName, fields);
 			
-			MethodNode mcgen = getMCEGen(actualName.replace('.', '/'), classNode);
+			MethodNode mcgen = getMCEGen(actualName.replace('.', '/'), classNode, "<clinit>");
 			AbstractInsnNode spot = MCECoreUtils.getLastReturn(mcgen);
 			for (int i = 0; i <= 1; i++) 
 			{
@@ -109,7 +109,7 @@ public class MCEGen {
 	}
 	
 	private static final String base = "mce_gen_";
-	public MethodNode getMCEGen(String actualName, ClassNode c) 
+	public MethodNode getMCEGen(String actualName, ClassNode c, String mname) 
 	{
 		int index = 0;
 		while(MCECoreUtils.getMethodNode(c, (base + index), "()V") != null)
@@ -129,7 +129,7 @@ public class MCEGen {
 		c.methods.add(m);
 		
 		//Hook Method to Invoke MCEGen
-		MethodNode clinit = MCECoreUtils.getMethodNode(c, "<clinit>", "()V");
+		MethodNode clinit = MCECoreUtils.getMethodNode(c, mname, "()V");
 		InsnList list = new InsnList();
 		list.add(new MethodInsnNode(Opcodes.INVOKESTATIC, actualName, genName, "()V"));
 		clinit.instructions.insertBefore(MCECoreUtils.getLastReturn(clinit), list);
@@ -287,19 +287,6 @@ public class MCEGen {
 				MethodNode init = new MethodNode(Opcodes.ACC_PUBLIC + Opcodes.ACC_STATIC, "init", "()V", null, null);
 				classNode.methods.add(init);
 				InsnList initList = new InsnList();
-				LabelNode l0_ = new LabelNode();
-				LineNumberNode ln0_ = new LineNumberNode(line++, l0_);
-				initList.add(l0_);
-				initList.add(ln0_);
-				initList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
-				//Call GC to prevent memory leak
-				if(cn.equals("jredfox/mce/MCEGenInitPost"))
-				{
-					LabelNode L_0 = new LabelNode();
-					initList.add(L_0);
-					initList.add(new LineNumberNode(line++, L_0));
-					initList.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "gc0", "()V"));
-				}
 				LabelNode l1_ = new LabelNode();
 				initList.add(l1_);
 				initList.add(new LineNumberNode(line++, l1_));
@@ -307,16 +294,20 @@ public class MCEGen {
 				LabelNode l2_ = new LabelNode();
 				initList.add(l2_);
 				init.instructions = initList;
-				init.localVariables.add(new LocalVariableNode("this", "L" + cn + ";", null, l0_, l2_, 0));
-				init.visitMaxs(1, 1);
+				init.visitMaxs(0, 0);
 				
 				//Generate the methods calls dynamically
 				for(Map.Entry pair : this.root.entrySet())
 				{
 					if(!(pair.getValue() instanceof JSONArray))
 						continue;
+					String clname = (String) pair.getKey();
 					JSONArray arr = (JSONArray) pair.getValue();
-					AbstractInsnNode genSpot = ln0_;
+					if(arr.isEmpty())
+						continue;
+					
+					MethodNode dynamic = getMCEGen(cn, classNode, init.name);
+					AbstractInsnNode genSpot = MCECoreUtils.getLastReturn(dynamic);
 					for(Object ov : arr)
 					{
 						if(!(ov instanceof JSONObject))
@@ -326,26 +317,35 @@ public class MCEGen {
 						//Since we only support static value in gen if this tag exists we don't have to check everything again only this tag
 						if(!jval.containsKey("value"))
 							continue;
-						boolean isStatic = jval.getBoolean("static");
-						String orgClName = (String) pair.getKey();
-						String clname = orgClName.toString().replace('.', '/');
 						String fieldName = jval.getString("name");
 						String desc = jval.getString("desc");
-						String type = jval.getString("type");
 						
 						InsnList li = new InsnList();
-						li.add(new LdcInsnNode(orgClName));
+						li.add(new LdcInsnNode(clname));
 						li.add(new LdcInsnNode(fieldName));
-						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname, fieldName, desc));
+						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname.replace('.', '/'), fieldName, desc));
 						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V"));
 						LabelNode label_gen = new LabelNode();
 						li.add(label_gen);
-						AbstractInsnNode lastLine = new LineNumberNode(line++, label_gen);
-						li.add(lastLine);
-						init.instructions.insert(genSpot, li);
-						genSpot = lastLine;
+						li.add(new LineNumberNode(line++, label_gen));
+						dynamic.instructions.insertBefore(genSpot, li);
 					}
 				}
+				
+				InsnList slist = new InsnList();
+				slist.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "saveChanges", "()V"));
+				LabelNode L0Save = new LabelNode();
+				slist.add(L0Save);
+				slist.add(new LineNumberNode(line++, L0Save));
+				//Call GC to prevent memory leak
+				if(cn.equals("jredfox/mce/MCEGenInitPost"))
+				{
+					slist.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "gc0", "()V"));
+					LabelNode L_0 = new LabelNode();
+					slist.add(L_0);
+					slist.add(new LineNumberNode(line++, L_0));
+				}
+				init.instructions.insertBefore(MCECoreUtils.getLastReturn(init), slist);
 				
 				return MCECoreUtils.toByteArray(MCECoreUtils.getClassWriter(classNode, ClassWriter.COMPUTE_MAXS | ClassWriter.COMPUTE_FRAMES), actualName, null);
 			}

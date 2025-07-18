@@ -7,6 +7,7 @@ import java.util.Map;
 import org.ralleytn.simple.json.JSONParseException;
 
 import jredfox.mce.types.DataTypeContainer;
+import jredfox.mce.util.OpcodeHelper;
 
 public class Test {
 	
@@ -112,9 +113,7 @@ public class Test {
 	
 	public static void main(String[] args) throws JSONParseException
 	{
-		DataTypeContainer dtc = new DataTypeContainer("[[booleana", false).copy().copy();
-		System.out.println(dtc.type + " " + dtc.isArr + " " + dtc.arrDim);
-		System.out.println(dtc.desc);
+		System.out.println(OpcodeHelper.BAD_CTR_OPCODES.contains(0));
 	}
 	
     public static int getCapacity(Map map) {

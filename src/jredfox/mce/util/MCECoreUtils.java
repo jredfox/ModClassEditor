@@ -422,11 +422,8 @@ public class MCECoreUtils {
 						return am;
 					
 					AbstractInsnNode prev = prevRealInsn(am);
-					int prevOpcode = prev != null ? prev.getOpcode() : 0;
-					if(!OpcodeHelper.BAD_CTR_OPCODES.contains(prevOpcode))
-					{
+					if(prev != null && !OpcodeHelper.BAD_CTR_OPCODES.contains(prev.getOpcode()))
 						return am;
-					}
 				}
 			}
 			a = a.getNext();//increment the index

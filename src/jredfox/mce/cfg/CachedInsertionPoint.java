@@ -51,12 +51,7 @@ public class CachedInsertionPoint {
 	@Override
 	public boolean equals(Object obj)
 	{
-		if(this == obj)
-			return true;
-		else if(!(obj instanceof CachedInsertionPoint))
-			return false;
-		CachedInsertionPoint o = (CachedInsertionPoint) obj;
-		return this.index == o.index;
+		return this == obj || obj instanceof CachedInsertionPoint && this.index == ((CachedInsertionPoint)obj).index;
 	}
 
 }

@@ -255,6 +255,7 @@ public class MCEGen {
 		{
 			try
 			{
+				boolean labels = Transformer.label;
 				int line = 0;
 				String cn = actualName.replace('.', '/');
 				ClassNode classNode = new ClassNode();
@@ -325,9 +326,12 @@ public class MCEGen {
 						li.add(new LdcInsnNode(fieldName));
 						li.add(new FieldInsnNode(Opcodes.GETSTATIC, clname.replace('.', '/'), fieldName, desc));
 						li.add(new MethodInsnNode(Opcodes.INVOKESTATIC, "jredfox/mce/MCEGen", "capValue", "(Ljava/lang/String;Ljava/lang/String;" + desc + ")V"));
-						LabelNode label_gen = new LabelNode();
-						li.add(label_gen);
-						li.add(new LineNumberNode(line++, label_gen));
+						if(labels)
+						{
+							LabelNode label_gen = new LabelNode();
+							li.add(label_gen);
+							li.add(new LineNumberNode(line++, label_gen));
+						}
 						dynamic.instructions.insertBefore(genSpot, li);
 					}
 				}

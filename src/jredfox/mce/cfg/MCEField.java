@@ -449,7 +449,8 @@ public class MCEField
 		//If shiftTo is Exact use Exact indexes and always inject before. Index 0 = insertBefore exact insn, Index 1 = insertBefore of the previous instruction
 		if(opp == Opperation.BEFORE && (inject == spot || exact))
 		{
-			return new CachedInsertionPoint(m.instructions, spot, Opperation.BEFORE, spot instanceof LabelNode);
+			AbstractInsnNode prv = spot.getPrevious();
+			return new CachedInsertionPoint(m.instructions, spot, Opperation.BEFORE, (prv == null || !MCECoreUtils.isLineOrLabel(prv)));
 		}
 		else
 		{

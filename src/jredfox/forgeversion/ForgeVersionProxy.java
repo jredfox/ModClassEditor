@@ -8,7 +8,7 @@ import org.objectweb.asm.tree.FieldNode;
 import jredfox.mce.util.MCECoreUtils;
 
 /**
- * Safley Get the Forge Version Past 1.5 - 1.12.2 without loading the ModContainer class
+ * Safely Get the Forge Version 1.1 - 1.12.2 without loading the ModContainer class
  * @author jredfox
  */
 public class ForgeVersionProxy {
@@ -177,5 +177,7 @@ public class ForgeVersionProxy {
 				break;
 		}
 	}
+
+	public static void load() {}
 
 }

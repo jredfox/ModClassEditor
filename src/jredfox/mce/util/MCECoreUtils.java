@@ -1,6 +1,7 @@
 package jredfox.mce.util;
 
 import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -57,6 +58,12 @@ public class MCECoreUtils {
 			} catch (Throwable ignored) {}
 		}
 		return 4;
+	}
+	
+	public static ClassNode getClassNode(InputStream stream) throws IOException 
+	{
+		byte[] newbyte = toByteArray(stream);
+		return getClassNode(newbyte);
 	}
 	
 	public static ClassNode getClassNode(byte[] basicClass)
@@ -205,6 +212,13 @@ public class MCECoreUtils {
     		Util.close(in, out);
     	}
 	}
+	
+    public static byte[] toByteArray(final InputStream input) throws IOException
+    {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
+    }
 	
 	public static void copy(InputStream in, OutputStream out) throws IOException
 	{

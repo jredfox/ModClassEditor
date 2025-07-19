@@ -4,6 +4,7 @@ import cpw.mods.fml.common.Mod;
 import cpw.mods.fml.common.event.FMLInitializationEvent;
 import cpw.mods.fml.common.event.FMLPostInitializationEvent;
 import cpw.mods.fml.common.event.FMLPreInitializationEvent;
+import jredfox.forgeversion.ForgeVersionProxy;
 
 @Mod(modid="modclasseditor", name="Mod Class Editor @ALPHA", version="0.10.0", dependencies="after:*")
 public class MCEMod {
@@ -16,6 +17,7 @@ public class MCEMod {
 	static
 	{
 		Test.load();//TODO: REMOVE
+		ForgeVersionProxy.load();
 	}
 	
 	@Mod.PreInit

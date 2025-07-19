@@ -48,7 +48,8 @@ public class MCEObj {
 	
 	public String className;
 	public String classNameASM;
-	public ModAtCfg atmod;
+	public AtMod atmod;
+	public AtNetworkMod atNetworkMod;
 	public List<MCEField> fields = new ArrayList();
 	protected Transformer transformer;
 	
@@ -75,9 +76,12 @@ public class MCEObj {
 		
 		//Parse the @Mod Configuration Object
 		if(json.containsKey("@Mod"))
-			this.atmod = new ModAtCfg(json.getJSONObject("@Mod"));
+			this.atmod = new AtMod(json.getJSONObject("@Mod"));
 		else if(json.containsKey("modid"))
-			this.atmod = new ModAtCfg(json.getString("modid"));
+			this.atmod = new AtMod(json.getString("modid"));
+		//Parse the @NetworkMod Configuration Object
+		if(json.containsKey("@NetworkMod"))
+			this.atNetworkMod = new AtNetworkMod(json.getJSONObject("@NetworkMod"));
 		
 		Transformer t = this.transformer;//avoid duplicate GETFIELD
 		JSONArray arr = json.getJSONArray("Fields");
@@ -172,21 +176,64 @@ public class MCEObj {
 	}
 
 	private static final String ATMOD = "Lcpw/mods/fml/common/Mod;";
+	private static final String ATNET = "Lcpw/mods/fml/common/network/NetworkMod;";
 	private void configureModAnn(ClassNode cn) 
 	{
-		ModAtCfg atmod = this.atmod;
-		if(atmod == null)
+		AtNetworkMod atn = this.atNetworkMod;
+		AtMod atmod = this.atmod;
+		if(atn == null && atmod == null)
 			return;
 		
-		for(AnnotationNode ann : cn.visibleAnnotations)
+		boolean hasAtn = atn != null;
+		boolean hasAtMod = atmod != null;
+		boolean foundNet = false;
+		List[] arr = {cn.visibleAnnotations, cn.invisibleAnnotations};
+		for(List ol : arr)
 		{
-			if(ATMOD.equals(ann.desc))
+			if(ol == null || ol.isEmpty())
+				continue;
+			List<AnnotationNode> l = ol;
+			
+			for(AnnotationNode ann : l)
 			{
-				Map<String, Object> vals = MCECoreUtils.getAnnMap(ann);
-				vals.putAll(atmod.values);
-				ann.values = MCECoreUtils.toAnnList(vals);
-				System.out.println(ann.values);
+				if(hasAtn && ATNET.equals(ann.desc))
+				{
+					Map<String, Object> vals = MCECoreUtils.getAnnMap(ann);
+					if(atn.hasCS)
+						vals.put("clientSideRequired", atn.clientSideRequired);
+					if(atn.hasSS)
+						vals.put("serverSideRequired", atn.serverSideRequired);
+					if(atn.hasVB)
+						vals.put("versionBounds", atn.versionBounds);
+					ann.values = MCECoreUtils.toAnnList(vals);
+					foundNet = true;
+				}
+				else if(hasAtMod && ATMOD.equals(ann.desc))
+				{
+					Map<String, Object> vals = MCECoreUtils.getAnnMap(ann);
+					vals.putAll(atmod.values);
+					ann.values = MCECoreUtils.toAnnList(vals);
+				}
 			}
+		}
+		
+		//Add @NetworkMod if it's not found
+		if(hasAtn && !foundNet)
+		{
+			AnnotationNode atnet = new AnnotationNode("Lcpw/mods/fml/common/network/NetworkMod;");
+			atnet.values = new ArrayList(5);
+			atnet.values.add("clientSideRequired");
+			atnet.values.add(atn.clientSideRequired);
+			atnet.values.add("serverSideRequired");
+			atnet.values.add(atn.serverSideRequired);
+			if(atn.hasVB)
+			{
+				atnet.values.add("versionBounds");
+				atnet.values.add(atn.versionBounds);
+			}
+			cn.visibleAnnotations.add(atnet);
+			
+			System.out.println("ANN:" + atn.clientSideRequired + " " + atn.serverSideRequired + " " + atn.versionBounds);
 		}
 	}
 

@@ -220,7 +220,10 @@ public class MCEObj {
 		//Add @NetworkMod if it's not found
 		if(hasAtn && !foundNet)
 		{
-			AnnotationNode atnet = new AnnotationNode("Lcpw/mods/fml/common/network/NetworkMod;");
+			if(cn.visibleAnnotations == null)
+				cn.visibleAnnotations = new ArrayList();
+			
+			AnnotationNode atnet = new AnnotationNode(ATNET);
 			atnet.values = new ArrayList(5);
 			atnet.values.add("clientSideRequired");
 			atnet.values.add(atn.clientSideRequired);
@@ -232,8 +235,6 @@ public class MCEObj {
 				atnet.values.add(atn.versionBounds);
 			}
 			cn.visibleAnnotations.add(atnet);
-			
-			System.out.println("ANN:" + atn.clientSideRequired + " " + atn.serverSideRequired + " " + atn.versionBounds);
 		}
 	}
 

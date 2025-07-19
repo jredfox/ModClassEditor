@@ -2,8 +2,13 @@ package jredfox.forgeversion;
 
 import java.io.IOException;
 
+import org.objectweb.asm.Opcodes;
+import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
+import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.MethodInsnNode;
+import org.objectweb.asm.tree.MethodNode;
 
 import jredfox.mce.util.MCECoreUtils;
 
@@ -64,33 +69,72 @@ public class ForgeVersionProxy {
 
 	public static void init() 
 	{
+		ClassNode c;
 		try 
 		{
-			ClassNode c = MCECoreUtils.getClassNode(ForgeVersionProxy.class.getClassLoader().getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
+			c = MCECoreUtils.getClassNode(ForgeVersionProxy.class.getClassLoader().getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
+			boolean modified = false;
 			for(FieldNode f : c.fields)
 			{
 				String n = f.name;
-				if(n.equals("majorVersion"))
-					majorVersion = ((Number)f.value).intValue();
-				else if(n.equals("minorVersion"))
-					minorVersion = ((Number)f.value).intValue();
-				else if(n.equals("revisionVersion"))
-					revisionVersion = ((Number)f.value).intValue();
-				else if(n.equals("buildVersion"))
-					buildVersion = ((Number)f.value).intValue();
-				else if(n.equals("mcVersion"))
-					mcVersion = (String) f.value;
-				else if(n.equals("mcpVersion"))
-					mcpVersion = (String) f.value;
+				try
+				{
+					if(n.equals("majorVersion"))
+						majorVersion = ((Number)f.value).intValue();
+					else if(n.equals("minorVersion"))
+						minorVersion = ((Number)f.value).intValue();
+					else if(n.equals("revisionVersion"))
+						revisionVersion = ((Number)f.value).intValue();
+					else if(n.equals("buildVersion"))
+						buildVersion = ((Number)f.value).intValue();
+					else if(n.equals("mcVersion"))
+						mcVersion = (String) f.value;
+					else if(n.equals("mcpVersion"))
+						mcpVersion = (String) f.value;
+				}
+				catch(NullPointerException e)
+				{
+					System.err.println("Field " + f.name + " is no longer final!");
+					modified = true;
+				}
 			}
 			
-			initMcVersion();
-			notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
+			//Handle ForgeVersion whan the class has been AT (Access Transformed) or modified and are no longer final fields
+			if(modified)
+			{
+				MethodNode m = MCECoreUtils.getMethodNode(c, "<clinit>", "()V");
+				for(AbstractInsnNode a : m.instructions.toArray())
+				{
+					if(a.getOpcode() == Opcodes.PUTSTATIC && a instanceof FieldInsnNode)
+					{
+						FieldInsnNode insn = (FieldInsnNode) a;
+						if(insn.owner.equals("net/minecraftforge/common/ForgeVersion"))
+						{
+							String n = insn.name;
+							if(n.equals("majorVersion"))
+								majorVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+							else if(n.equals("minorVersion"))
+								minorVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+							else if(n.equals("revisionVersion"))
+								revisionVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+							else if(n.equals("buildVersion"))
+								buildVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+							else if(n.equals("mcVersion"))
+								mcVersion = MCECoreUtils.getStringFromInsn(insn.getPrevious());
+							else if(n.equals("mcpVersion"))
+								mcpVersion = MCECoreUtils.getStringFromInsn(insn.getPrevious());
+						}
+					}
+				}
+			}
 		}
 		catch (Throwable e)
 		{
 			e.printStackTrace();
 		}
+		
+		initMcVersion();
+		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
 	}
 
 	public static void initMcVersion() 

@@ -898,4 +898,53 @@ public class MCECoreUtils {
 		return l;
 	}
 
+	public static int getIntFromInsn(AbstractInsnNode spot)
+	{
+		if(spot instanceof InsnNode)
+		{
+			int opcode = ((InsnNode)spot).getOpcode();
+			switch(opcode)
+			{
+				case Opcodes.ICONST_M1:
+					return -1;
+				case Opcodes.ICONST_0:
+					return 0;		
+				case Opcodes.ICONST_1:
+					return 1;
+				case Opcodes.ICONST_2:
+					return 2;
+				case Opcodes.ICONST_3:
+					return 3;
+				case Opcodes.ICONST_4:
+					return 4;
+				case Opcodes.ICONST_5:
+					return 5;
+				case Opcodes.LCONST_0:
+					return 0;
+				case Opcodes.LCONST_1:
+					return 1;
+				case Opcodes.FCONST_0:
+					return 0;
+				case Opcodes.FCONST_1:
+					return 1;
+				case Opcodes.FCONST_2:
+					return 2;
+				case Opcodes.DCONST_0:
+					return 0;
+				case Opcodes.DCONST_1:
+					return 1;
+			}
+		}
+		else if(spot instanceof IntInsnNode)
+			return ((IntInsnNode)spot).operand;
+		else if(spot instanceof LdcInsnNode)
+			return MCEUtil.parseInt(((LdcInsnNode)spot).cst.toString());
+		return 0;
+	}
+
+	public static String getStringFromInsn(AbstractInsnNode spot) 
+	{
+		return spot instanceof LdcInsnNode ? ((LdcInsnNode)spot).cst.toString() : null;
+	}
+
 }

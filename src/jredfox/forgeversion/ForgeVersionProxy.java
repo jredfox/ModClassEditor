@@ -81,11 +81,6 @@ public class ForgeVersionProxy {
     
     //____START PROXY ADDITIONAL GETTERS____\\
     
-    public static String getProxyVersion()
-    {
-    	return PROXY_VERSION;
-    }
-    
     public static String getMcVersion()
     {
     	return mcVersion;
@@ -94,6 +89,11 @@ public class ForgeVersionProxy {
     public static String getMcpVersion()
     {
     	return mcpVersion;
+    }
+    
+    public static String getProxyVersion()
+    {
+    	return PROXY_VERSION;
     }
     
     public static boolean getNotchNames()

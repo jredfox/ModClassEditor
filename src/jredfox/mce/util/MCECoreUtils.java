@@ -940,7 +940,10 @@ public class MCECoreUtils {
 		else if(spot instanceof IntInsnNode)
 			return ((IntInsnNode)spot).operand;
 		else if(spot instanceof LdcInsnNode)
-			return MCEUtil.parseInt(((LdcInsnNode)spot).cst.toString());
+		{
+			Object o = ((LdcInsnNode)spot).cst;
+			return o instanceof Number ? ( ((Number)o).intValue() ) : ( MCEUtil.parseInt(o.toString()) );
+		}
 		return 0;
 	}
 

@@ -311,9 +311,7 @@ public class ForgeVersionProxy {
 		else if(spot instanceof LdcInsnNode)
 		{
 			Object o = ((LdcInsnNode)spot).cst;
-			if(o instanceof Float || o instanceof Double)
-				return ((Number)o).intValue();
-			return parseInt(o.toString());
+			return o instanceof Number ? ( ((Number)o).intValue() ) : ( parseInt(o.toString()) );
 		}
 		return 0;
 	}

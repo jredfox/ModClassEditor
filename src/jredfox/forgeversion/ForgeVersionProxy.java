@@ -1,19 +1,27 @@
 package jredfox.forgeversion;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
+import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
+import org.objectweb.asm.tree.InsnNode;
+import org.objectweb.asm.tree.IntInsnNode;
+import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import jredfox.mce.util.MCECoreUtils;
-
 /**
- * Safely Get the Forge Version 1.3.2 - 1.12.2 without loading the ModContainer class
+ * Safely Get the Forge Version 1.3.2 - 1.12.2 without loading the ModContainer class.
+ * Class Is Portable, Free to Use, Copy, Re-Distribute and Modify for your own project.
+ * If you modify this and it's not a bug fix please refactor for your own mods to prevent class collisions
+ * @report bugs to github.com/jredfox/mc-dpifix/issues
  * @author jredfox
  */
 public class ForgeVersionProxy {
@@ -36,6 +44,10 @@ public class ForgeVersionProxy {
      * Use this for ASM to determine if your transformer should use notch names vs SRG names
      */
     public static boolean notchNames;
+    /**
+     * The ForgeVersionProxy Version
+     */
+    public static final String PROXY_VERSION = "1.0.0";
 	
 	static
 	{
@@ -66,13 +78,45 @@ public class ForgeVersionProxy {
     {
         return String.format("%d.%d.%d.%d", majorVersion, minorVersion, revisionVersion, buildVersion);
     }
+    
+    //____START PROXY ADDITIONAL GETTERS____\\
+    
+    public static String getProxyVersion()
+    {
+    	return PROXY_VERSION;
+    }
+    
+    public static String getMcVersion()
+    {
+    	return mcVersion;
+    }
+    
+    public static String getMcpVersion()
+    {
+    	return mcpVersion;
+    }
+    
+    public static boolean getNotchNames()
+    {
+    	return notchNames;
+    }
+    
+  //____END PROXY ADDITIONAL GETTERS____\\
 
 	public static void init() 
 	{
 		ClassNode c;
 		try 
 		{
-			c = MCECoreUtils.getClassNode(ForgeVersionProxy.class.getClassLoader().getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
+			c = getClassNode(ForgeVersionProxy.class.getClassLoader().getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
+			if(c == null)
+			{
+				System.err.println("Unable to Parse ForgeVersion.class via ClassNode! It's likely you are on 1.2.5 or Older and isn't supported!");
+				mcVersion = "1.2.5";
+				notchNames = true;
+				return;
+			}
+			
 			boolean modified = false;
 			for(FieldNode f : c.fields)
 			{
@@ -102,7 +146,7 @@ public class ForgeVersionProxy {
 			//Handle ForgeVersion whan the class has been AT (Access Transformed) or modified and are no longer final fields
 			if(modified)
 			{
-				MethodNode m = MCECoreUtils.getMethodNode(c, "<clinit>", "()V");
+				MethodNode m = getMethodNode(c, "<clinit>", "()V");
 				for(AbstractInsnNode a : m.instructions.toArray())
 				{
 					if(a.getOpcode() == Opcodes.PUTSTATIC && a instanceof FieldInsnNode)
@@ -112,17 +156,17 @@ public class ForgeVersionProxy {
 						{
 							String n = insn.name;
 							if(n.equals("majorVersion"))
-								majorVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+								majorVersion = getIntFromInsn(insn.getPrevious());
 							else if(n.equals("minorVersion"))
-								minorVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+								minorVersion = getIntFromInsn(insn.getPrevious());
 							else if(n.equals("revisionVersion"))
-								revisionVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+								revisionVersion = getIntFromInsn(insn.getPrevious());
 							else if(n.equals("buildVersion"))
-								buildVersion = MCECoreUtils.getIntFromInsn(insn.getPrevious());
+								buildVersion = getIntFromInsn(insn.getPrevious());
 							else if(n.equals("mcVersion"))
-								mcVersion = MCECoreUtils.getStringFromInsn(insn.getPrevious());
+								mcVersion = getStringFromInsn(insn.getPrevious());
 							else if(n.equals("mcpVersion"))
-								mcpVersion = MCECoreUtils.getStringFromInsn(insn.getPrevious());
+								mcpVersion = getStringFromInsn(insn.getPrevious());
 						}
 					}
 				}
@@ -223,5 +267,117 @@ public class ForgeVersionProxy {
 	}
 
 	public static void load() {}
+	
+	public static int getIntFromInsn(AbstractInsnNode spot)
+	{
+		if(spot instanceof InsnNode)
+		{
+			int opcode = ((InsnNode)spot).getOpcode();
+			switch(opcode)
+			{
+				case Opcodes.ICONST_M1:
+					return -1;
+				case Opcodes.ICONST_0:
+					return 0;		
+				case Opcodes.ICONST_1:
+					return 1;
+				case Opcodes.ICONST_2:
+					return 2;
+				case Opcodes.ICONST_3:
+					return 3;
+				case Opcodes.ICONST_4:
+					return 4;
+				case Opcodes.ICONST_5:
+					return 5;
+				case Opcodes.LCONST_0:
+					return 0;
+				case Opcodes.LCONST_1:
+					return 1;
+				case Opcodes.FCONST_0:
+					return 0;
+				case Opcodes.FCONST_1:
+					return 1;
+				case Opcodes.FCONST_2:
+					return 2;
+				case Opcodes.DCONST_0:
+					return 0;
+				case Opcodes.DCONST_1:
+					return 1;
+				default:
+					return 0;
+			}
+		}
+		else if(spot instanceof IntInsnNode)
+			return ((IntInsnNode)spot).operand;
+		else if(spot instanceof LdcInsnNode)
+			return parseInt(((LdcInsnNode)spot).cst.toString());
+		return 0;
+	}
+	
+	/**
+	 * Parse a Int Safely
+	 */
+	public static int parseInt(String value) 
+	{
+		if(value == null) return 0;
+		
+		try
+		{
+			return (int) Long.parseLong(value.trim(), 10);
+		}
+		catch(NumberFormatException e)
+		{
+			return 0;
+		}
+	}
+
+	public static String getStringFromInsn(AbstractInsnNode spot) 
+	{
+		return spot instanceof LdcInsnNode ? ((LdcInsnNode)spot).cst.toString() : null;
+	}
+	
+	public static MethodNode getMethodNode(ClassNode classNode, String method_name, String method_desc) 
+	{
+		for (Object method_ : classNode.methods)
+		{
+			MethodNode method = (MethodNode) method_;
+			if (method.name.equals(method_name) && method.desc.equals(method_desc))
+			{
+				return method;
+			}
+		}
+		return null;
+	}
+	
+	public static ClassNode getClassNode(InputStream stream) throws IOException 
+	{
+		byte[] newbyte = toByteArray(stream);
+		return getClassNode(newbyte);
+	}
+	
+	public static ClassNode getClassNode(byte[] basicClass)
+	{
+		ClassNode classNode = new ClassNode();
+        ClassReader classReader = new ClassReader(basicClass);
+        classReader.accept(classNode, 0);
+        return classNode;
+	}
+	
+    public static byte[] toByteArray(final InputStream input) throws IOException
+    {
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
+    }
+	
+	public static void copy(InputStream in, OutputStream out) throws IOException
+	{
+		byte[] buffer = new byte[1048576/2];
+		int length;
+   	 	while ((length = in.read(buffer)) >= 0)
+		{
+			out.write(buffer, 0, length);
+		}
+	}
 
 }

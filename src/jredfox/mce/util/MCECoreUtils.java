@@ -933,6 +933,8 @@ public class MCECoreUtils {
 					return 0;
 				case Opcodes.DCONST_1:
 					return 1;
+				default:
+					return 0;
 			}
 		}
 		else if(spot instanceof IntInsnNode)

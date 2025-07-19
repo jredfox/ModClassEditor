@@ -18,7 +18,7 @@ public class MCEMod {
 	{
 		Test.load();//TODO: REMOVE
 		ForgeVersionProxy.load();
-		System.out.println(ForgeVersionProxy.getVersion() + " mc:" + ForgeVersionProxy.mcVersion);
+		System.out.println(ForgeVersionProxy.getVersion() + " mc:" + ForgeVersionProxy.mcVersion + " " + ForgeVersionProxy.mcpVersion);
 	}
 	
 	@Mod.PreInit

@@ -5,12 +5,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.MethodNode;
 import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import jredfox.mce.Transformer;
+import jredfox.mce.util.MCECoreUtils;
 
 /**
  * Allows Classes Fields to be edited as if they were a configuration file
@@ -46,6 +48,7 @@ public class MCEObj {
 	
 	public String className;
 	public String classNameASM;
+	public ModAtCfg atmod;
 	public List<MCEField> fields = new ArrayList();
 	protected Transformer transformer;
 	
@@ -70,23 +73,32 @@ public class MCEObj {
 		//clear previous fields
 		this.fields.clear();
 		
+		//Parse the @Mod Configuration Object
+		if(json.containsKey("@Mod"))
+			this.atmod = new ModAtCfg(json.getJSONObject("@Mod"));
+		else if(json.containsKey("modid"))
+			this.atmod = new ModAtCfg(json.getString("modid"));
+		
 		Transformer t = this.transformer;//avoid duplicate GETFIELD
 		JSONArray arr = json.getJSONArray("Fields");
-		for(Object o : arr)
+		if(arr != null)
 		{
-			if(!(o instanceof JSONObject))
-				continue;//Why are there comments in here
-			
-			JSONObject j = (JSONObject) o;
-			MCEField f = !j.containsKey("values") ? new MCEField(this, j) : new MCEArrField(this, j);
-			this.fields.add(f);
-			
-			//Auto AT Custom Classes Who are not in ModClasses
-			if(f.custom && t != null)
+			for(Object o : arr)
 			{
-				String key = f.owner.replace('/', '.');
-				if(!t.arr.containsKey(key))
-					t.at.put(key, "");
+				if(!(o instanceof JSONObject))
+					continue;//Why are there comments in here
+				
+				JSONObject j = (JSONObject) o;
+				MCEField f = !j.containsKey("values") ? new MCEField(this, j) : new MCEArrField(this, j);
+				this.fields.add(f);
+				
+				//Auto AT Custom Classes Who are not in ModClasses
+				if(f.custom && t != null)
+				{
+					String key = f.owner.replace('/', '.');
+					if(!t.arr.containsKey(key))
+						t.at.put(key, "");
+				}
 			}
 		}
 	}
@@ -108,6 +120,7 @@ public class MCEObj {
 
 	public synchronized void configure(ClassNode cn)
 	{
+		this.configureModAnn(cn);
 		//Avoid GETFIELD OPCODES
 		boolean ds = Transformer.ds;
 		boolean labels = Transformer.label;
@@ -154,6 +167,25 @@ public class MCEObj {
 					if(last)
 						c.clear();
 				}
+			}
+		}
+	}
+
+	private static final String ATMOD = "Lcpw/mods/fml/common/Mod;";
+	private void configureModAnn(ClassNode cn) 
+	{
+		ModAtCfg atmod = this.atmod;
+		if(atmod == null)
+			return;
+		
+		for(AnnotationNode ann : cn.visibleAnnotations)
+		{
+			if(ATMOD.equals(ann.desc))
+			{
+				Map<String, Object> vals = MCECoreUtils.getAnnMap(ann);
+				vals.putAll(atmod.values);
+				ann.values = MCECoreUtils.toAnnList(vals);
+				System.out.println(ann.values);
 			}
 		}
 	}

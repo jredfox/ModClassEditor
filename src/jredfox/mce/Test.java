@@ -6,7 +6,8 @@ import java.util.Map;
 
 import org.ralleytn.simple.json.JSONParseException;
 
-import jredfox.mce.types.DataTypeContainer;
+import cpw.mods.fml.common.Loader;
+import cpw.mods.fml.common.ModContainer;
 import jredfox.mce.util.OpcodeHelper;
 
 public class Test {
@@ -109,6 +110,8 @@ public class Test {
 	public static void load() {
 		method_st(null);
 		TestDemo.B.init();
+		for(ModContainer m : Loader.instance().getActiveModList())
+			System.out.println(m + ", " + m.getModId() + ", " + m.getName());
 	}
 	
 	public static void main(String[] args) throws JSONParseException

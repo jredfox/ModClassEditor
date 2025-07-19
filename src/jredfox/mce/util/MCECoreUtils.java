@@ -7,12 +7,16 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.objectweb.asm.ClassReader;
 import org.objectweb.asm.ClassWriter;
 import org.objectweb.asm.Opcodes;
 import org.objectweb.asm.tree.AbstractInsnNode;
+import org.objectweb.asm.tree.AnnotationNode;
 import org.objectweb.asm.tree.ClassNode;
 import org.objectweb.asm.tree.FieldInsnNode;
 import org.objectweb.asm.tree.FieldNode;
@@ -850,6 +854,34 @@ public class MCECoreUtils {
 			index = index.getNext();
 		}
 		return null;
+	}
+	
+	public static Map<String, Object> getAnnMap(AnnotationNode ann)
+	{
+		List<Object> vals = ann.values;
+		if(vals == null || vals.isEmpty())
+			return new HashMap(0);
+		
+		int size = vals.size();
+		Map<String, Object> annMap = new LinkedHashMap((size / 2) + 1);
+		for (int i = 0; i < size; i += 2)
+		{
+			String key = (String) vals.get(i);
+			Object val = vals.get(i + 1);
+			annMap.put(key, val);
+		}
+		return annMap;
+	}
+	
+	public static List<Object> toAnnList(Map<String, Object> m)
+	{
+		List l = new ArrayList(m.size() * 2);
+		for(Map.Entry<String, Object> e : m.entrySet())
+		{
+			l.add(e.getKey());
+			l.add(e.getValue());
+		}
+		return l;
 	}
 
 }

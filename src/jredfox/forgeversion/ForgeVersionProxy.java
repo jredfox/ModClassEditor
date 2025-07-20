@@ -171,14 +171,9 @@ public class ForgeVersionProxy {
 					System.err.println("Field " + f.name + " is no longer final!");
 					modified = true;
 				}
-				catch(ClassCastException ec)
+				catch(Exception ec)
 				{
-					System.err.println("Field " + f.name + " is no longer a Number or primative! Class:" + (f.value != null ? f.value.getClass().getName() : "null"));
-					modified = true;
-				}
-				catch(IllegalArgumentException e)
-				{
-					System.err.println("Field " + f.name + " is no longer a Number or primative! Class:" + (f.value != null ? f.value.getClass().getName() : "null"));
+					System.err.println("Field " + f.name + " is no longer a Number or Primative! Class:" + (f.value != null ? f.value.getClass().getName() : "null"));
 					modified = true;
 				}
 			}

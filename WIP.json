@@ -9,6 +9,21 @@
   
   "com.example.ExampleMod":
   {
+	"modid": "My Configurable Modid",
+	"@Mod":
+	{
+		"modid": "Overriden",
+		"name": "A Custom Name",
+		"dependencies": "before:*",
+		"useMetadata": true
+	},
+	"@NetworkMod":
+	{
+		"clientSideRequired": false,
+		"serverSideRequired": false,
+		"versionBounds": "",
+	}
+	
     "Fields":
     [
       {
@@ -19,7 +34,6 @@
       },
       {
         "name": "id",
-		"__comment": "use @<clinit> @Construction @PreInit @Init or @PostInit to make the values generate at MCE's Loading Stages instead of the class your editing's Stages",
         "method": "preinit",
 		"desc": "*",
 		"_comment": "//inject values are [before, after, <injectionPoint>, <before:InjectionByteCodePoint>] it will be injected before the next label or before the next return",
@@ -57,8 +71,7 @@
         "desc": "",
         "find": 1738,
         "replace": 2402,
-        "index": 0,
-        "all": true
+        "index": "start-end"
       },
 	 {
 		"type": "int",
@@ -67,19 +80,71 @@
         "find": 101,
         "replace": 1096,
 		"_comment": "index_range will start at index 0 and end replacing at index 10 so 11 indices will be replaced",
-        "index": "0-10"
+        "index": "0-10",
+		"increment_find": 1,
+		"increment_replace": 1
       }
     ],
     
     "MethodChangeParams":
     [
       {
+		 "_comment": "SUPPORTS Changing values of: methods params, method invokation's params, local variable values",
         "method": "loadBlocks",
         "desc": "",
-        "inject": "INVOKEVIRTUAL, \"java/io/PrintStream\", \"println\", \"(I)V\", false",
+        "inject": "AFTER, MethodInsnNode, INVOKEVIRTUAL, \"java/io/PrintStream\", \"println\", \"(I)V\", false",
+		"inject": "AFTER, LABEL:32",
         "param": 0,
         "value": 64209
       }
+    ]
+	
+	"Annotations":
+    [
+	  {
+		"ann": "cpw.mods.fml.common.Mod",
+		"values": 
+		{
+			"modid": "examplemodid //types are dynamically determined by parsing the Annotation class data via ASM for example this would be type string",
+			"name": "Example Mod",
+			"version": "0.0.0.1"
+		}
+	  },
+	  {
+		"ann": "cpw.mods.fml.common.Mod$Block",
+		"field": "myBlock",
+		"values": 
+		{
+			"name": "myBlock2"
+		}
+	  },
+	  {
+		"ann": "cpw.mods.fml.common.Mod$ServerStarting",
+		"method": "serverStartingMethod",
+		"desc": "()V",
+		"values":
+		{
+			"example key": "example value"
+		}
+	  },
+	  {
+		"ann": "cpw.mods.fml.common.Mod$Block",
+		"method": "serverStartingMethod",
+		"desc": "()V",
+		"param": "0-end",
+		"values":
+		{
+			"example key": "example value"
+		}
+	  },
+	  {
+		"ann": "cpw.mods.fml.common.Mod",
+		"package": true
+		"values": 
+		{
+			"key": "value"
+		}
+	  },
     ]
   }
 }

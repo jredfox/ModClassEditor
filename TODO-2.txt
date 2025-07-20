@@ -1,25 +1,72 @@
 TODONOW:
-- Dynamic Setter Fix Method Number Inversion
-- Investigate why Inversion Happens
+- Fix isClient boolean
+- Fix Resource Leaks in EvilNotchLib
+
+cpw.mods.fml.common.DummyModContainer
+- override metadata entirely configured before the duplicate mods exception
+
+cpw.mods.fml.common.modloader.ModLoaderModContainer
+- override the modid before return
+
+cpw.mods.fml.common.FMLModContainer
+- override the desc found before return
+
+public boolean deDuplicateModIds
+- changes the modid dynamically to prevent conflict "modid" --> "modid_<int>" where int is the generated number for the first free modid string
+
+TODO DPI-FIX:
+- Fix MC 1.5x Dedicated Server not being visible when the java agent is active
+- Fix MC 1.5x Dedicated Server isClinet is true when it's a server
+- Fix MC 1.5x Dedicated Server acceptedMinecraftVersions = ""
+- Fix MC 1.5x @Mod$EventHandler Annotations not getting removed
 
 TODO 2:
+- Configurable Modids per class
 - Support Object Field Editing Assuming they have the Instance of the Object
-- Support Editing another Classs Fields assuming both type and "class or owner" are non null
-- AT all classes that are not on the list but are in an MCEField setter that's setting a custom class's fields
 - Support Editing Static Arrays for opperations replace, append, and grow
-- MCEGen gen array output for x limit of indexes alloud using Object and then a dynamic instanceof check
 - Wildcards support '|' for or and '!' for not
 - Variables with incremental value in Main JSON that can be used in either value or values tag. This is so we can just say "@ID" instead of "0" then "1" then "2" because id will say it is 0 with increment of 1
 - Index Opperations for both array "index" and ASM injection point "occurance" and "shift" and "index" for FindAndReplace examples: "0-(end - 1)", "(end+1)", "(start+5)-(end*start+3)" opperations supports +, -, *, % and will go from left to right with the index base being defined by the starting number. Variable support included?
+- MCEGen support dumping arrays into their own individual file if configured to by ModClassEditor.json
+- Test Obfuscated and what has to change
 
 TODO 3:
 - Fields
-- Configureable Modids and annotations!
+- Universal Configureable Annotations!
 - Find and Replace with advanced features like increment id search and increment value
 - Change Params of methods
 - Change Params of method instructions
 - MCWriter 2 (Backported and or re-written version of MCWriter from EviLNotchLib)
 - Support Static Arrays 2d - 12d
+
+ChangeLog 0.11.0:
+- Added @Mod and modid Configuration (Currently only edits the class and can only be used by dumping the class and modding the jar)
+- Added @NetworkMod Configuration
+- Added ForgeVersionProxy to get the forge's version without loading ForgeVersion or the ModContainer class
+
+ChangeLog 0.10.0:
+- Fixed Duplicate Injection(Insertion) Points not merging when AFTER Instruction A was the same place as BEFORE instruction B
+- Fixed Injection(Insertion) Point Order being screwed up when AFTER Instruction A was the same place as BEFORE instruction B
+- Fixed Label Injection for when Opperation was BEFORE and we either never shifted backwards or the shiftTo was EXACT
+- Fixed Label Injection for when the point was a FrameNode and previous point was a Label or Line.
+- Optimized Configure Main Loop
+- Optimized Lookup for CachedInsertionPoint
+- Optimized Slightly MCECoreUtils#getFirstCtrInsn
+
+ChangeLog 0.9.1:
+- Fixed MCEGen exceeding bytecode limit for PreInit, Init, and PostInit checks. It now generates one dynamic checker per class instead of one for all classes. Supports up to 65,000 classes now
+- Fixed MCEGen PreInit, Init, and PostInit "public static void init()" method containing "this" as a local variable when it's a static method
+- Fixed Constructor Checking owner#isEmpty twice instead of using an if else block
+
+ChangeLog 0.9.0:
+- Added Ability to set custom fields of another class. For example Minecraft#debugFPS can get set in Test's <clinit>. TYPE must be specified or it will not work
+- Added Auto AT for custom fields of another class
+- Added Interchangeability of '/' to '.' for the "ModClasses" "owner" "class" tags
+
+ChangeLog 0.8.1:
+- Fixed Duplicate Dynamic Setters for the same CachedInsertionPoint we now use Map<CachedInsertionPoint, MethodNode> for dynamic setters it's also faster
+- Fixed No-Issue Missing Break in MCECoreUtils#genStaticArray for cases 'WRAPPED_CHAR' and 'CHAR'. Since it was the last case no bug ever happened
+- Optimized Slightly Main Configure loop as MCEField#genDynamicSetter returns void now (nothing)
 
 ChangeLog 0.8.0:
 - Added Dynamic Setters to prevent exceeding bytecode limit of 65535 bytes per method
@@ -27,6 +74,7 @@ ChangeLog 0.8.0:
 - Fixed Possible NullPointerExceptions in MCECoreUtils#getLastReturn as ASM 4 seems to love to put null indexes into InsnList#toArray
 - Fixed MCEGen possibly exceeding the bytecode limit of 65535 bytes per method
 - Fixed MCEGen not using labels for each line of code for MCEGen#capValue & MCEGen#saveChanges
+- Fixed Inversion Injection Bugs
 
 ChangeLog 0.7.2:
 - Fixed Injection Point when opperation was 'AFTER' shiftTo was 'LABEL' and next insn was a FrameNode and after was LineNumberNode

@@ -21,7 +21,7 @@ import org.objectweb.asm.tree.MethodNode;
  * Class Is Portable, Free to Use, Copy, Re-Distribute and Modify for your own project.
  * If you modify this and it's not a bug fix please refactor for your own mods to prevent class collisions
  * @report bugs to github.com/jredfox/mc-dpifix/issues
- * @compiling needs SideOnly Side classes from both 1.4.5 and 1.5.2 to compile. Do not include inside SideOnly or Side.CLIENT inside your mod's jar. Detection is automatic and won't trigger incorrect classloading
+ * @compiling needs SideOnly Side classes from 1.4.5, 1.5.2 and 1.8's to compile. Do not include inside SideOnly or Side.CLIENT inside your mod's jar. Detection is automatic and won't trigger incorrect classloading
  * @author jredfox
  */
 public class ForgeVersionProxy {
@@ -215,16 +215,22 @@ public class ForgeVersionProxy {
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
 		isObf = (majorVersion < 7 && buildVersion < 448) ? (cl.getResource("net/minecraft/src/World.class") == null && cl.getResource("net/minecraft/world/World.class") == null) : (cl.getResource("net/minecraft/world/World.class") == null);
-		isClient = majorVersion < 8 ? legacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
+		isClient = sideCheck();
 	}
 	
-	private static boolean legacyIsClient()
+	/**
+	 * Accurately Check 1.3.2 - 1.12.2 For the real boolean of isClient when {@link #hasForge} is true
+	 */
+	private static boolean sideCheck()
 	{
 		try
 		{
-			//1.4.6 - 1.5.2
-			if(majorVersion > 6 || majorVersion == 6 && buildVersion >= 451)
-				SideCheckOF.checkClient();
+			//1.8 - 1.12.2
+			if(majorVersion > 10)
+				SideCheckModern.checkClient();
+			//1.4.6 - 1.7.10
+			else if(majorVersion > 6 || majorVersion == 6 && buildVersion >= 451)
+				SideCheckOld.checkClient();
 			//1.3.2 - 1.4.5
 			else
 				SideCheckLegacy.checkClient();
@@ -235,8 +241,23 @@ public class ForgeVersionProxy {
 			return false;
 		}
 	}
+	
+	public static class SideCheckModern
+	{
+		@net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.CLIENT)
+		public static void checkClient()
+		{
+			
+		}
+		
+		@net.minecraftforge.fml.relauncher.SideOnly(net.minecraftforge.fml.relauncher.Side.SERVER)
+		public static void checkServer()
+		{
+			
+		}
+	}
 
-	public static class SideCheckOF
+	public static class SideCheckOld
 	{
 		@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 		public static void checkClient()

@@ -213,11 +213,23 @@ public class MCECoreUtils {
     	}
 	}
 	
-    public static byte[] toByteArray(final InputStream input) throws IOException
+    public static byte[] toByteArray(final InputStream input)
     {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
+    	try
+    	{
+	        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+	        copy(input, output);
+	        return output.toByteArray();
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	finally
+    	{
+    		Util.close(input);
+    	}
+    	return null;
     }
 	
 	public static void copy(InputStream in, OutputStream out) throws IOException

@@ -351,25 +351,45 @@ public class ForgeVersionProxy {
 		return null;
 	}
 	
-	public static ClassNode getClassNode(InputStream stream) throws IOException 
+	public static ClassNode getClassNode(InputStream stream) 
 	{
-		byte[] newbyte = toByteArray(stream);
-		return getClassNode(newbyte);
-	}
-	
-	public static ClassNode getClassNode(byte[] basicClass)
-	{
+		byte[] basicClass = toByteArray(stream);
 		ClassNode classNode = new ClassNode();
         ClassReader classReader = new ClassReader(basicClass);
         classReader.accept(classNode, 0);
         return classNode;
 	}
 	
-    public static byte[] toByteArray(final InputStream input) throws IOException
+	/**
+	 * Converts the InputStream into byte[] then closes the InputStream
+	 */
+    public static byte[] toByteArray(final InputStream input)
     {
-        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-        copy(input, output);
-        return output.toByteArray();
+    	try
+    	{
+	        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+	        copy(input, output);
+	        return output.toByteArray();
+    	}
+    	catch(Exception e)
+    	{
+    		e.printStackTrace();
+    	}
+    	finally
+    	{
+    		if(input != null)
+    		{
+    			try
+    			{
+    				input.close();
+    			}
+    			catch(Throwable t)
+    			{
+    				t.printStackTrace();
+    			}
+    		}
+    	}
+    	return null;
     }
 	
 	public static void copy(InputStream in, OutputStream out) throws IOException

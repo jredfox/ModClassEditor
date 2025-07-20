@@ -61,7 +61,7 @@ public class ForgeVersionProxy {
     /**
      * The ForgeVersionProxy Version
      */
-    public static final String PROXY_VERSION = "1.0.1";
+    public static final String PROXY_VERSION = "1.0.0";
 	
 	static
 	{
@@ -432,45 +432,49 @@ public class ForgeVersionProxy {
 		return null;
 	}
 	
-	public static ClassNode getClassNode(InputStream stream) 
+	public static ClassNode getClassNode(InputStream in) 
 	{
-		byte[] basicClass = toByteArray(stream);
-		ClassNode classNode = new ClassNode();
-        ClassReader classReader = new ClassReader(basicClass);
-        classReader.accept(classNode, 0);
-        return classNode;
+		if(in == null)
+			return null;
+		
+		try
+		{
+			byte[] basicClass = toByteArray(in);
+			ClassNode classNode = new ClassNode();
+	        ClassReader classReader = new ClassReader(basicClass);
+	        classReader.accept(classNode, 0);
+	        return classNode;
+		}
+		catch(Throwable t)
+		{
+			t.printStackTrace();
+		}
+		finally
+		{
+			if(in != null)
+			{
+				try
+				{
+					in.close();
+				}
+				catch(Throwable t)
+				{
+					t.printStackTrace();
+				}
+			}
+		}
+		return null;
 	}
 	
 	/**
 	 * Converts the InputStream into byte[] then closes the InputStream
+	 * @throws IOException 
 	 */
-    public static byte[] toByteArray(final InputStream input)
+    public static byte[] toByteArray(final InputStream input) throws IOException
     {
-    	try
-    	{
-	        final ByteArrayOutputStream output = new ByteArrayOutputStream();
-	        copy(input, output);
-	        return output.toByteArray();
-    	}
-    	catch(Exception e)
-    	{
-    		e.printStackTrace();
-    	}
-    	finally
-    	{
-    		if(input != null)
-    		{
-    			try
-    			{
-    				input.close();
-    			}
-    			catch(Throwable t)
-    			{
-    				t.printStackTrace();
-    			}
-    		}
-    	}
-    	return null;
+        final ByteArrayOutputStream output = new ByteArrayOutputStream();
+        copy(input, output);
+        return output.toByteArray();
     }
 	
 	public static void copy(InputStream in, OutputStream out) throws IOException

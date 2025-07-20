@@ -211,7 +211,7 @@ public class ForgeVersionProxy {
 		
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
-		isObf = cl.getResource("net/minecraft/world/World.class") == null;
+		isObf = majorVersion < 7 ? (cl.getResource("net/minecraft/src/World.class") == null && cl.getResource("net/minecraft/world/World.class") == null) : (cl.getResource("net/minecraft/world/World.class") == null);
 		isClient = majorVersion < 8 ? getLegacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 	}
 	

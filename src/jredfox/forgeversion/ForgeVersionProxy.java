@@ -44,6 +44,14 @@ public class ForgeVersionProxy {
      */
     public static boolean notchNames;
     /**
+     * Are we running on the client or the server?
+     */
+    public static boolean isClient;
+    /**
+     * Are we running on a obfuscated environment
+     */
+    public static boolean isObf;
+    /**
      * The ForgeVersionProxy Version
      */
     public static final String PROXY_VERSION = "1.0.0";
@@ -90,24 +98,35 @@ public class ForgeVersionProxy {
     	return mcpVersion;
     }
     
-    public static String getProxyVersion()
-    {
-    	return PROXY_VERSION;
-    }
-    
     public static boolean getNotchNames()
     {
     	return notchNames;
+    }
+    
+    public static boolean getIsClient()
+    {
+    	return isClient;
+    }
+    
+    public static boolean getIsObf()
+    {
+    	return isObf;
+    }
+    
+    public static String getProxyVersion()
+    {
+    	return PROXY_VERSION;
     }
     
   //____END PROXY ADDITIONAL GETTERS____\\
 
 	public static void init() 
 	{
+		ClassLoader cl = ForgeVersionProxy.class.getClassLoader();
 		ClassNode c;
 		try 
 		{
-			c = getClassNode(ForgeVersionProxy.class.getClassLoader().getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
+			c = getClassNode(cl.getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
 			if(c == null)
 			{
 				System.err.println("Unable to Parse ForgeVersion.class via ClassNode! It's likely you are on 1.2.5 or Older and isn't supported!");
@@ -178,6 +197,8 @@ public class ForgeVersionProxy {
 		
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
+		isClient = majorVersion < 8 ? cl.getSystemClassLoader().getResource("net/minecraft/client/Minecraft.class") != null : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
+		isObf = cl.getResource("net/minecraft/world/World.class") == null;
 	}
 
 	public static void initMcVersion() 

@@ -98,7 +98,8 @@ public class Transformer implements IClassTransformer {
 		gen.init();
 		System.out.println("Recompute frames:" + this.recomputeFrames + ", GenFieldNames:" + this.generateFieldNames);
 		System.out.println("GC:" + this.gc + " Dump:" + this.dump + " DumpOrg:" + this.dumpOrg + " BatchLoad:" + this.batchLoad);
-		System.out.println(ForgeVersionProxy.getVersion() + " mc:" + ForgeVersionProxy.mcVersion);
+		System.out.println("ForgeVersion:" + ForgeVersionProxy.getVersion() + " mc:" + ForgeVersionProxy.mcVersion);
+		System.out.println("isClient:" + ForgeVersionProxy.isClient + " isObf:" + ForgeVersionProxy.isObf);
 	}
 	
 	/**

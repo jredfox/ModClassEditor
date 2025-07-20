@@ -171,6 +171,16 @@ public class ForgeVersionProxy {
 					System.err.println("Field " + f.name + " is no longer final!");
 					modified = true;
 				}
+				catch(ClassCastException ec)
+				{
+					System.err.println("Field " + f.name + " is no longer a Number or primative! Value:" + (f.value != null ? f.value.getClass().getName() : "null"));
+					modified = true;
+				}
+				catch(IllegalArgumentException e)
+				{
+					System.err.println("Field " + f.name + " is no longer a Number or primative! Value:" + (f.value != null ? f.value.getClass().getName() : "null"));
+					modified = true;
+				}
 			}
 			
 			//Handle ForgeVersion whan the class has been AT (Access Transformed) or modified and are no longer final fields

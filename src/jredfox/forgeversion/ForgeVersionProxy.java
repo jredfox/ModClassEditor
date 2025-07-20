@@ -16,14 +16,12 @@ import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
-import cpw.mods.fml.relauncher.Side;
-import cpw.mods.fml.relauncher.SideOnly;
-
 /**
  * Safely Get the Forge Version 1.3.2 - 1.12.2 without loading the ModContainer class.
  * Class Is Portable, Free to Use, Copy, Re-Distribute and Modify for your own project.
  * If you modify this and it's not a bug fix please refactor for your own mods to prevent class collisions
  * @report bugs to github.com/jredfox/mc-dpifix/issues
+ * @compiling needs SideOnly Side classes from both 1.3.2 and 1.5.2 to compile. Do not include inside the build as it will only trigger loading the correct method
  * @author jredfox
  */
 public class ForgeVersionProxy {
@@ -212,14 +210,17 @@ public class ForgeVersionProxy {
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
 		isObf = (majorVersion < 7 && buildVersion < 448) ? (cl.getResource("net/minecraft/src/World.class") == null && cl.getResource("net/minecraft/world/World.class") == null) : (cl.getResource("net/minecraft/world/World.class") == null);
-		isClient = majorVersion < 8 ? getLegacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
+		isClient = majorVersion < 8 ? legacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 	}
 	
-	private static boolean getLegacyIsClient()
+	private static boolean legacyIsClient()
 	{
 		try
 		{
-			SideCheck.checkClient();
+			if(majorVersion > 6 || majorVersion == 6 && buildVersion < 451)
+				SideCheckOF.checkClient();
+			else
+				SideCheckLegacy.checkClient();
 			return true;
 		}
 		catch(Throwable t)
@@ -228,15 +229,30 @@ public class ForgeVersionProxy {
 		}
 	}
 
-	public static class SideCheck
+	public static class SideCheckOF
 	{
-		@SideOnly(Side.CLIENT)
+		@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.CLIENT)
 		public static void checkClient()
 		{
 			
 		}
 		
-		@SideOnly(Side.SERVER)
+		@cpw.mods.fml.relauncher.SideOnly(cpw.mods.fml.relauncher.Side.SERVER)
+		public static void checkServer()
+		{
+			
+		}
+	}
+	
+	public static class SideCheckLegacy
+	{
+		@cpw.mods.fml.common.asm.SideOnly(cpw.mods.fml.common.Side.CLIENT)
+		public static void checkClient()
+		{
+			
+		}
+		
+		@cpw.mods.fml.common.asm.SideOnly(cpw.mods.fml.common.Side.SERVER)
 		public static void checkServer()
 		{
 			

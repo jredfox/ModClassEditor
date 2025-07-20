@@ -142,7 +142,7 @@ public class ForgeVersionProxy {
 				mcVersion = "1.2.5";
 				notchNames = true;
 				isObf = true;
-				isClient = majorVersion < 8 ? cl.getSystemClassLoader().getResource("net/minecraft/client/Minecraft.class") != null : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
+				isClient = cl.getSystemClassLoader().getResource("net/minecraft/client/Minecraft.class") != null || cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 				return;
 			}
 			

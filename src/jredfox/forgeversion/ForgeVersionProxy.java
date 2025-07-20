@@ -149,8 +149,9 @@ public class ForgeVersionProxy {
 			}
 			
 			boolean modified = false;
-			for(FieldNode f : c.fields)
+			for(Object of : c.fields)
 			{
+				FieldNode f = (FieldNode) of;
 				String n = f.name;
 				try
 				{
@@ -210,8 +211,8 @@ public class ForgeVersionProxy {
 		
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
-		isClient = majorVersion < 8 ? getLegacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 		isObf = cl.getResource("net/minecraft/world/World.class") == null;
+		isClient = majorVersion < 8 ? getLegacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 	}
 	
 	private static boolean getLegacyIsClient()

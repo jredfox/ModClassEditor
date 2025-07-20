@@ -16,6 +16,9 @@ import org.objectweb.asm.tree.IntInsnNode;
 import org.objectweb.asm.tree.LdcInsnNode;
 import org.objectweb.asm.tree.MethodNode;
 
+import cpw.mods.fml.relauncher.Side;
+import cpw.mods.fml.relauncher.SideOnly;
+
 /**
  * Safely Get the Forge Version 1.3.2 - 1.12.2 without loading the ModContainer class.
  * Class Is Portable, Free to Use, Copy, Re-Distribute and Modify for your own project.
@@ -40,17 +43,23 @@ public class ForgeVersionProxy {
      */
     public static String mcpVersion;
     /**
+     * When false forge build numbers will be 0 {@link #majorVersion}, {@link #minorVersion}, {@link #revisionVersion}, {@link #buildVersion}
+     * {@link #mcVersion} will be "1.2.5" and the Extension booleans will be the best guess
+     * such as {@link #notchNames} will be true {@link #isObf} will be true and {@link #isClient} will be determined based on the Existence of the Main class
+     */
+    public static boolean hasForge;
+    /**
      * Use this for ASM to determine if your transformer should use notch names vs SRG names
      */
     public static boolean notchNames;
     /**
-     * Are we running on the client or the server?
-     */
-    public static boolean isClient;
-    /**
      * Are we running on a obfuscated environment
      */
     public static boolean isObf;
+    /**
+     * Are we running on the client or the server?
+     */
+    public static boolean isClient;
     /**
      * The ForgeVersionProxy Version
      */
@@ -122,6 +131,7 @@ public class ForgeVersionProxy {
 
 	public static void init() 
 	{
+		hasForge = true;
 		ClassLoader cl = ForgeVersionProxy.class.getClassLoader();
 		ClassNode c;
 		try 
@@ -129,9 +139,12 @@ public class ForgeVersionProxy {
 			c = getClassNode(cl.getResourceAsStream("net/minecraftforge/common/ForgeVersion.class"));
 			if(c == null)
 			{
-				System.err.println("Unable to Parse ForgeVersion.class via ClassNode! It's likely you are on 1.2.5 or Older and isn't supported!");
+				System.err.println("Unable to Parse ForgeVersion.class via ClassNode! Either Forge isn't installed or your MC Version is 1.2.5 or older which isn't supported!");
+				hasForge = false;
 				mcVersion = "1.2.5";
 				notchNames = true;
+				isObf = true;
+				isClient = majorVersion < 8 ? cl.getSystemClassLoader().getResource("net/minecraft/client/Minecraft.class") != null : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 				return;
 			}
 			
@@ -197,11 +210,39 @@ public class ForgeVersionProxy {
 		
 		initMcVersion();
 		notchNames = majorVersion < 9 || majorVersion == 9 && minorVersion <= 11 && buildVersion < 937;
-		isClient = majorVersion < 8 ? cl.getSystemClassLoader().getResource("net/minecraft/client/Minecraft.class") != null : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
+		isClient = majorVersion < 8 ? getLegacyIsClient() : cl.getSystemClassLoader().getResource("net/minecraft/client/main/Main.class") != null;
 		isObf = cl.getResource("net/minecraft/world/World.class") == null;
 	}
+	
+	private static boolean getLegacyIsClient()
+	{
+		try
+		{
+			SideCheck.checkClient();
+			return true;
+		}
+		catch(Throwable t)
+		{
+			return false;
+		}
+	}
 
-	public static void initMcVersion() 
+	public static class SideCheck
+	{
+		@SideOnly(Side.CLIENT)
+		public static void checkClient()
+		{
+			
+		}
+		
+		@SideOnly(Side.SERVER)
+		public static void checkServer()
+		{
+			
+		}
+	}
+
+	public static void initMcVersion()
 	{
 		if(mcVersion != null)
 			return;

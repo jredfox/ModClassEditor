@@ -162,9 +162,9 @@ public class ForgeVersionProxy {
 					else if(n.equals("buildVersion"))
 						buildVersion = ((Number)f.value).intValue();
 					else if(n.equals("mcVersion"))
-						mcVersion = (String) f.value;
+						mcVersion = f.value.toString();
 					else if(n.equals("mcpVersion"))
-						mcpVersion = (String) f.value;
+						mcpVersion = f.value.toString();
 				}
 				catch(NullPointerException e)
 				{

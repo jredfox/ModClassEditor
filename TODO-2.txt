@@ -1,5 +1,11 @@
+TODONOW-DPI-FIX:
+- cleanup repetitive checks on minor version
+- diff check between just before the local variable changes and last commit then make sure that the new logic matches the old logic
+
+TODO FoxyRetroMDK:
+- Fix 1.1 - 1.2.5 no longer working due to BS security updates
+
 TODONOW:
-- Fix isClient boolean
 - Fix Resource Leaks in EvilNotchLib
 
 cpw.mods.fml.common.DummyModContainer
@@ -15,10 +21,18 @@ public boolean deDuplicateModIds
 - changes the modid dynamically to prevent conflict "modid" --> "modid_<int>" where int is the generated number for the first free modid string
 
 TODO DPI-FIX:
-- Fix MC 1.5x Dedicated Server not being visible when the java agent is active
-- Fix MC 1.5x Dedicated Server isClinet is true when it's a server
 - Fix MC 1.5x Dedicated Server acceptedMinecraftVersions = ""
 - Fix MC 1.5x @Mod$EventHandler Annotations not getting removed
+- Fix LaunchClassLoader fixes not supporting RelaunchClassLoader for 1.3.2 - 1.5.2
+- Recompile X64 (win 7 and windows 8.1+) natives for Windows to stop mcafee from freaking out
+
+DPI-Fix ChangeLog 1.5.5:
+- Fixed MC 1.5x Dedicated Server not being visible when the java agent was active
+- Fixed MC 1.5x Dedicated Server isClient is true when it's a server
+- Fixed MC 1.5x GameModeLib#getFileFromClass returning null sometimes
+- Fixed Triggering Loading ModContainer Class by calling ForgeVersion we now use ForgeVersionProxy a brand new API (SpongeForge and Mod Class Editor Compat)
+- Optimized GETSTATIC Field calls it now gets the forge version field one time per method inside the transformers
+- Cleaned up hard coded checks majorVersion checks into more readable code
 
 TODO 2:
 - Configurable Modids per class

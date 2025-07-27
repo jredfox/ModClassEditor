@@ -10,7 +10,6 @@ import org.ralleytn.simple.json.JSONArray;
 import org.ralleytn.simple.json.JSONObject;
 
 import cpw.mods.fml.relauncher.IClassTransformer;
-import jredfox.forgeversion.ForgeVersionProxy;
 import jredfox.mce.cfg.MCEObj;
 import jredfox.mce.util.JSONUtils;
 import jredfox.mce.util.MCECoreUtils;
@@ -98,8 +97,6 @@ public class Transformer implements IClassTransformer {
 		gen.init();
 		System.out.println("Recompute frames:" + this.recomputeFrames + ", GenFieldNames:" + this.generateFieldNames);
 		System.out.println("GC:" + this.gc + " Dump:" + this.dump + " DumpOrg:" + this.dumpOrg + " BatchLoad:" + this.batchLoad);
-		System.out.println("ForgeVersion:" + ForgeVersionProxy.getVersion() + " mc:" + ForgeVersionProxy.mcVersion);
-		System.out.println("isClient:" + ForgeVersionProxy.isClient + " isObf:" + ForgeVersionProxy.isObf);
 	}
 	
 	/**

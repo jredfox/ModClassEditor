@@ -1,0 +1,200 @@
+"major.minor.patch.revision(mc patch ver specific)-MCVERSION"
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 3, 2, 3, 4, 5, 6, 7, 8, 9]"
+"values": [ 3 ]
+"index": "1",
+"increment": 0 "//increment is zero by default"
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [3, 5, 7, 9, 11, 13, 6, 7, 8, 9]"
+"values": [ 3 ]
+"index": "0-5 //when index is in range form it fills x to y from the first value and increments if it's not equal to 0. use 'end' or -1 to specify end of the array without knowning the size",
+"increment": 2
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 10, 11, 12, 4, 5, 6, 7, 8, 9]"
+"values": [10, 11, 12],
+"index": 1
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 1, 2, 3, 4, 5, 6, 7, 8, 10, 11, 12] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [10, 11, 12],
+"index": "end",
+"grow": true
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [10, 11, 12],
+"index": "end",
+"grow": true,
+"append": true
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [ 0 ],
+"index": "0-15",
+"grow": true,
+"increment": 1
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [0, 1, 2, 3, 4, 5, 6, 7, 8 9, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [ 0 ],
+"index": "0-9",
+"grow": true,
+"append": true,
+"increment": 1
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [10, 11, 12, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [10, 11, 12],
+"index": "0",
+"append": true
+
+"//arr [0, 1, 2, 3, 4, 5, 6, 7, 8, 9] --> [10, 11, 12] --> WARNING: new Memory Location possible code incompatabilities if done incorrectly outside of <clinit> or wrong injection point inside <clinit>"
+"values": [10, 11, 12],
+"index": "0",
+"replace": true
+
+"values": [10, 11, 12],
+"index": "[0-10], [0-10]",
+"replace": true
+
+"owner --> overrides the field's class owner when setting the field use this when setting a field outside of the class you are editing"
+"type --> overrides the data type use this when setting a field that's inside another class"
+
+
+		{
+			"name": "id_str",
+			"value": "ARA_I",
+			"insert":
+			{
+				"point": "Before:OPCODE, PUTSTATIC",
+				"occurrence_": "0",
+				"shift": "3",
+				"shiftTo": "EXACT"
+			}
+		},
+		{
+			"name": "o_arr_char",
+			"values": [ null, 0, null, 99],
+			"index": "1"
+		},
+		{
+			"name": "o_arr_bool",
+			"values": [ null, "f", 1, "t", "1"],
+			"index": "1"
+		}
+		{
+			"name": "o_arr_byte",
+			"values": [ null, 0, 21, "NAN"],
+			"index": "1"
+		},
+		{
+			"name": "o_arr_short",
+			"values": [ null, 0, null, 30000],
+			"index": "1"
+		},
+		{
+			"name": "o_arr_int",
+			"values": [ null, 0, null, 40000],
+			"index": "1"
+		},
+		{
+			"name": "o_arr_long",
+			"values": [ null, 0, null, 42000],
+			"index": "1"
+		},
+		{
+			"name": "o_arr_float",
+			"values": [ null, 0, null, 128.0],
+			"index": "1"
+		}
+		{
+			"name": "o_arr_double",
+			"values": [ -1, 0, 0, 129.0, 130, 131, 132, 133, 134, 135, 136, 137, 138],
+			"index": "start"
+		}
+
+	"inject/insert":
+	{
+		"point_": "BEFORE, label:33",
+		"point": "before:LABEL: 33"
+		"point": "before | after | line:<int> | label:<int> | <ASM injection point expression> | before, <ASM injection point Expression>",
+		"occurrence": "1",
+		"shift": "<int> // Indexed Number of Instructions from 'shiftTo' that we are shifting forwards with opperation 'after' or backwards with opperation 'before'",
+		"shiftTo": "<LINE, LABEL, EXACT> //The Instructions we are shifting twords. ",
+	}
+	
+	"OPCODE, TYPE[InsnNode, FieldInsnNode, IntInsnNode, JumpInsnNode, LabelNode, LdcInsnNode, LineNumberNode, MethodInsnNode, TypeInsnNode, VarInsnNode, Opcode]"
+  
+  		{
+			"name": "id_str",
+			"value": "BEFORE A TEST",
+			"inject": 
+			{
+				"point": "before, OPCODE, PUTSTATIC",
+				"shift": 1,
+				"shiftTo": "EXACT"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "INDEX BEFORE 0",
+			"inject": "before"
+		},
+		{
+			"name": "id_str",
+			"value": "INDEX BEFORE 1",
+			"insert": "before"
+		},
+		{
+			"name": "id_str",
+			"value": "Custom String",
+			"inject": 
+			{
+				"point": "before:label:0",
+				"shift": 0,
+				"shiftTo_": "EXACT"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "Custom String 2",
+			"inject": 
+			{
+				"point": "before:label:0",
+				"shift": 0,
+				"shiftTo_": "EXACT"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "UwU",
+			"inject": 
+			{
+				"point": "before:IntInsn, BIPUSH, 97",
+				"shift": 0,
+				"shiftTo_": "EXACT"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "A TEST",
+			"inject": 
+			{
+				"point": "before:FieldInsn, PUTSTATIC, \"jredfox/mce/Test\", \"id_c\", \"C\"",
+				"shift": 0,
+				"shiftTo_": "EXACT"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "Test 2",
+			"inject": 
+			{
+				"point": "label, 0"
+			}
+		},
+		{
+			"name": "id_str",
+			"value": "AFTER A TEST",
+			"inject": 
+			{
+				"point": "after, label, 0",
+				"shift": 1,
+				"shiftTo": "EXACT"
+			}
+		}

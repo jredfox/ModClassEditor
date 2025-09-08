@@ -8,9 +8,8 @@ TODONOW-EVILNOTCHLIB:
 
 TODONOW-DPI-FIX 1.7.0:
 - Test Adding glortho and viewport 1.7.10+
-- Test macOS chatgpt coco code
 - Re-write the agent and dpifix.class to be clear and organized
-- Add Config Option to transform Display.setResizable when false is called to do nothing
+- Add Agent Option Config to transform Display.setResizable when false is called to do nothing
 - OpenAL bug > 1.5 < ?
 
 cpw.mods.fml.common.DummyModContainer
@@ -24,33 +23,6 @@ cpw.mods.fml.common.FMLModContainer
 
 public boolean deDuplicateModIds
 - changes the modid dynamically to prevent conflict "modid" --> "modid_<int>" where int is the generated number for the first free modid string
-
-DPI-Fix ChangeLog 1.6.0:
-- Fixed Mcafee False Positive Malware Flag for the x64 Natives (Recompiled All Natives using Microsoft's Visual C++ Instead of MingW with /MT and Optimization /O2)
-- Fixed MC 1.5x Dedicated Server not being visible when the java agent was active
-- Fixed MC 1.5x Dedicated Server isClient is true when it's a server
-- Fixed MC 1.5x GameModeLib#getFileFromClass returning null sometimes
-- Fixed MC 1.5x not removing @Mod.EventHandler from DpiFixModLegacy I have no idea how it wasn't crashing before
-- Fixed Triggering Loading ModContainer Class by calling ForgeVersion we now use ForgeVersionProxy a brand new API (SpongeForge and Mod Class Editor Compat)
-- Fixed LaunchClassLoaderFix not applying all class loaders if the OpenJDK IMPL didn't provide unqiue identity hashcode per object instance even though java 7 and below specifications required it and even use to represent the memory address
-- Fixed LaunchClassLoaderFix Verify not working for non instances of LaunchClassLoader
-- Fixed LaunchClassLoaderFix not supporting parent ClasssLoaders
-- Fixed LaunchClassLoaderFix Technic's resources and pngMap memory leak in LaunchWrapperTransformer only. Due to forge's RelaunchClassLoader#findClass for MC 1.5x and below public API expecting to use cached classes for modders we cannot fix it. It would cause a class to redefine it twice causeing major issues
-- Fixed LaunchClassLoaderFix patching LaunchClassLoader#cachedClasses when MC Version < 1.12.2! this resulted in mod incompatabilities and false positive ClassNotFoundExceptions
-- Fixed MC 1.6x Not Removing @Mod.EventHandler from modloadcomplete(FMLLoadCompleteEvent) this would make forge print an error. The annotation will stay for 1.7.2 or higher as intended
-- Fixed MC 1.6x and below running loadComplete every time a world starts not just the first time
-- Fixed MC 1.1 - 1.4.7 Hypothetical Crash when running in java agent mode with forge installed. The mod DOES NOT SUPPORT 1.1 - 1.4.7 Forge only the java agent mode does which fixes dpi, sets process prioirty and fixes LaunchClassLoader
-- Fixed DPI-Fix's Config Appearing when -Dgamemodelib.cfg=false
-- Fixed Crash MC 1.6.4 - 1.12.2 with bspkrsCore when going into fullscreen
-- Fixed MC 1.6x Fragile injection point for DpiFixCoreMod#updateViewPort it now checks for both fields and then gets the injection point
-- Optimized GETSTATIC Field calls it now gets the forge version field one time per method inside the transformers
-- Cleaned up and Optimized code to use one GETSTATIC field per method for each majorVersion, minorVersion == 10, majorVersion == 11, majorVersion >= 10, majorVersion < 9 etc...
-- Added Config Option LaunchClassLoaderFix.StrictMode. When auto it becomes true for 1.5x or below else auto resolves to false. If you encounter issues in 1.6 or higher then turn it to true and report the issue. if 1.5x And below I recommend leaving it on auto but it can proably work with any class loader including forge's RelaunchClassLoader
-- Added Config Option LaunchClassLoaderFix.cachedClasses. When auto it becomes true for 1.12.2 or above else auto resolves to false. It's only safe to set this to true in MC 1.12.2 or above because mods like codechickencore for < 1.8 used findClass directly instead of loadClass resulting in ClassNotFoundExceptions if it was already loaded
-- Added -Dclfix.strictMode when present overrides the Config option of LaunchClassLoaderFix.StrictMode
-- Added -Dclfix.patchCachedClasses when true patches LaunchClassLoader#cachedClasses or any custom class loader's cachedClasses Map<String, Class> but it's generally not safe to patch unless your on MC 1.12.2 or above
-- Added jredfox.clfix.FindClass mini program Accessible via command line Example java -cp <dpifix.jar> jredfox.clfix.FindClass "<dir>". This will help you decide if your modpack is safe to turn on cachedClasses config option or not. AKA almost never as modpacks almost always contain code chicken core
-- Added arm64 support for windows 7
 
 TODO 2:
 - Configurable Modids per class

@@ -1,6 +1,7 @@
-TODO FoxyRetroMDK:
-- Debug if it tries to find java in C:\Windows\System32
-- Fix 1.1 - 1.2.5 no longer working due to BS security updates
+TODONOW:
+- Ignore any paths starting in C:\Windows as C:\Windows\System32\lib may be a valid folder in windows itself
+- Figure out why javac was returning an error code
+- Figure out why jdk-finder.py cached config wasn't the same as the MDK's cached JDK
 
 TODONOW-EVILNOTCHLIB:
 - Fix Resource Leaks in EvilNotchLib

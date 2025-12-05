@@ -1,11 +1,37 @@
-TODONOW:
-- Ignore any paths starting in C:\Windows as C:\Windows\System32\lib may be a valid folder in windows itself
-- Figure out why javac was returning an error code
-- Figure out why jdk-finder.py cached config wasn't the same as the MDK's cached JDK
-
 TODONOW-EVILNOTCHLIB:
-- Fix Resource Leaks in EvilNotchLib
 - Update to LaunchClassLoaderFix V2.1.0
+
+ChangeLog SNAPSHOT-127:
+- Fixed ASMHelper InputStream Resource Leaks
+
+change_niceness_v2:
+- /usr/local/bin vs /usr/bin vs /usr/bin/local FoxyRetroMDK and change_niceness check paths for each program
+- support -n --niceness
+- support -p --pid if flag isn't present or is set to "-1" or "" the target PID will be dynamically grabbed with PPID or (PPPID if PPID is a shell and -s flag isn't present)
+- support -s shell flag use when your executing from a shell instead of a executeable file / app. When present gets the PPID instead of the PPPID when it encounters a shell
+- support --ppid <int> changes the target PID to it's parent X amount of times.
+- support -g --pgid / --pgrp Process Group ID is used isntead of the PID
+- support -u --user is going to take the username or user name id and then change all processes of said user
+- support lists for -p -g -u starting seperated by a "," Example: "1028, 5852"
+- support -r for recursive setting niceness of all children of a given PID
+- support -c for children of this process but not the process itself of a given PID
+- support -i -Incremental The Sum of Process's Niceness + Niceness rather then changing the niceness to a fixed value
+- support -f --filter regex pattern filtering image name preeceed statement with "!" to invert regex statement and "\!" to escape it if it's the first character. Use "<@C>" for or statement
+- support -w -window_limit max/min amount of visible windows example "min:0,max:10" or "min:2" where the min is 2 without a max being required. Example "4" where 4 is max amount of windows. Example "min:0,max:0|min:5,max:7&!min:6,max:6" where this says 0 windows or 5-6 windows with the max being not 6 and no min required
+- support -t --titles a regex filter of the title window preceed statement with "!" to invert it and "\!" to escape it if it's the first character. Use "<@C>" for an or statement
+- support -n(index 0) -p(index 1) without the flags or when all flags have been parsed
+- support -v --version
+- support -h --help
+- support both "-flag=arg" and "-flag arg"
+- throw error if two one character flags are on one argument like -rc because rc flags are redundant and the rest require arguments that cannot go on an array
+- installer delete change_niceness inside the path before installing and delete previous V2 path
+
+change_nicesness 1.0.3 TODO:
+- Respect "$NONINTERACTIVE=1"
+- Linux Installation Support (either manually compiling requring deps or supporting fixed executables [x86, x64, arm64, RISC-V, IMB-Z])
+- macOS only apply the java-fix for macOS as linux doesn't appear to have the issues of freezing
+- Better installation paths for both macOS and linux?????? while being backwards compatible with the older paths for dpi-fix
+- support -v --version and --help and -h
 
 TODONOW-DPI-FIX 1.7.0:
 - Test Adding glortho and viewport 1.7.10+

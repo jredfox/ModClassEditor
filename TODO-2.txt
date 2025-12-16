@@ -1,14 +1,11 @@
-TODONOW-EVILNOTCHLIB:
-- Update to LaunchClassLoaderFix V2.1.0
-
-ChangeLog SNAPSHOT-127:
-- Fixed ASMHelper InputStream Resource Leaks
+TODO:
+- jdk-finder.py finish V2
 
 change_niceness_v2:
-- /usr/local/bin vs /usr/bin vs /usr/bin/local FoxyRetroMDK and change_niceness check paths for each program
 - support -n --niceness
 - support -p --pid if flag isn't present or is set to "-1" or "" the target PID will be dynamically grabbed with PPID or (PPPID if PPID is a shell and -s flag isn't present)
-- support -s shell flag use when your executing from a shell instead of a executeable file / app. When present gets the PPID instead of the PPPID when it encounters a shell
+- support -s --shell flag is used when your executing from a shell script instead of a executeable file / app. When present gets the PPID instead of the PPPID when it encounters a shell when dynamically getting the target PID
+- support -e --shell_list="zsh:/bin/bash;/bin/csh;sh" list of shell exectuable definitions seperated by ";" or ":". Overrides the hard coded list of the program
 - support --ppid <int> changes the target PID to it's parent X amount of times.
 - support -g --pgid / --pgrp Process Group ID is used isntead of the PID
 - support -u --user is going to take the username or user name id and then change all processes of said user
@@ -30,10 +27,12 @@ change_nicesness 1.0.3 TODO:
 - Respect "$NONINTERACTIVE=1"
 - Linux Installation Support (either manually compiling requring deps or supporting fixed executables [x86, x64, arm64, RISC-V, IMB-Z])
 - macOS only apply the java-fix for macOS as linux doesn't appear to have the issues of freezing
-- Better installation paths for both macOS and linux?????? while being backwards compatible with the older paths for dpi-fix
+- Better installation path of /usr/local/apps/change_niceness and a link to /usr/local/bin/change_niceness and /usr/local/bin/change_niceness_v2
 - support -v --version and --help and -h
 
 TODONOW-DPI-FIX 1.7.0:
+- dpi-fix update arch to accept "x86?32" and "x32" for 32 bit intel arch also make sure that i?86 works and that IA-32 apprently this is an alias for x86 to because Itanium only had 64 bits and was "IA-64"
+- update dpi-fix to add enum archs for docs ("AIX", "POWERPC" then determin bits using java dynamically 32/64), ("s390x","s390","IBM-Z", "z<nums>", "z??<nums> determin bits 32/64 dynamically), ("RISC-V", or contains "RISC" and is 64 bits) IA-64 for itanium intel)
 - Test Adding glortho and viewport 1.7.10+
 - Re-write the agent and dpifix.class to be clear and organized
 - Add Agent Option Config to transform Display.setResizable when false is called to do nothing
